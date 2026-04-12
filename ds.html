@@ -25,6 +25,7 @@ button{-webkit-tap-highlight-color:transparent}
 .search-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .search-box{position:relative;flex:1;min-width:140px}
 .search-box input{width:100%;padding:10px 10px 10px 34px;background:#0f1117;border:1px solid #2d3348;border-radius:10px;color:#e2e8f0;font-size:14px;outline:none}
+.search-box input:focus{border-color:#6366f1}
 .search-box svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none}
 .btn{border:1px solid #2d3348;border-radius:8px;padding:8px 12px;cursor:pointer;font-size:12px;display:flex;align-items:center;gap:4px;white-space:nowrap;background:#242836;color:#94a3b8}
 .btn.active{background:rgba(245,158,11,0.2);border-color:#f59e0b;color:#f59e0b}
@@ -93,9 +94,12 @@ svg text{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif}
 </style>
 </head>
 <body>
-<div id="app" class="app"></div>
+<div id="app" class="app">
+<div id="header"></div>
+<div id="content"></div>
+</div>
 <script>
-// ─── Minimal SVG Chart Helpers ──────────────────────
+// ─── SVG Chart Helpers ──────────────────────────────
 function svgChart(w,h,content){
   return '<svg viewBox="0 0 '+w+' '+h+'" width="100%" height="'+h+'" xmlns="http://www.w3.org/2000/svg" style="display:block">'+content+'</svg>';
 }
@@ -134,7 +138,6 @@ var C={bg:"#0f1117",surface:"#1a1d27",surfaceLight:"#242836",border:"#2d3348",te
 // ─── State ──────────────────────────────────────────
 var state={
   selectedCat:null, search:'', expandedTopics:{}, favorites:{}, showFavOnly:false,
-  // viz states
   normMean:0, normStd:1,
   bvComplexity:5,
   rocThreshold:0.5,
@@ -149,199 +152,282 @@ var state={
 
 function setState(updates){
   for(var k in updates) state[k]=updates[k];
-  render();
+  renderContent();
+}
+function setSearch(val){
+  state.search=val;
+  renderContent();
 }
 
 // ─── Category Data ──────────────────────────────────
 var CATEGORIES=[
-  {id:"stats",name:"Statistics & Probability",icon:'📊',color:C.cyan,
+  {id:"stats",name:"Statistics & Probability",icon:'\u{1F4CA}',color:C.cyan,
     topics:[
       {id:"normal-dist",name:"Normal Distribution",
-        quick:"Bell-shaped curve where ~68% of data falls within 1σ of the mean. Defined by μ (mean) and σ (standard deviation).",
-        detail:"Think of measuring heights of 10,000 people. Most cluster around the average. That's a Normal Distribution!\n\nThe magic numbers:\n→ 68% within ±1σ\n→ 95% within ±2σ\n→ 99.7% within ±3σ (empirical rule)\n\nWhy it matters: The Central Limit Theorem says sample means become normally distributed regardless of population shape.\n\nDon't memorize the formula — understand the shape. Play with μ and σ below!",
-        formula:"f(x) = (1/σ√2π) · e^(-½((x-μ)/σ)²)", viz:"normalDist",
+        quick:"Bell-shaped curve where ~68% of data falls within 1\u03C3 of the mean. Defined by \u03BC (mean) and \u03C3 (standard deviation).",
+        detail:"Think of measuring heights of 10,000 people. Most cluster around the average. That's a Normal Distribution!\n\nThe magic numbers:\n\u2192 68% within \u00B11\u03C3\n\u2192 95% within \u00B12\u03C3\n\u2192 99.7% within \u00B13\u03C3 (empirical rule)\n\nWhy it matters: The Central Limit Theorem says sample means become normally distributed regardless of population shape.\n\nDon't memorize the formula \u2014 understand the shape. Play with \u03BC and \u03C3 below!",
+        formula:"f(x) = (1/\u03C3\u221A2\u03C0) \u00B7 e^(-\u00BD((x-\u03BC)/\u03C3)\u00B2)", viz:"normalDist",
         tags:["distribution","gaussian","bell curve","CLT"]},
       {id:"bayes",name:"Bayes' Theorem",
-        quick:"Updates probability given new evidence: P(A|B) = P(B|A)·P(A) / P(B)",
-        detail:"A disease test is 99% accurate. Only 1 in 10,000 have the disease. Positive test → only ~1% chance you have it!\n\nKey ingredients:\n→ Prior: P(A) — belief before evidence\n→ Likelihood: P(B|A) — evidence if hypothesis true\n→ Posterior: P(A|B) — updated belief\n\nThe Base Rate Fallacy = ignoring the prior. Underpins Naive Bayes classifiers.",
-        formula:"P(A|B) = P(B|A) · P(A) / P(B)",
+        quick:"Updates probability given new evidence: P(A|B) = P(B|A)\u00B7P(A) / P(B)",
+        detail:"A disease test is 99% accurate. Only 1 in 10,000 have the disease. Positive test \u2192 only ~1% chance you have it!\n\nKey ingredients:\n\u2192 Prior: P(A) \u2014 belief before evidence\n\u2192 Likelihood: P(B|A) \u2014 evidence if hypothesis true\n\u2192 Posterior: P(A|B) \u2014 updated belief\n\nThe Base Rate Fallacy = ignoring the prior. Underpins Naive Bayes classifiers.",
+        formula:"P(A|B) = P(B|A) \u00B7 P(A) / P(B)",
         tags:["probability","conditional","prior","posterior"]},
       {id:"hypothesis",name:"Hypothesis Testing",
         quick:"Framework to decide if evidence is strong enough to reject a claim. Uses p-values and significance levels.",
-        detail:"Assume the drug doesn't work (H₀). Look for evidence against that.\n\n1. State H₀ and H₁\n2. Choose α (usually 0.05)\n3. Compute test statistic\n4. Get p-value\n5. If p-value < α → reject H₀\n\nCommon mistakes:\n→ p-value ≠ probability H₀ is true\n→ \"Not significant\" ≠ \"no effect\"\n→ Multiple comparisons inflate false positives\n\nTypes: z-test, t-test, chi-square, ANOVA",
-        formula:"If p-value < α → Reject H₀",
+        detail:"Assume the drug doesn't work (H\u2080). Look for evidence against that.\n\n1. State H\u2080 and H\u2081\n2. Choose \u03B1 (usually 0.05)\n3. Compute test statistic\n4. Get p-value\n5. If p-value < \u03B1 \u2192 reject H\u2080\n\nCommon mistakes:\n\u2192 p-value \u2260 probability H\u2080 is true\n\u2192 \"Not significant\" \u2260 \"no effect\"\n\u2192 Multiple comparisons inflate false positives\n\nTypes: z-test, t-test, chi-square, ANOVA",
+        formula:"If p-value < \u03B1 \u2192 Reject H\u2080",
         tags:["p-value","significance","null hypothesis","t-test"]},
       {id:"distributions",name:"Key Distributions",
         quick:"Binomial (n trials), Poisson (rare events/time), Exponential (time between events), Uniform (equal probability).",
-        detail:"Your distribution toolkit:\n\nBinomial: \"How many heads in 20 flips?\"\n→ Parameters: n (trials), p (probability)\n\nPoisson: \"Customers per hour?\"\n→ Parameter: λ (average rate)\n\nExponential: \"Time until next customer?\"\n→ Memoryless property!\n\nStudent's t: Normal with heavier tails\n→ Small sample, unknown σ\n→ As n → ∞, becomes Normal",
+        detail:"Your distribution toolkit:\n\nBinomial: \"How many heads in 20 flips?\"\n\u2192 Parameters: n (trials), p (probability)\n\nPoisson: \"Customers per hour?\"\n\u2192 Parameter: \u03BB (average rate)\n\nExponential: \"Time until next customer?\"\n\u2192 Memoryless property!\n\nStudent's t: Normal with heavier tails\n\u2192 Small sample, unknown \u03C3\n\u2192 As n \u2192 \u221E, becomes Normal",
         tags:["binomial","poisson","exponential","t-distribution"]},
       {id:"clt",name:"Central Limit Theorem",
-        quick:"Sample means → normal distribution as n increases, regardless of original shape. Rule of thumb: n ≥ 30.",
-        detail:"The MOST IMPORTANT theorem in statistics.\n\nTake ANY distribution. Sample many times. Plot the means. Result: Normal!\n\n→ Mean of sample means = μ\n→ Std of sample means = σ/√n (standard error)\n\nThis lets us use Normal tools even when data isn't normal. Foundation of inferential statistics.",
-        formula:"X̄ ~ N(μ, σ²/n) as n → ∞",
+        quick:"Sample means \u2192 normal distribution as n increases, regardless of original shape. Rule of thumb: n \u2265 30.",
+        detail:"The MOST IMPORTANT theorem in statistics.\n\nTake ANY distribution. Sample many times. Plot the means. Result: Normal!\n\n\u2192 Mean of sample means = \u03BC\n\u2192 Std of sample means = \u03C3/\u221An (standard error)\n\nThis lets us use Normal tools even when data isn't normal. Foundation of inferential statistics.",
+        formula:"X\u0304 ~ N(\u03BC, \u03C3\u00B2/n) as n \u2192 \u221E",
         tags:["sampling","standard error"]},
       {id:"confidence",name:"Confidence Intervals",
-        quick:"A range likely to contain the true parameter. 95% CI ≠ '95% chance truth is here'.",
-        detail:"95% CI means: repeat 100 times → ~95 intervals contain the truth.\n\nFormula: X̄ ± z* × (σ/√n)\n\n→ 90%: z* = 1.645\n→ 95%: z* = 1.96\n→ 99%: z* = 2.576\n\nKey insights:\n→ Wider = more confident, less precise\n→ Larger sample = narrower interval\n→ CI width ∝ 1/√n",
-        formula:"CI = X̄ ± z* × (σ/√n)",
+        quick:"A range likely to contain the true parameter. 95% CI \u2260 '95% chance truth is here'.",
+        detail:"95% CI means: repeat 100 times \u2192 ~95 intervals contain the truth.\n\nFormula: X\u0304 \u00B1 z* \u00D7 (\u03C3/\u221An)\n\n\u2192 90%: z* = 1.645\n\u2192 95%: z* = 1.96\n\u2192 99%: z* = 2.576\n\nKey insights:\n\u2192 Wider = more confident, less precise\n\u2192 Larger sample = narrower interval\n\u2192 CI width \u221D 1/\u221An",
+        formula:"CI = X\u0304 \u00B1 z* \u00D7 (\u03C3/\u221An)",
         tags:["margin of error","standard error"]},
+      {id:"correlation",name:"Correlation & Covariance",
+        quick:"Pearson: linear relationship [-1,1]. Spearman: monotonic rank correlation. Correlation \u2260 causation!",
+        detail:"Covariance tells direction, correlation tells direction AND strength.\n\nPearson r: Linear relationship only\n\u2192 r = 1: perfect positive line\n\u2192 r = 0: no LINEAR relationship (could still be curved!)\n\u2192 r = -1: perfect negative line\n\nSpearman: Rank-based, catches non-linear monotonic relationships\n\nTrap: Anscombe's quartet \u2014 4 datasets with same r but wildly different shapes! Always plot your data.\n\nGolden rule: Correlation does NOT mean causation. Ice cream sales correlate with drownings (both caused by summer).",
+        formula:"r = \u03A3(x\u1D62-x\u0304)(y\u1D62-y\u0304) / \u221A[\u03A3(x\u1D62-x\u0304)\u00B2\u03A3(y\u1D62-y\u0304)\u00B2]",
+        tags:["pearson","spearman","covariance","causation"]},
+      {id:"ab-testing",name:"A/B Testing",
+        quick:"Compare two versions using hypothesis testing. Need enough sample size for statistical power.",
+        detail:"Want to know if a new button color gets more clicks? A/B test it!\n\n1. Pick your metric (click rate, revenue, etc.)\n2. Calculate sample size needed (power analysis)\n3. Randomly split users into A (control) and B (treatment)\n4. Run until you hit sample size \u2014 NO peeking!\n5. Run hypothesis test\n\nKey concepts:\n\u2192 Statistical power: probability of detecting a real effect (aim for 80%+)\n\u2192 Effect size: how big a difference you care about\n\u2192 Multiple testing: testing 10 metrics? Some will be \"significant\" by chance! Use Bonferroni correction.\n\nPeeking = inflated false positive rate. Decide sample size BEFORE you start.",
+        formula:"n = (Z_\u03B1 + Z_\u03B2)\u00B2 \u00B7 2\u03C3\u00B2 / \u03B4\u00B2",
+        tags:["experiment","power","sample size","significance"]},
+      {id:"mle",name:"Maximum Likelihood Estimation",
+        quick:"Find parameter values that make the observed data most probable. Foundation of many ML algorithms.",
+        detail:"You flip a coin 10 times, get 7 heads. What's the most likely p?\n\nMLE says: find the p that maximizes P(data | p).\n\n1. Write the likelihood function: L(\u03B8) = P(data | \u03B8)\n2. Take the log (easier math): log L(\u03B8)\n3. Take derivative, set = 0\n4. Solve for \u03B8\n\nFor the coin: MLE gives p = 7/10 = 0.7. Makes sense!\n\nWhy it matters:\n\u2192 Logistic regression uses MLE\n\u2192 Neural network training is basically MLE\n\u2192 Many distributions have closed-form MLE solutions\n\nMLE can overfit with small samples \u2192 use MAP (adds a prior) or regularization.",
+        formula:"\u03B8\u0302 = argmax L(\u03B8) = argmax \u03A0 P(x\u1D62 | \u03B8)",
+        tags:["likelihood","estimation","MAP","parameters"]},
     ]
   },
-  {id:"ml",name:"Machine Learning Models",icon:'🧠',color:C.accent,
+  {id:"ml",name:"Machine Learning Models",icon:'\u{1F9E0}',color:C.accent,
     topics:[
       {id:"linreg",name:"Linear Regression",
         quick:"Fits y = wx + b minimizing squared errors. Assumes linearity, independence, homoscedasticity, normal residuals.",
-        detail:"The Hello World of ML.\n\nModel: ŷ = w₁x₁ + w₂x₂ + ... + b\nMinimizes: Σ(yᵢ - ŷᵢ)²\n\nAssumptions (LINE):\n→ Linearity\n→ Independence\n→ Normality of residuals\n→ Equal variance\n\nCheck: R² (variance explained), residual plots.\nFails with: non-linear data, multicollinearity, outliers.",
-        formula:"ŷ = Xw + b, min ||y - ŷ||²",
+        detail:"The Hello World of ML.\n\nModel: y\u0302 = w\u2081x\u2081 + w\u2082x\u2082 + ... + b\nMinimizes: \u03A3(y\u1D62 - y\u0302\u1D62)\u00B2\n\nAssumptions (LINE):\n\u2192 Linearity\n\u2192 Independence\n\u2192 Normality of residuals\n\u2192 Equal variance\n\nCheck: R\u00B2 (variance explained), residual plots.\nFails with: non-linear data, multicollinearity, outliers.",
+        formula:"y\u0302 = Xw + b, min ||y - y\u0302||\u00B2",
         tags:["regression","OLS","R-squared"]},
       {id:"logreg",name:"Logistic Regression",
         quick:"Classification via sigmoid: P(y=1) = 1/(1+e^(-z)). It's classification, not regression!",
-        detail:"It's a classification algorithm!\n\n1. Compute z = wᵀx + b\n2. σ(z) = 1/(1+e⁻ᶻ) → probability [0,1]\n3. P ≥ 0.5 → class 1\n\nLoss: Binary Cross-Entropy\nL = -[y·log(ŷ) + (1-y)·log(1-ŷ)]\n\nWhy not linear regression? Outputs must be [0,1]!\n→ Interpretable coefficients (log-odds)\n→ Multiclass: Softmax",
-        formula:"P(y=1) = 1/(1+e^(-(wᵀx+b)))",
+        detail:"It's a classification algorithm!\n\n1. Compute z = w\u1D40x + b\n2. \u03C3(z) = 1/(1+e\u207B\u1DBB) \u2192 probability [0,1]\n3. P \u2265 0.5 \u2192 class 1\n\nLoss: Binary Cross-Entropy\nL = -[y\u00B7log(y\u0302) + (1-y)\u00B7log(1-y\u0302)]\n\nWhy not linear regression? Outputs must be [0,1]!\n\u2192 Interpretable coefficients (log-odds)\n\u2192 Multiclass: Softmax",
+        formula:"P(y=1) = 1/(1+e^(-(w\u1D40x+b)))",
         tags:["classification","sigmoid","cross-entropy"]},
       {id:"dtree",name:"Decision Trees",
         quick:"If-then splits minimizing Gini or Entropy. Interpretable but overfits easily.",
-        detail:"20 Questions with data. Best-separating question at each node.\n\nSplit criteria:\n→ Gini: 1 - Σpᵢ²\n→ Entropy: -Σpᵢ·log₂(pᵢ)\n→ Info Gain = parent - weighted children entropy\n\nPros: Interpretable, no scaling needed\nCons: Overfits, unstable\nFix: Prune or use ensembles.\n\nTry the interactive tree!",
+        detail:"20 Questions with data. Best-separating question at each node.\n\nSplit criteria:\n\u2192 Gini: 1 - \u03A3p\u1D62\u00B2\n\u2192 Entropy: -\u03A3p\u1D62\u00B7log\u2082(p\u1D62)\n\u2192 Info Gain = parent - weighted children entropy\n\nPros: Interpretable, no scaling needed\nCons: Overfits, unstable\nFix: Prune or use ensembles.\n\nTry the interactive tree!",
         viz:"decisionTree",
         tags:["gini","entropy","CART","pruning"]},
       {id:"rf",name:"Random Forest",
-        quick:"Ensemble of trees on random subsets. Bagging + feature randomization → less overfitting.",
-        detail:"Train hundreds of trees, let them vote.\n\nTwo tricks:\n→ Bagging: Random samples WITH replacement\n→ Feature randomization: √p features per split\n\nKey params: n_estimators, max_depth, max_features\n\nBonus: OOB score = free validation!\nFeature importance from impurity reduction.",
-        formula:"ŷ = mode(tree₁, tree₂, ..., treeₙ)",
+        quick:"Ensemble of trees on random subsets. Bagging + feature randomization \u2192 less overfitting.",
+        detail:"Train hundreds of trees, let them vote.\n\nTwo tricks:\n\u2192 Bagging: Random samples WITH replacement\n\u2192 Feature randomization: \u221Ap features per split\n\nKey params: n_estimators, max_depth, max_features\n\nBonus: OOB score = free validation!\nFeature importance from impurity reduction.",
+        formula:"y\u0302 = mode(tree\u2081, tree\u2082, ..., tree\u2099)",
         tags:["ensemble","bagging","OOB"]},
       {id:"xgb",name:"Gradient Boosting / XGBoost",
         quick:"Sequential learners correcting previous errors. XGBoost adds regularization.",
-        detail:"Trees built sequentially — each fixes previous mistakes.\n\n1. Start with mean\n2. Compute residuals\n3. Train tree on residuals\n4. Add (scaled by lr)\n5. Repeat!\n\nXGBoost adds:\n→ L1 + L2 regularization\n→ Handles missing values\n→ Parallel feature processing\n\nKey: learning_rate (0.01-0.1), max_depth (3-8), early stopping!",
-        formula:"ŷ = Σ η · hₘ(x) + Ω(hₘ)",
+        detail:"Trees built sequentially \u2014 each fixes previous mistakes.\n\n1. Start with mean\n2. Compute residuals\n3. Train tree on residuals\n4. Add (scaled by lr)\n5. Repeat!\n\nXGBoost adds:\n\u2192 L1 + L2 regularization\n\u2192 Handles missing values\n\u2192 Parallel feature processing\n\nKey: learning_rate (0.01-0.1), max_depth (3-8), early stopping!",
+        formula:"y\u0302 = \u03A3 \u03B7 \u00B7 h\u2098(x) + \u03A9(h\u2098)",
         viz:"gradientDescent",
         tags:["boosting","xgboost","lightgbm"]},
       {id:"svm",name:"Support Vector Machines",
         quick:"Maximizes margin between classes. Kernel trick for non-linear boundaries.",
-        detail:"Find the widest street between classes. Closest points = support vectors.\n\nNon-linear? Kernel trick:\n→ Linear: xᵀy\n→ RBF: exp(-γ||x-y||²) — most common\n→ Polynomial: (xᵀy + c)^d\n\nParams: C (regularization), γ (kernel width)\nPros: High dimensions, memory-efficient\nCons: Slow on large data",
-        formula:"min ½||w||² s.t. yᵢ(wᵀxᵢ+b) ≥ 1",
+        detail:"Find the widest street between classes. Closest points = support vectors.\n\nNon-linear? Kernel trick:\n\u2192 Linear: x\u1D40y\n\u2192 RBF: exp(-\u03B3||x-y||\u00B2) \u2014 most common\n\u2192 Polynomial: (x\u1D40y + c)^d\n\nParams: C (regularization), \u03B3 (kernel width)\nPros: High dimensions, memory-efficient\nCons: Slow on large data",
+        formula:"min \u00BD||w||\u00B2 s.t. y\u1D62(w\u1D40x\u1D62+b) \u2265 1",
         tags:["kernel","margin","RBF"]},
       {id:"knn",name:"k-Nearest Neighbors",
-        quick:"Majority vote of k closest points. Lazy learning — no training phase!",
-        detail:"\"You are your neighbors.\"\n\n1. Store all data\n2. Find k closest\n3. Vote (classification) or average (regression)\n\nDistances: Euclidean √Σ(xᵢ-yᵢ)², Manhattan Σ|xᵢ-yᵢ|\n\nk small → flexible/noisy. k large → smooth/underfit.\n\nCRITICAL: Scale features!\nSpeed: KD-trees, FAISS",
+        quick:"Majority vote of k closest points. Lazy learning \u2014 no training phase!",
+        detail:"\"You are your neighbors.\"\n\n1. Store all data\n2. Find k closest\n3. Vote (classification) or average (regression)\n\nDistances: Euclidean \u221A\u03A3(x\u1D62-y\u1D62)\u00B2, Manhattan \u03A3|x\u1D62-y\u1D62|\n\nk small \u2192 flexible/noisy. k large \u2192 smooth/underfit.\n\nCRITICAL: Scale features!\nSpeed: KD-trees, FAISS",
         tags:["distance","lazy learning","euclidean"]},
       {id:"naive-bayes",name:"Naive Bayes",
-        quick:"Assumes feature independence. P(class) × ∏P(feature|class). Fast, great for text.",
-        detail:"Naive = features independent given class. Rarely true but works!\n\nVariants:\n→ Gaussian: Continuous features\n→ Multinomial: Word counts\n→ Bernoulli: Binary features\n\nWorks because ranking matters more than exact probabilities.\n\nUse: Spam, sentiment, document classification.",
-        formula:"P(C|X) = P(C)∏P(xᵢ|C) / P(X)",
+        quick:"Assumes feature independence. P(class) \u00D7 \u220FP(feature|class). Fast, great for text.",
+        detail:"Naive = features independent given class. Rarely true but works!\n\nVariants:\n\u2192 Gaussian: Continuous features\n\u2192 Multinomial: Word counts\n\u2192 Bernoulli: Binary features\n\nWorks because ranking matters more than exact probabilities.\n\nUse: Spam, sentiment, document classification.",
+        formula:"P(C|X) = P(C)\u220FP(x\u1D62|C) / P(X)",
         tags:["probabilistic","spam","text"]},
+      {id:"loss-functions",name:"Loss Functions",
+        quick:"MSE for regression, Cross-Entropy for classification. The function your model is actually minimizing.",
+        detail:"A loss function measures how WRONG your model is. Training = minimizing loss.\n\nRegression losses:\n\u2192 MSE: (y-y\u0302)\u00B2 \u2014 penalizes big errors heavily\n\u2192 MAE: |y-y\u0302| \u2014 robust to outliers\n\u2192 Huber: MSE when small, MAE when large \u2014 best of both\n\nClassification losses:\n\u2192 Binary Cross-Entropy: -[y\u00B7log(p) + (1-y)\u00B7log(1-p)]\n\u2192 Categorical Cross-Entropy: -\u03A3 y\u1D62\u00B7log(p\u1D62)\n\u2192 Hinge Loss: max(0, 1 - y\u00B7f(x)) \u2014 used by SVMs\n\nPicking the right loss matters more than picking the right model! MSE + outliers = disaster. Use Huber instead.",
+        formula:"MSE = (1/n)\u03A3(y\u1D62-y\u0302\u1D62)\u00B2 | CE = -\u03A3y\u1D62log(p\u1D62)",
+        tags:["MSE","MAE","cross-entropy","hinge","huber"]},
     ]
   },
-  {id:"dl",name:"Deep Learning",icon:'⚡',color:C.pink,
+  {id:"dl",name:"Deep Learning",icon:'\u26A1',color:C.pink,
     topics:[
       {id:"nn",name:"Neural Networks",
         quick:"Layers of neurons with activations. Universal function approximators.",
-        detail:"Matrix multiplications + non-linear functions!\n\nNeuron: output = activation(Σwᵢxᵢ + b)\n\nTraining:\n1. Forward pass → prediction\n2. Compute loss\n3. Backprop gradients (chain rule)\n4. Update: w = w - lr × ∂L/∂w\n\nKey concepts:\n→ Vanishing gradients → use ReLU, ResNets\n→ Batch Norm → stable training\n→ Dropout → prevents overfitting\n\nExplore activations below!",
+        detail:"Matrix multiplications + non-linear functions!\n\nNeuron: output = activation(\u03A3w\u1D62x\u1D62 + b)\n\nTraining:\n1. Forward pass \u2192 prediction\n2. Compute loss\n3. Backprop gradients (chain rule)\n4. Update: w = w - lr \u00D7 \u2202L/\u2202w\n\nKey concepts:\n\u2192 Vanishing gradients \u2192 use ReLU, ResNets\n\u2192 Batch Norm \u2192 stable training\n\u2192 Dropout \u2192 prevents overfitting\n\nExplore activations below!",
         viz:"activation",
         tags:["backpropagation","activation","dropout"]},
       {id:"cnn",name:"CNNs",
-        quick:"Convolutional filters detect spatial patterns: edges → textures → shapes → objects.",
-        detail:"Slide small filters to detect local patterns.\n\nBlocks:\n→ Conv: Filter slides across input\n→ Pooling: Downsample (Max pool)\n→ Flatten + Dense: Classify\n\nHierarchy:\nLayer 1: Edges → Layer 2: Textures → Layer 3: Parts → Layer 4+: Objects\n\nConcepts: Stride, Padding, Receptive field\n\nArchitectures: LeNet → AlexNet → VGG → ResNet → EfficientNet",
+        quick:"Convolutional filters detect spatial patterns: edges \u2192 textures \u2192 shapes \u2192 objects.",
+        detail:"Slide small filters to detect local patterns.\n\nBlocks:\n\u2192 Conv: Filter slides across input\n\u2192 Pooling: Downsample (Max pool)\n\u2192 Flatten + Dense: Classify\n\nHierarchy:\nLayer 1: Edges \u2192 Layer 2: Textures \u2192 Layer 3: Parts \u2192 Layer 4+: Objects\n\nConcepts: Stride, Padding, Receptive field\n\nArchitectures: LeNet \u2192 AlexNet \u2192 VGG \u2192 ResNet \u2192 EfficientNet",
         tags:["convolution","pooling","ResNet"]},
       {id:"rnn",name:"RNNs & LSTMs",
         quick:"Sequential data with memory. LSTMs use gates to solve vanishing gradients.",
-        detail:"RNNs pass info between timesteps.\nhₜ = tanh(Wₕhₜ₋₁ + Wₓxₜ)\nProblem: Vanishing gradients!\n\nLSTM fixes with 3 gates:\n→ Forget: Discard old info\n→ Input: Store new info\n→ Output: What to emit\n\nCell state = conveyor belt through time.\n\nGRU: Simpler, 2 gates, often works as well.\n\nNote: Transformers now dominate NLP.",
+        detail:"RNNs pass info between timesteps.\nh\u209C = tanh(W\u2095h\u209C\u208B\u2081 + W\u2093x\u209C)\nProblem: Vanishing gradients!\n\nLSTM fixes with 3 gates:\n\u2192 Forget: Discard old info\n\u2192 Input: Store new info\n\u2192 Output: What to emit\n\nCell state = conveyor belt through time.\n\nGRU: Simpler, 2 gates, often works as well.\n\nNote: Transformers now dominate NLP.",
         tags:["sequence","time series","gates"]},
       {id:"transformer",name:"Transformers & Attention",
         quick:"Self-attention lets each token attend to all others. Foundation of GPT, BERT.",
-        detail:"\"Attention Is All You Need\"\n\n1. Create Q, K, V for each token\n2. Scores = Q · Kᵀ / √dₖ\n3. Softmax → attention weights\n4. Output = weighted sum of Values\n\nMulti-Head: Multiple parallel attention with different projections.\n\n→ Encoder: BERT (bidirectional)\n→ Decoder: GPT (autoregressive)\n→ Both: T5\n\nPositional encoding via sine/cosine.",
-        formula:"Attention(Q,K,V) = softmax(QKᵀ/√dₖ)V",
+        detail:"\"Attention Is All You Need\"\n\n1. Create Q, K, V for each token\n2. Scores = Q \u00B7 K\u1D40 / \u221Ad\u2096\n3. Softmax \u2192 attention weights\n4. Output = weighted sum of Values\n\nMulti-Head: Multiple parallel attention with different projections.\n\n\u2192 Encoder: BERT (bidirectional)\n\u2192 Decoder: GPT (autoregressive)\n\u2192 Both: T5\n\nPositional encoding via sine/cosine.",
+        formula:"Attention(Q,K,V) = softmax(QK\u1D40/\u221Ad\u2096)V",
         tags:["attention","BERT","GPT","NLP"]},
+      {id:"autoencoders",name:"Autoencoders & VAEs",
+        quick:"Compress input to latent space, then reconstruct. VAEs add probabilistic sampling for generation.",
+        detail:"An autoencoder learns to copy its input \u2014 but through a bottleneck!\n\nEncoder: Input \u2192 small latent vector (z)\nDecoder: z \u2192 reconstructed input\n\nThe bottleneck forces the network to learn the most important features.\n\nUses:\n\u2192 Dimensionality reduction (non-linear PCA!)\n\u2192 Denoising (train on noisy, reconstruct clean)\n\u2192 Anomaly detection (high reconstruction error = anomaly)\n\nVAE (Variational):\nInstead of a fixed z, encode to a mean and variance. Sample from that distribution. This lets you GENERATE new data by sampling from the latent space.\n\nVAE loss = Reconstruction loss + KL divergence (keeps latent space organized).",
+        formula:"Loss = ||x - x\u0302||\u00B2 + KL(q(z|x) || p(z))",
+        tags:["latent space","generative","VAE","denoising"]},
     ]
   },
-  {id:"eval",name:"Model Evaluation",icon:'🎯',color:C.green,
+  {id:"eval",name:"Model Evaluation",icon:'\u{1F3AF}',color:C.green,
     topics:[
       {id:"bias-var",name:"Bias-Variance Tradeoff",
-        quick:"Error = Bias² + Variance + Noise. Bias = underfitting, Variance = overfitting.",
-        detail:"Bias: Model too simple → poor everywhere\nVariance: Model memorizes noise → great on train, bad on test\n\nMore complex → bias↓ variance↑\nLess complex → bias↑ variance↓\n\nDiagnose:\n→ High bias: Bad train AND test\n→ High variance: Great train, bad test\n\nFix bias: More features, complex model\nFix variance: More data, regularization, dropout\n\nPlay with the chart!",
+        quick:"Error = Bias\u00B2 + Variance + Noise. Bias = underfitting, Variance = overfitting.",
+        detail:"Bias: Model too simple \u2192 poor everywhere\nVariance: Model memorizes noise \u2192 great on train, bad on test\n\nMore complex \u2192 bias\u2193 variance\u2191\nLess complex \u2192 bias\u2191 variance\u2193\n\nDiagnose:\n\u2192 High bias: Bad train AND test\n\u2192 High variance: Great train, bad test\n\nFix bias: More features, complex model\nFix variance: More data, regularization, dropout\n\nPlay with the chart!",
         viz:"biasVariance",
         tags:["underfitting","overfitting","generalization"]},
       {id:"crossval",name:"Cross-Validation",
         quick:"k folds: train on k-1, test on 1, rotate. More reliable than single split.",
-        detail:"One split = one exam. CV gives k exams!\n\n1. Split into k folds\n2. Each fold takes a turn as test set\n3. Average scores\n\nVariants:\n→ Stratified: Preserves class proportions\n→ LOO: k = n\n→ Time Series: Only past → future\n\nNEVER tune on test data! Use nested CV.",
+        detail:"One split = one exam. CV gives k exams!\n\n1. Split into k folds\n2. Each fold takes a turn as test set\n3. Average scores\n\nVariants:\n\u2192 Stratified: Preserves class proportions\n\u2192 LOO: k = n\n\u2192 Time Series: Only past \u2192 future\n\nNEVER tune on test data! Use nested CV.",
         viz:"crossVal",
         tags:["k-fold","stratified","LOOCV"]},
       {id:"confusion",name:"Confusion Matrix",
-        quick:"TP, FP, FN, TN → Precision, Recall, F1. Don't use accuracy on imbalanced data!",
-        detail:"The scorecard:\n→ Precision = TP/(TP+FP) — \"of predicted +, how many right?\"\n→ Recall = TP/(TP+FN) — \"of actual +, how many found?\"\n→ F1 = 2·P·R/(P+R)\n\nPrioritize:\n→ Spam filter → Precision\n→ Cancer screening → Recall\n→ Balanced → F1\n\nTry adjusting values!",
+        quick:"TP, FP, FN, TN \u2192 Precision, Recall, F1. Don't use accuracy on imbalanced data!",
+        detail:"The scorecard:\n\u2192 Precision = TP/(TP+FP) \u2014 \"of predicted +, how many right?\"\n\u2192 Recall = TP/(TP+FN) \u2014 \"of actual +, how many found?\"\n\u2192 F1 = 2\u00B7P\u00B7R/(P+R)\n\nPrioritize:\n\u2192 Spam filter \u2192 Precision\n\u2192 Cancer screening \u2192 Recall\n\u2192 Balanced \u2192 F1\n\nTry adjusting values!",
         viz:"confusionMatrix",
         tags:["precision","recall","F1","accuracy"]},
       {id:"roc-auc",name:"ROC Curve & AUC",
         quick:"TPR vs FPR at all thresholds. AUC 0.5=random, 1.0=perfect.",
-        detail:"Performance across ALL thresholds.\n\n→ X: False Positive Rate\n→ Y: True Positive Rate (= Recall)\n→ Diagonal = random\n→ Top-left = perfect\n\nAUC = probability model ranks positive higher than negative.\n\nROC vs PR curve:\n→ ROC: Balanced classes\n→ PR: Imbalanced data\n\nPlay with threshold!",
+        detail:"Performance across ALL thresholds.\n\n\u2192 X: False Positive Rate\n\u2192 Y: True Positive Rate (= Recall)\n\u2192 Diagonal = random\n\u2192 Top-left = perfect\n\nAUC = probability model ranks positive higher than negative.\n\nROC vs PR curve:\n\u2192 ROC: Balanced classes\n\u2192 PR: Imbalanced data\n\nPlay with threshold!",
         viz:"roc",
         tags:["threshold","AUC","TPR","FPR"]},
     ]
   },
-  {id:"unsupervised",name:"Unsupervised Learning",icon:'🔀',color:C.orange,
+  {id:"unsupervised",name:"Unsupervised Learning",icon:'\u{1F500}',color:C.orange,
     topics:[
       {id:"kmeans",name:"K-Means Clustering",
         quick:"Assign points to nearest of k centroids, update centroids, repeat until convergence.",
-        detail:"1. Place k centroids randomly\n2. Assign each point → nearest centroid\n3. Move centroids to cluster means\n4. Repeat!\n\nChoose k: Elbow method, Silhouette score\n\nLimitations: Spherical clusters, specify k, sensitive to init (use K-Means++)\n\nAlternatives: DBSCAN, Hierarchical, GMM\n\nTry it!",
-        formula:"min Σ ||x - μᵢ||²",
+        detail:"1. Place k centroids randomly\n2. Assign each point \u2192 nearest centroid\n3. Move centroids to cluster means\n4. Repeat!\n\nChoose k: Elbow method, Silhouette score\n\nLimitations: Spherical clusters, specify k, sensitive to init (use K-Means++)\n\nAlternatives: DBSCAN, Hierarchical, GMM\n\nTry it!",
+        formula:"min \u03A3 ||x - \u03BC\u1D62||\u00B2",
         viz:"kmeans",
         tags:["clustering","centroid","elbow","silhouette"]},
       {id:"pca",name:"PCA",
         quick:"Find directions of maximum variance. Project onto top-k principal components.",
-        detail:"100 features → find the few that matter.\n\n1. Center data\n2. Covariance matrix\n3. Eigenvectors + eigenvalues\n4. Sort by eigenvalue\n5. Project onto top-k\n\nKeep ~95% explained variance.\n\nLinear only!\nAlternatives: t-SNE (viz), UMAP (faster), Autoencoders (non-linear)",
-        formula:"X_reduced = X · W_k",
+        detail:"100 features \u2192 find the few that matter.\n\n1. Center data\n2. Covariance matrix\n3. Eigenvectors + eigenvalues\n4. Sort by eigenvalue\n5. Project onto top-k\n\nKeep ~95% explained variance.\n\nLinear only!\nAlternatives: t-SNE (viz), UMAP (faster), Autoencoders (non-linear)",
+        formula:"X_reduced = X \u00B7 W_k",
         tags:["dimensionality reduction","eigenvalue","t-SNE","UMAP"]},
+      {id:"hierarchical",name:"Hierarchical Clustering",
+        quick:"Build a tree of clusters. No need to pre-specify k. Cut the dendrogram where you want.",
+        detail:"Two approaches:\n\nAgglomerative (bottom-up) \u2014 most common:\n1. Start: every point is its own cluster\n2. Merge the two closest clusters\n3. Repeat until one cluster remains\n4. Cut the dendrogram at desired height\n\nLinkage methods (how to measure cluster distance):\n\u2192 Single: min distance (chains!)\n\u2192 Complete: max distance (compact)\n\u2192 Average: mean distance (balanced)\n\u2192 Ward: minimizes variance (usually best)\n\nDivisive (top-down): Start with one cluster, split. Rare in practice.\n\nPros over K-Means: No need to choose k upfront, dendrogram shows structure.\nCons: O(n\u00B2) memory, O(n\u00B3) time \u2014 doesn't scale to big data.",
+        tags:["dendrogram","linkage","agglomerative","ward"]},
+      {id:"anomaly",name:"Anomaly Detection",
+        quick:"Find the weird ones. Z-score for simple data, Isolation Forest for complex, autoencoders for deep.",
+        detail:"Normal data is similar. Anomalies are different. Find the different ones.\n\nSimple methods:\n\u2192 Z-score: |z| > 3 \u2192 anomaly (assumes normal distribution)\n\u2192 IQR: below Q1-1.5*IQR or above Q3+1.5*IQR\n\nML methods:\n\u2192 Isolation Forest: Randomly split features. Anomalies are isolated in fewer splits (short path = anomaly).\n\u2192 LOF (Local Outlier Factor): Compares point's density to neighbors. Low relative density = anomaly.\n\u2192 One-Class SVM: Learns boundary around normal data.\n\nDeep Learning:\n\u2192 Autoencoder: Train on normal data. High reconstruction error = anomaly.\n\nUse cases: Fraud detection, equipment failure, network intrusion.",
+        tags:["outlier","isolation forest","LOF","fraud"]},
     ]
   },
-  {id:"prep",name:"Data Prep & Features",icon:'🗄️',color:C.purple,
+  {id:"prep",name:"Data Prep & Features",icon:'\u{1F5C4}\uFE0F',color:C.purple,
     topics:[
       {id:"missing",name:"Missing Data",
         quick:"MCAR/MAR/MNAR. Methods: deletion, imputation (mean/KNN/MICE), indicator variables.",
-        detail:"Types:\n→ MCAR: Random — safe to drop\n→ MAR: Depends on observed — impute\n→ MNAR: Depends on missing value — hardest\n\nStrategies:\n→ Delete rows/columns\n→ Mean/median/mode fill\n→ KNN or MICE imputation\n→ Binary \"was_missing\" column\n\nRules: Investigate WHY first. Never impute target. Impute AFTER split!",
+        detail:"Types:\n\u2192 MCAR: Random \u2014 safe to drop\n\u2192 MAR: Depends on observed \u2014 impute\n\u2192 MNAR: Depends on missing value \u2014 hardest\n\nStrategies:\n\u2192 Delete rows/columns\n\u2192 Mean/median/mode fill\n\u2192 KNN or MICE imputation\n\u2192 Binary \"was_missing\" column\n\nRules: Investigate WHY first. Never impute target. Impute AFTER split!",
         tags:["imputation","MCAR","MICE"]},
       {id:"scaling",name:"Feature Scaling",
-        quick:"Z-score: (x-μ)/σ. MinMax: [0,1]. Essential for distance-based models.",
-        detail:"Feature 0-1 vs 0-1000 → second dominates!\n\nZ-score: z = (x-μ)/σ → mean=0, std=1\nMinMax: (x-min)/(max-min) → [0,1]\n\nNeed scaling: KNN, SVM, NNs, PCA, K-Means\nDon't need: Trees, RF, GBM\n\nCRITICAL: Fit on TRAIN only, transform both!",
-        formula:"Z: (x-μ)/σ | MinMax: (x-min)/(max-min)",
+        quick:"Z-score: (x-\u03BC)/\u03C3. MinMax: [0,1]. Essential for distance-based models.",
+        detail:"Feature 0-1 vs 0-1000 \u2192 second dominates!\n\nZ-score: z = (x-\u03BC)/\u03C3 \u2192 mean=0, std=1\nMinMax: (x-min)/(max-min) \u2192 [0,1]\n\nNeed scaling: KNN, SVM, NNs, PCA, K-Means\nDon't need: Trees, RF, GBM\n\nCRITICAL: Fit on TRAIN only, transform both!",
+        formula:"Z: (x-\u03BC)/\u03C3 | MinMax: (x-min)/(max-min)",
         tags:["normalization","standardization"]},
       {id:"encoding",name:"Encoding Categoricals",
         quick:"Label (ordinal), One-hot (nominal), Target encoding (high cardinality).",
-        detail:"Label: red=0, blue=1 — ordinal only!\nOne-hot: red→[1,0,0] — nominal, drop 1 column\nTarget: Replace with target mean — high cardinality\n\nWhen:\n→ 2-5 categories: One-hot\n→ Ordinal: Label\n→ High cardinality: Target encoding (with CV!)",
+        detail:"Label: red=0, blue=1 \u2014 ordinal only!\nOne-hot: red\u2192[1,0,0] \u2014 nominal, drop 1 column\nTarget: Replace with target mean \u2014 high cardinality\n\nWhen:\n\u2192 2-5 categories: One-hot\n\u2192 Ordinal: Label\n\u2192 High cardinality: Target encoding (with CV!)",
         tags:["one-hot","label encoding","target encoding"]},
       {id:"regularization",name:"Regularization",
         quick:"L1 (Lasso): sparse. L2 (Ridge): small weights. Elastic Net: both.",
-        detail:"Penalty on loss to prevent overfitting.\n\nL1 (Lasso): + λΣ|wᵢ|\n→ Drives weights to zero → feature selection!\n\nL2 (Ridge): + λΣwᵢ²\n→ Shrinks toward zero, handles multicollinearity\n\nElastic Net: Both!\n\nIn NNs: L2 = weight decay, Dropout, Early stopping\n\nSee the effect!",
-        formula:"L1: λΣ|wᵢ| | L2: λΣwᵢ²",
+        detail:"Penalty on loss to prevent overfitting.\n\nL1 (Lasso): + \u03BB\u03A3|w\u1D62|\n\u2192 Drives weights to zero \u2192 feature selection!\n\nL2 (Ridge): + \u03BB\u03A3w\u1D62\u00B2\n\u2192 Shrinks toward zero, handles multicollinearity\n\nElastic Net: Both!\n\nIn NNs: L2 = weight decay, Dropout, Early stopping\n\nSee the effect!",
+        formula:"L1: \u03BB\u03A3|w\u1D62| | L2: \u03BB\u03A3w\u1D62\u00B2",
         viz:"regularization",
         tags:["Lasso","Ridge","Elastic Net"]},
       {id:"imbalanced",name:"Imbalanced Data",
-        quick:"99:1 classes → accuracy useless. Use SMOTE, class weights, F1/AUC.",
-        detail:"\"Not fraud\" = 99.9% accuracy. Useless!\n\n→ SMOTE: Synthetic minority samples\n→ class_weight='balanced' — free!\n→ Anomaly detection\n\nEvaluation: F1, AUC-PR, MCC\nNEVER use accuracy!\n\nStart with class_weight='balanced'.",
+        quick:"99:1 classes \u2192 accuracy useless. Use SMOTE, class weights, F1/AUC.",
+        detail:"\"Not fraud\" = 99.9% accuracy. Useless!\n\n\u2192 SMOTE: Synthetic minority samples\n\u2192 class_weight='balanced' \u2014 free!\n\u2192 Anomaly detection\n\nEvaluation: F1, AUC-PR, MCC\nNEVER use accuracy!\n\nStart with class_weight='balanced'.",
         tags:["SMOTE","class weights"]},
       {id:"data-leakage",name:"Data Leakage",
         quick:"Training info unavailable at prediction time. Always split BEFORE preprocessing!",
-        detail:"#1 reason models fail in production.\n\n→ Target leakage: Feature caused by target\n→ Train-test contamination: Test leaks into train\n→ Temporal leakage: Future info used\n\nPrevention:\n1. Split FIRST\n2. Features from train only\n3. Use sklearn Pipeline\n4. Ask: \"Would I know this in production?\"",
+        detail:"#1 reason models fail in production.\n\n\u2192 Target leakage: Feature caused by target\n\u2192 Train-test contamination: Test leaks into train\n\u2192 Temporal leakage: Future info used\n\nPrevention:\n1. Split FIRST\n2. Features from train only\n3. Use sklearn Pipeline\n4. Ask: \"Would I know this in production?\"",
         tags:["contamination","pipeline"]},
     ]
   },
-  {id:"accel",name:"Advanced Concepts",icon:'⭐',color:C.cyan,
+  {id:"accel",name:"Advanced Concepts",icon:'\u2B50',color:C.cyan,
     topics:[
       {id:"gradient-descent",name:"Gradient Descent Variants",
         quick:"SGD, Mini-batch, Adam. Adam = adaptive lr + momentum. Default for deep learning.",
-        detail:"Batch: All data → stable, slow\nSGD: 1 sample → fast, noisy\nMini-batch: 32-256 → best of both\n\nMomentum: Ball rolling downhill\nAdam: Momentum + adaptive lr\n→ lr=0.001, β₁=0.9, β₂=0.999\n\nLR scheduling: Step decay, Cosine, One-cycle",
+        detail:"Batch: All data \u2192 stable, slow\nSGD: 1 sample \u2192 fast, noisy\nMini-batch: 32-256 \u2192 best of both\n\nMomentum: Ball rolling downhill\nAdam: Momentum + adaptive lr\n\u2192 lr=0.001, \u03B2\u2081=0.9, \u03B2\u2082=0.999\n\nLR scheduling: Step decay, Cosine, One-cycle",
         viz:"gradientDescent",
         tags:["SGD","Adam","momentum","learning rate"]},
       {id:"ensemble",name:"Ensemble Methods",
-        quick:"Bagging (parallel, ↓variance), Boosting (sequential, ↓bias), Stacking (meta-learner).",
-        detail:"Combine models!\n\nBagging: Parallel, vote/average → ↓variance\n→ Random Forest\n\nBoosting: Sequential, fix errors → ↓bias\n→ XGBoost, LightGBM\n\nStacking: Diverse models + meta-learner\n→ Wins competitions!\n\nWhy: Different models make uncorrelated errors that cancel out.",
+        quick:"Bagging (parallel, \u2193variance), Boosting (sequential, \u2193bias), Stacking (meta-learner).",
+        detail:"Combine models!\n\nBagging: Parallel, vote/average \u2192 \u2193variance\n\u2192 Random Forest\n\nBoosting: Sequential, fix errors \u2192 \u2193bias\n\u2192 XGBoost, LightGBM\n\nStacking: Diverse models + meta-learner\n\u2192 Wins competitions!\n\nWhy: Different models make uncorrelated errors that cancel out.",
         tags:["bagging","boosting","stacking"]},
       {id:"dim-reduction",name:"t-SNE & UMAP",
         quick:"Non-linear dimensionality reduction. t-SNE = local, UMAP = local + global, both stochastic.",
-        detail:"PCA is linear. These handle non-linear.\n\nt-SNE: Perplexity 5-50\n→ Sizes/distances NOT meaningful\n→ Slow, viz only\n\nUMAP: Faster, better global structure\n→ Can use for general dim reduction\n\nQuick viz: UMAP\nPublication: t-SNE\nPreprocessing: UMAP or PCA",
+        detail:"PCA is linear. These handle non-linear.\n\nt-SNE: Perplexity 5-50\n\u2192 Sizes/distances NOT meaningful\n\u2192 Slow, viz only\n\nUMAP: Faster, better global structure\n\u2192 Can use for general dim reduction\n\nQuick viz: UMAP\nPublication: t-SNE\nPreprocessing: UMAP or PCA",
         tags:["visualization","manifold","perplexity"]},
+      {id:"recommender",name:"Recommender Systems",
+        quick:"Collaborative filtering: similar users like similar items. Content-based: match item features to user preferences.",
+        detail:"Netflix, Spotify, Amazon \u2014 all recommender systems.\n\nCollaborative Filtering:\n\u2192 User-based: \"Users like you also liked...\"\n\u2192 Item-based: \"People who liked this also liked...\"\n\u2192 Matrix Factorization: Decompose user-item matrix into low-rank matrices. Each user and item gets a latent vector.\n\nContent-Based:\n\u2192 Use item features (genre, director, keywords)\n\u2192 Build user profile from liked items\n\u2192 Recommend items matching profile\n\nCold Start Problem:\n\u2192 New user? No history \u2192 can't do collaborative\n\u2192 New item? No ratings \u2192 use content features\n\nHybrid: Combine both approaches. Netflix uses this.",
+        tags:["collaborative filtering","matrix factorization","cold start"]},
+      {id:"reinforcement",name:"Reinforcement Learning",
+        quick:"Agent learns by trial and error. Maximize cumulative reward through actions in an environment.",
+        detail:"A robot learning to walk. No one tells it the right answer \u2014 it just tries things and gets rewards.\n\nKey pieces:\n\u2192 Agent: The learner (your algorithm)\n\u2192 Environment: The world it acts in\n\u2192 State: Current situation\n\u2192 Action: What agent does\n\u2192 Reward: Feedback signal\n\nCore algorithms:\n\u2192 Q-Learning: Learn a table of state-action values. Pick action with highest Q.\n\u2192 Deep Q-Network (DQN): Use a neural net for Q when state space is huge (Atari games).\n\u2192 Policy Gradient: Directly learn the best action probabilities.\n\u2192 Actor-Critic: Combine value estimation + policy learning.\n\nExploration vs Exploitation:\n\u2192 Explore: Try new things (might find better rewards)\n\u2192 Exploit: Use what you know (safe bet)\n\u2192 Epsilon-greedy: Random action \u03B5% of the time",
+        formula:"Q(s,a) \u2190 Q(s,a) + \u03B1[r + \u03B3\u00B7max Q(s',a') - Q(s,a)]",
+        tags:["Q-learning","policy gradient","reward","exploration"]},
+      {id:"shap",name:"SHAP & Explainability",
+        quick:"Shapley values explain each feature's contribution to a prediction. LIME explains locally with simple models.",
+        detail:"Your model says \"deny loan\". The customer asks WHY. You need explainability.\n\nSHAP (SHapley Additive exPlanations):\n\u2192 Based on game theory (Shapley values)\n\u2192 For each prediction, tells you how much each feature pushed it up or down\n\u2192 Example: Income pushed prediction +0.3, Age pushed -0.1\n\u2192 All SHAP values sum to the difference from average prediction\n\nLIME (Local Interpretable Model-agnostic Explanations):\n\u2192 Create fake data near the point\n\u2192 Get predictions from your complex model\n\u2192 Fit a simple model (linear) locally\n\u2192 The simple model explains the complex one at that point\n\nFeature Importance (tree-based):\n\u2192 How much each feature reduces impurity across all splits\n\u2192 Fast but less rigorous than SHAP\n\nPartial Dependence Plots:\n\u2192 Show effect of one feature, averaged over all others",
+        tags:["shapley","LIME","feature importance","interpretability"]},
+    ]
+  },
+  {id:"nlp",name:"NLP & Text",icon:'\u{1F4DD}',color:C.blue,
+    topics:[
+      {id:"bow-tfidf",name:"Bag of Words & TF-IDF",
+        quick:"BoW: count words. TF-IDF: weight by how unique a word is across documents. Simple but powerful baseline.",
+        detail:"How do you turn text into numbers a model can use?\n\nBag of Words:\n1. Build vocabulary from all documents\n2. Each document = vector of word counts\n3. \"I love cats\" + \"I love dogs\" \u2192 {I:1, love:1, cats:1, dogs:0} and {I:1, love:1, cats:0, dogs:1}\n\nProblem: \"the\" appears everywhere but means nothing!\n\nTF-IDF fixes this:\n\u2192 TF (Term Frequency): How often word appears in THIS doc\n\u2192 IDF (Inverse Doc Frequency): log(total docs / docs containing word)\n\u2192 TF-IDF = TF \u00D7 IDF\n\nRare words get HIGH scores. Common words get LOW scores.\n\nStill used in search engines and as ML baselines. Loses word order though.",
+        formula:"TF-IDF = tf(t,d) \u00D7 log(N / df(t))",
+        tags:["text representation","vectorization","search"]},
+      {id:"word-embeddings",name:"Word Embeddings",
+        quick:"Words as dense vectors where similar words are nearby. Word2Vec, GloVe, then contextual (BERT).",
+        detail:"\"King\" - \"Man\" + \"Woman\" = \"Queen\". That's the magic of embeddings!\n\nWord2Vec (2013):\n\u2192 Skip-gram: predict context from word\n\u2192 CBOW: predict word from context\n\u2192 Trains on co-occurrence patterns\n\u2192 Result: 100-300 dimensional dense vectors\n\nGloVe: Uses global word co-occurrence statistics. Often similar quality.\n\nProblem: One vector per word. \"Bank\" (river) = \"Bank\" (money)!\n\nContextual Embeddings (BERT, GPT):\n\u2192 Different vector depending on sentence context\n\u2192 \"Bank of the river\" vs \"Bank of America\" \u2192 different vectors\n\u2192 Pre-trained on massive text, fine-tune for your task\n\nThis was the revolution that made modern NLP possible.",
+        tags:["Word2Vec","GloVe","BERT","embeddings","representation"]},
+      {id:"seq2seq",name:"Sequence Models",
+        quick:"Encoder reads input sequence, decoder generates output. Add attention to focus on relevant parts.",
+        detail:"Translate English to French? Summarize a document? You need seq2seq.\n\nOriginal Architecture:\n1. Encoder reads input word by word \u2192 context vector\n2. Decoder generates output word by word from context vector\n\nProblem: Squeezing entire input into ONE vector loses information!\n\nAttention Mechanism:\n\u2192 Decoder can LOOK BACK at all encoder states\n\u2192 Learns which input words matter for each output word\n\u2192 \"Translating 'chat' \u2192 look at 'cat' in English\"\n\nBeam Search: Keep top-k candidates at each step instead of just the best one. Better output quality.\n\nTeacher Forcing: During training, feed correct previous word (not model's guess). Faster training but exposure bias.",
+        tags:["encoder-decoder","attention","beam search","translation"]},
+      {id:"text-preprocess",name:"Text Preprocessing",
+        quick:"Tokenize, lowercase, remove stop words, stem/lemmatize. Clean text before feeding to models.",
+        detail:"Raw text is messy. Models need clean, consistent input.\n\nPipeline:\n1. Tokenization: Split into words/subwords\n\u2192 \"I can't\" \u2192 [\"I\", \"ca\", \"n't\"] or [\"I\", \"can't\"]\n\n2. Lowercasing: \"Apple\" \u2192 \"apple\"\n\u2192 Usually yes, unless case matters (NER)\n\n3. Stop Words: Remove \"the\", \"is\", \"at\"\n\u2192 Careful: \"not good\" loses meaning without \"not\"!\n\n4. Stemming vs Lemmatization:\n\u2192 Stemming: Chop suffix. \"running\" \u2192 \"run\", \"better\" \u2192 \"better\"\n\u2192 Lemmatization: Use dictionary. \"better\" \u2192 \"good\". Slower but smarter.\n\n5. N-grams: Pairs/triples of words. \"New York\" = bigram.\n\nModern approach: Subword tokenization (BPE, WordPiece) handles rare words by breaking them into pieces.",
+        tags:["tokenization","stemming","lemmatization","n-grams","stop words"]},
+    ]
+  },
+  {id:"timeseries",name:"Time Series",icon:'\u{1F4C8}',color:C.orange,
+    topics:[
+      {id:"arima",name:"ARIMA & Forecasting",
+        quick:"AR (past values) + I (differencing) + MA (past errors). The workhorse of time series forecasting.",
+        detail:"Predict tomorrow's stock price from past prices? Time series!\n\nARIMA(p, d, q):\n\u2192 AR(p): Use last p values as predictors. \"Today looks like recent days.\"\n\u2192 I(d): Difference d times to make stationary. If data has a trend, subtract previous value.\n\u2192 MA(q): Use last q forecast errors. \"Correct for recent mistakes.\"\n\nStep by step:\n1. Plot it! Look for trend, seasonality\n2. Test stationarity (ADF test). If non-stationary, difference.\n3. Look at ACF/PACF plots:\n\u2192 ACF cuts off at q \u2192 MA order\n\u2192 PACF cuts off at p \u2192 AR order\n4. Fit model, check residuals are white noise\n\nSeasonal ARIMA: SARIMA(p,d,q)(P,D,Q,s) for seasonal patterns.\n\nModern alternatives: Prophet (Facebook), LSTM, Temporal Fusion Transformers.",
+        formula:"y\u209C = c + \u03C6\u2081y\u209C\u208B\u2081 + ... + \u03C6\u209Ay\u209C\u208B\u209A + \u03B5\u209C + \u03B8\u2081\u03B5\u209C\u208B\u2081 + ... + \u03B8\u2091\u03B5\u209C\u208B\u2091",
+        tags:["forecasting","stationarity","ACF","PACF","seasonal"]},
+      {id:"ts-decomposition",name:"Time Series Decomposition",
+        quick:"Break a series into Trend + Seasonality + Residual. Additive or multiplicative.",
+        detail:"Every time series is a combination of patterns:\n\n\u2192 Trend: Long-term direction (sales growing over years)\n\u2192 Seasonality: Repeating patterns (ice cream sales peak in summer)\n\u2192 Residual: Random noise left over\n\nTwo types:\n\u2192 Additive: y = Trend + Seasonal + Residual\n  Use when seasonal variation is CONSTANT (same amplitude)\n\u2192 Multiplicative: y = Trend \u00D7 Seasonal \u00D7 Residual\n  Use when seasonal variation GROWS with trend\n\nHow to decompose:\n1. Estimate trend (moving average)\n2. Remove trend \u2192 detrended series\n3. Average detrended by season \u2192 seasonal component\n4. Residual = original - trend - seasonal\n\nWhy bother? Each component can be modeled separately. Easier to forecast when you understand the pieces.",
+        tags:["trend","seasonality","additive","multiplicative","moving average"]},
     ]
   },
 ];
-
 // ─── Visualization Renderers ────────────────────────
 function renderNormalDist(){
   var W=320,H=180,pad={l:35,r:10,t:10,b:24};
@@ -356,11 +442,10 @@ function renderNormalDist(){
   maxY=Math.ceil(maxY*10)/10+0.05;
   var svgPts=pts.map(function(p){return [mapRange(p[0],-5,5,pad.l,W-pad.r), mapRange(p[1],0,maxY,H-pad.b,pad.t)];});
   var grid=gridLines(pad.l,pad.t,W-pad.r,H-pad.b,5,4);
-  var xL=['-5','','-1','','3','5'];
   var labels=axisLabels(pad.l,pad.t,W-pad.r,H-pad.b,['-5','','-1','','3','5'],null);
   var html='<div class="slider-row">';
-  html+='<label class="slider-label">μ: <span class="slider-val" style="color:'+C.cyan+'">'+mean+'</span><br><input type="range" min="-3" max="3" step="0.5" value="'+mean+'" onchange="setState({normMean:+this.value})"></label>';
-  html+='<label class="slider-label">σ: <span class="slider-val" style="color:'+C.orange+'">'+std+'</span><br><input type="range" min="0.3" max="3" step="0.1" value="'+std+'" onchange="setState({normStd:+this.value})"></label>';
+  html+='<label class="slider-label">\u03BC: <span class="slider-val" style="color:'+C.cyan+'">'+mean+'</span><br><input type="range" min="-3" max="3" step="0.5" value="'+mean+'" onchange="setState({normMean:+this.value})"></label>';
+  html+='<label class="slider-label">\u03C3: <span class="slider-val" style="color:'+C.orange+'">'+std+'</span><br><input type="range" min="0.3" max="3" step="0.1" value="'+std+'" onchange="setState({normStd:+this.value})"></label>';
   html+='</div>';
   html+=svgChart(W,H,grid+labels+areaPath(svgPts,H-pad.b,C.cyan,0.25)+polyline(svgPts,C.cyan,2.5));
   return html;
@@ -380,10 +465,10 @@ function renderBiasVariance(){
   var html='<div class="slider-row">';
   html+='<label class="slider-label">Complexity: <span class="slider-val" style="color:'+C.accent+'">'+state.bvComplexity+'</span><br><input type="range" min="1" max="10" value="'+state.bvComplexity+'" onchange="setState({bvComplexity:+this.value})"></label>';
   html+='</div>';
-  html+='<div class="metrics-row" style="margin-bottom:10px"><span style="color:'+C.blue+'">Bias²: '+sel.b.toFixed(1)+'</span><span style="color:'+C.orange+'">Var: '+sel.v.toFixed(1)+'</span><span style="color:'+C.red+'">Total: '+sel.t.toFixed(1)+'</span></div>';
+  html+='<div class="metrics-row" style="margin-bottom:10px"><span style="color:'+C.blue+'">Bias\u00B2: '+sel.b.toFixed(1)+'</span><span style="color:'+C.orange+'">Var: '+sel.v.toFixed(1)+'</span><span style="color:'+C.red+'">Total: '+sel.t.toFixed(1)+'</span></div>';
   var cx=mapRange(sel.c,1,10,pad.l,W-pad.r);
   var marker='<line x1="'+cx+'" y1="'+pad.t+'" x2="'+cx+'" y2="'+(H-pad.b)+'" stroke="'+C.accent+'" stroke-width="1" stroke-dasharray="4 3" opacity="0.5"/>';
-  var leg=legendItem(pad.l+10,pad.t+4,C.blue,'Bias²')+legendItem(pad.l+70,pad.t+4,C.orange,'Variance')+legendItem(pad.l+150,pad.t+4,C.red,'Total');
+  var leg=legendItem(pad.l+10,pad.t+4,C.blue,'Bias\u00B2')+legendItem(pad.l+70,pad.t+4,C.orange,'Variance')+legendItem(pad.l+150,pad.t+4,C.red,'Total');
   html+=svgChart(W,H,grid+marker+polyline(bPts,C.blue,2)+polyline(vPts,C.orange,2)+polyline(tPts,C.red,2.5,'5 5')+leg);
   return html;
 }
@@ -430,8 +515,8 @@ function renderGradientDescent(){
   var grid=gridLines(pad.l,pad.t,W-pad.r,H-pad.b,5,4);
   var html='<div class="slider-row">';
   html+='<label class="slider-label">LR: <span class="slider-val" style="color:'+C.orange+'">'+lr+'</span><br><input type="range" min="0.01" max="0.5" step="0.01" value="'+lr+'" onchange="setState({gdLr:+this.value,gdStep:0})"></label>';
-  html+='<button class="viz-btn primary" onclick="setState({gdStep:Math.min(state.gdStep+1,30)})">▶ Step</button> ';
-  html+='<button class="viz-btn secondary" onclick="setState({gdStep:0})">↺ Reset</button> ';
+  html+='<button class="viz-btn primary" onclick="setState({gdStep:Math.min(state.gdStep+1,30)})">&#9654; Step</button> ';
+  html+='<button class="viz-btn secondary" onclick="setState({gdStep:0})">&#8634; Reset</button> ';
   html+='<span style="font-size:12px;color:#94a3b8">'+step+'/30</span>';
   html+='</div>';
   html+=svgChart(W,H,grid+polyline(lPts,C.blue,2)+circle(curPx[0],curPx[1],7,C.red,'#fff',2));
@@ -442,11 +527,11 @@ function renderConfusionMatrix(){
   var tp=state.cmTp,fp=state.cmFp,fn=state.cmFn,tn=state.cmTn;
   var prec=tp/(tp+fp)||0, rec=tp/(tp+fn)||0, f1=2*prec*rec/(prec+rec)||0, acc=(tp+tn)/(tp+fp+fn+tn)||0;
   var html='<div class="cm-grid">';
-  html+='<div class="cm-header"></div><div class="cm-header">Pred +</div><div class="cm-header">Pred −</div>';
+  html+='<div class="cm-header"></div><div class="cm-header">Pred +</div><div class="cm-header">Pred \u2212</div>';
   html+='<div class="cm-header">Act +</div>';
   html+='<div class="cm-cell" style="background:'+C.green+'22;border:1px solid '+C.green+'44"><div class="cm-cell-label" style="color:'+C.green+'">TP</div><input class="cm-input" type="number" value="'+tp+'" onchange="setState({cmTp:Math.max(0,+this.value)})"></div>';
   html+='<div class="cm-cell" style="background:'+C.red+'22;border:1px solid '+C.red+'44"><div class="cm-cell-label" style="color:'+C.red+'">FN</div><input class="cm-input" type="number" value="'+fn+'" onchange="setState({cmFn:Math.max(0,+this.value)})"></div>';
-  html+='<div class="cm-header">Act −</div>';
+  html+='<div class="cm-header">Act \u2212</div>';
   html+='<div class="cm-cell" style="background:'+C.orange+'22;border:1px solid '+C.orange+'44"><div class="cm-cell-label" style="color:'+C.orange+'">FP</div><input class="cm-input" type="number" value="'+fp+'" onchange="setState({cmFp:Math.max(0,+this.value)})"></div>';
   html+='<div class="cm-cell" style="background:'+C.blue+'22;border:1px solid '+C.blue+'44"><div class="cm-cell-label" style="color:'+C.blue+'">TN</div><input class="cm-input" type="number" value="'+tn+'" onchange="setState({cmTn:Math.max(0,+this.value)})"></div>';
   html+='</div>';
@@ -463,7 +548,6 @@ function renderKMeans(){
   var W=300,H=220,pad={l:30,r:10,t:10,b:20};
   var k=state.kmK, iter=state.kmIter;
   var colors=[C.cyan,C.orange,C.pink,C.green,C.purple];
-  // Seeded random
   function seeded(s){return function(){s=(s*16807)%2147483647;return(s-1)/2147483646;};}
   var r1=seeded(42);
   var centers=[[2,2],[6,7],[9,3],[4,9],[8,8]];
@@ -490,11 +574,10 @@ function renderKMeans(){
   var dots='';
   assigned.forEach(function(p){var pt=px(p);dots+=circle(pt[0],pt[1],4,colors[p.c]+'cc','none',0);});
   cents.forEach(function(c,i){var pt=px(c);dots+='<rect x="'+(pt[0]-5)+'" y="'+(pt[1]-5)+'" width="10" height="10" transform="rotate(45 '+pt[0]+' '+pt[1]+')" fill="#fff" stroke="'+colors[i]+'" stroke-width="2.5"/>';});
-
   var html='<div class="slider-row">';
   html+='<label class="slider-label">k = <span class="slider-val" style="color:'+C.accent+'">'+k+'</span><br><input type="range" min="2" max="5" value="'+k+'" onchange="setState({kmK:+this.value,kmIter:0})"></label>';
-  html+='<button class="viz-btn primary" onclick="setState({kmIter:Math.min(state.kmIter+1,15)})">▶ Iterate</button> ';
-  html+='<button class="viz-btn secondary" onclick="setState({kmIter:0})">↺ Reset</button> ';
+  html+='<button class="viz-btn primary" onclick="setState({kmIter:Math.min(state.kmIter+1,15)})">&#9654; Iterate</button> ';
+  html+='<button class="viz-btn secondary" onclick="setState({kmIter:0})">&#8634; Reset</button> ';
   html+='<span style="font-size:12px;color:#94a3b8">Iter: '+iter+'</span>';
   html+='</div>';
   html+=svgChart(W,H,grid+dots);
@@ -504,9 +587,9 @@ function renderKMeans(){
 function renderDecisionTree(){
   var age=state.dtAge, inc=state.dtIncome;
   var result,path;
-  if(age<25){result=inc>40?'Yes':'No';path=age<25&&inc>40?'Age<25 → Income>40k → Approve':'Age<25 → Income≤40k → Deny';}
-  else if(age<50){result=inc>30?'Yes':'No';path=inc>30?'25≤Age<50 → Income>30k → Approve':'25≤Age<50 → Income≤30k → Deny';}
-  else{result=inc>50?'Yes':'No';path=inc>50?'Age≥50 → Income>50k → Approve':'Age≥50 → Income≤50k → Deny';}
+  if(age<25){result=inc>40?'Yes':'No';path=age<25&&inc>40?'Age<25 \u2192 Income>40k \u2192 Approve':'Age<25 \u2192 Income\u226440k \u2192 Deny';}
+  else if(age<50){result=inc>30?'Yes':'No';path=inc>30?'25\u2264Age<50 \u2192 Income>30k \u2192 Approve':'25\u2264Age<50 \u2192 Income\u226430k \u2192 Deny';}
+  else{result=inc>50?'Yes':'No';path=inc>50?'Age\u226550 \u2192 Income>50k \u2192 Approve':'Age\u226550 \u2192 Income\u226450k \u2192 Deny';}
   var activeNode=age<25?0:age<50?1:2;
   function ns(active){return 'tree-node" style="background:'+(active?C.accent+'33':C.surfaceLight)+';border:2px solid '+(active?C.accent:C.border)+';color:'+(active?C.accentLight:C.textMuted)+';font-weight:'+(active?700:400);}
   var html='<div class="slider-row">';
@@ -515,15 +598,15 @@ function renderDecisionTree(){
   html+='</div>';
   html+='<div class="tree-nodes">';
   html+='<div class="'+ns(true)+'">Age?</div>';
-  html+='<div style="color:#64748b;font-size:11px">↓</div>';
+  html+='<div style="color:#64748b;font-size:11px">\u2193</div>';
   html+='<div class="tree-branches">';
   html+='<div class="'+ns(activeNode===0)+'">< 25</div>';
   html+='<div class="'+ns(activeNode===1)+'">25-49</div>';
-  html+='<div class="'+ns(activeNode===2)+'">≥ 50</div>';
+  html+='<div class="'+ns(activeNode===2)+'">\u2265 50</div>';
   html+='</div>';
-  html+='<div style="color:#64748b;font-size:11px">↓ Income</div>';
+  html+='<div style="color:#64748b;font-size:11px">\u2193 Income</div>';
   var rc=result==='Yes'?C.green:C.red;
-  html+='<div class="tree-result" style="background:'+rc+'33;border:2px solid '+rc+';color:'+rc+'">'+(result==='Yes'?'✓ Approve':'✗ Deny')+'</div>';
+  html+='<div class="tree-result" style="background:'+rc+'33;border:2px solid '+rc+';color:'+rc+'">'+(result==='Yes'?'\u2713 Approve':'\u2717 Deny')+'</div>';
   html+='</div>';
   html+='<div style="margin-top:12px;font-size:12px;color:#94a3b8;background:#0f1117;padding:8px;border-radius:6px">Path: '+path+'</div>';
   return html;
@@ -566,7 +649,7 @@ function renderRegularization(){
   var grid=gridLines(pad.l,pad.t,W-pad.r,H-pad.b,5,4);
   var leg=legendItem(pad.l+10,pad.t+4,C.red,'No Reg')+legendItem(pad.l+80,pad.t+4,C.purple,'With Reg');
   var html='<div class="slider-row">';
-  html+='<label class="slider-label">λ: <span class="slider-val" style="color:'+C.purple+'">'+lam.toFixed(2)+'</span><br><input type="range" min="0" max="3" step="0.1" value="'+lam+'" onchange="setState({regLambda:+this.value})"></label>';
+  html+='<label class="slider-label">\u03BB: <span class="slider-val" style="color:'+C.purple+'">'+lam.toFixed(2)+'</span><br><input type="range" min="0" max="3" step="0.1" value="'+lam+'" onchange="setState({regLambda:+this.value})"></label>';
   html+='</div>';
   html+=svgChart(W,H,grid+leg+polyline(pts1.map(px),C.red,1.5,'5 5')+polyline(pts2.map(px),C.purple,2.5));
   return html;
@@ -609,7 +692,54 @@ var VIZ_MAP={
 // ─── Render ─────────────────────────────────────────
 function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-function render(){
+function initHeader(){
+  var totalTopics=CATEGORIES.reduce(function(s,c){return s+c.topics.length;},0);
+  var hdr=document.getElementById('header');
+  hdr.className='header';
+  var html='<div class="header-inner">';
+  html+='<div class="logo-row"><div class="logo-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/><line x1="12" y1="17" x2="12" y2="22"/><line x1="8" y1="20" x2="16" y2="20"/></svg></div><div><div class="logo-title">Data Science Mastery</div><div class="logo-sub">'+totalTopics+' concepts \u00B7 Interactive</div></div></div>';
+  html+='<div class="search-row">';
+  html+='<div class="search-box"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input id="searchInput" type="text" placeholder="Search concepts..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></div>';
+  html+='<button id="favBtn" class="btn">&#9733; Favs</button>';
+  html+='<span id="headerExtra"></span>';
+  html+='</div></div>';
+  hdr.innerHTML=html;
+
+  // Attach event listeners (persistent, not re-created)
+  document.getElementById('searchInput').addEventListener('input',function(e){
+    state.search=e.target.value;
+    renderContent();
+  });
+  document.getElementById('favBtn').addEventListener('click',function(){
+    state.showFavOnly=!state.showFavOnly;
+    updateHeaderState();
+    renderContent();
+  });
+}
+
+function updateHeaderState(){
+  var favBtn=document.getElementById('favBtn');
+  if(favBtn){
+    if(state.showFavOnly){favBtn.className='btn active';}
+    else{favBtn.className='btn';}
+  }
+  var extra=document.getElementById('headerExtra');
+  if(extra){
+    var h='';
+    if(state.selectedCat) h+='<button class="btn" onclick="setState({selectedCat:null})">\u2302 All</button> ';
+    var q=state.search.toLowerCase().trim();
+    if(q){
+      var totalFiltered=CATEGORIES.reduce(function(s,c){return s+c.topics.filter(function(t){
+        if(state.showFavOnly&&!state.favorites[t.id])return false;
+        return t.name.toLowerCase().indexOf(q)!==-1||t.quick.toLowerCase().indexOf(q)!==-1||(t.tags||[]).some(function(tag){return tag.toLowerCase().indexOf(q)!==-1;})||t.detail.toLowerCase().indexOf(q)!==-1;
+      }).length;},0);
+      h+='<span style="font-size:11px;color:#64748b">'+totalFiltered+' found</span>';
+    }
+    extra.innerHTML=h;
+  }
+}
+
+function renderContent(){
   var q=state.search.toLowerCase().trim();
   var filteredCats=CATEGORIES.map(function(cat){
     var topics=cat.topics.filter(function(t){
@@ -623,19 +753,9 @@ function render(){
   var totalTopics=CATEGORIES.reduce(function(s,c){return s+c.topics.length;},0);
   var totalFiltered=filteredCats.reduce(function(s,c){return s+c.topics.length;},0);
 
-  var html='';
-  // Header
-  html+='<div class="header"><div class="header-inner">';
-  html+='<div class="logo-row"><div class="logo-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/><line x1="12" y1="17" x2="12" y2="22"/><line x1="8" y1="20" x2="16" y2="20"/></svg></div><div><div class="logo-title">Data Science Mastery</div><div class="logo-sub">'+totalTopics+' concepts · Interactive</div></div></div>';
-  // Search
-  html+='<div class="search-row">';
-  html+='<div class="search-box"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" placeholder="Search concepts..." value="'+escHtml(state.search)+'" oninput="setState({search:this.value})"></div>';
-  html+='<button class="btn'+(state.showFavOnly?' active':'')+'" onclick="setState({showFavOnly:!state.showFavOnly})">★ Favs</button>';
-  if(state.selectedCat) html+='<button class="btn" onclick="setState({selectedCat:null})">⌂ All</button>';
-  if(q) html+='<span style="font-size:11px;color:#64748b">'+totalFiltered+' found</span>';
-  html+='</div></div></div>';
+  updateHeaderState();
 
-  html+='<div class="content">';
+  var html='<div class="content">';
 
   // Category grid
   if(!state.selectedCat&&!q&&!state.showFavOnly){
@@ -664,7 +784,6 @@ function render(){
       var expanded=state.expandedTopics[topic.id];
       var isFav=state.favorites[topic.id];
       html+='<div class="topic-card'+(expanded?' expanded':'')+'"'+(expanded?' style="border-color:'+cat.color+'66"':'')+'>';
-      // Head
       html+='<div class="topic-head" onclick="setState({expandedTopics:Object.assign({},state.expandedTopics,{\''+topic.id+'\':!state.expandedTopics[\''+topic.id+'\']})})">';
       html+='<div class="topic-chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="'+cat.color+'" stroke-width="2"><polyline points="'+(expanded?'6 9 12 15 18 9':'9 18 15 12 9 6')+'"/></svg></div>';
       html+='<div class="topic-body">';
@@ -675,7 +794,6 @@ function render(){
       html+='<p class="topic-quick">'+escHtml(topic.quick)+'</p>';
       if(topic.formula&&!expanded) html+='<code class="topic-formula-mini" style="color:'+cat.color+'">'+escHtml(topic.formula)+'</code>';
       html+='</div></div>';
-      // Expanded
       if(expanded){
         html+='<div class="topic-detail">';
         if(topic.formula){
@@ -686,19 +804,19 @@ function render(){
         }
         html+='<div class="detail-text">';
         topic.detail.split('\n').forEach(function(line){
-          if(line.indexOf('→')===0) html+='<div class="arrow"><span style="color:'+cat.color+'">→</span>'+escHtml(line.slice(1))+'</div>';
+          if(line.indexOf('\u2192')===0) html+='<div class="arrow"><span style="color:'+cat.color+'">\u2192</span>'+escHtml(line.slice(1))+'</div>';
           else if(line.match(/^\d+\./)) html+='<div class="numbered">'+escHtml(line)+'</div>';
           else if(line.trim()==='') html+='<div class="spacer"></div>';
           else html+='<div>'+escHtml(line)+'</div>';
         });
         html+='</div>';
         if(topic.viz&&VIZ_MAP[topic.viz]){
-          html+='<div class="viz-box"><div class="viz-label">▶ INTERACTIVE</div>'+VIZ_MAP[topic.viz]()+'</div>';
+          html+='<div class="viz-box"><div class="viz-label">&#9654; INTERACTIVE</div>'+VIZ_MAP[topic.viz]()+'</div>';
         }
         if(topic.tags){
           html+='<div class="tag-list">';
           topic.tags.forEach(function(tag){
-            html+='<span class="tag" onclick="setState({search:\''+tag+'\'})\">#'+tag+'</span>';
+            html+='<span class="tag" onclick="document.getElementById(\'searchInput\').value=\''+tag+'\';setSearch(\''+tag+'\')">#'+tag+'</span>';
           });
           html+='</div>';
         }
@@ -709,18 +827,21 @@ function render(){
     html+='</div>';
   });
 
-  // Empty
   if(q&&totalFiltered===0){
-    html+='<div class="empty"><div style="font-size:40px;margin-bottom:12px">🔍</div><p style="font-size:15px">No results for "'+escHtml(q)+'"</p><p style="font-size:12px;margin-top:6px">Try a different keyword</p></div>';
+    html+='<div class="empty"><div style="font-size:40px;margin-bottom:12px">\u{1F50D}</div><p style="font-size:15px">No results for "'+escHtml(q)+'"</p><p style="font-size:12px;margin-top:6px">Try a different keyword</p></div>';
   }
 
-  html+='<div class="footer">Data Science Mastery · '+totalTopics+' concepts</div>';
-  html+='</div>'; // content
+  html+='<div class="footer">Data Science Mastery \u00B7 '+totalTopics+' concepts</div>';
+  html+='</div>';
 
-  document.getElementById('app').innerHTML=html;
+  document.getElementById('content').innerHTML=html;
 }
 
-render();
+function render(){renderContent();}
+
+// ─── Init ───────────────────────────────────────────
+initHeader();
+renderContent();
 </script>
 </body>
 </html>
