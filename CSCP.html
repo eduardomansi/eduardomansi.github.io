@@ -1,0 +1,2128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSCP Master Study App</title>
+<style>
+  :root{
+    --bg:#0f172a; --bg2:#111827; --panel:#1e293b; --panel2:#253449;
+    --ink:#e5e7eb; --mute:#94a3b8; --accent:#38bdf8; --accent2:#22d3ee;
+    --good:#22c55e; --bad:#ef4444; --warn:#f59e0b; --border:#334155;
+    --chip:#1e40af; --chip2:#0e7490;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.55}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  header{position:sticky;top:0;z-index:50;background:linear-gradient(180deg,#0b1222 0%,#0f172a 100%);border-bottom:1px solid var(--border);padding:14px 22px;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#0ea5e9,#6366f1);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;letter-spacing:.5px}
+  .brand h1{font-size:1.05rem;margin:0;letter-spacing:.3px}
+  .brand small{color:var(--mute);display:block;font-weight:400}
+  nav.tabs{display:flex;flex-wrap:wrap;gap:6px}
+  nav.tabs button{background:transparent;color:var(--mute);border:1px solid transparent;padding:8px 14px;border-radius:999px;cursor:pointer;font-weight:600;font-size:.92rem}
+  nav.tabs button:hover{color:var(--ink);background:#1a2540}
+  nav.tabs button.active{color:#fff;background:linear-gradient(135deg,#0ea5e9,#6366f1);border-color:#0ea5e9}
+  main{max-width:1200px;margin:0 auto;padding:24px 22px 80px}
+  .view{display:none}
+  .view.active{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  h2.section-title{font-size:1.55rem;margin:8px 0 6px;letter-spacing:.2px}
+  .lead{color:var(--mute);margin:0 0 20px}
+  .grid{display:grid;gap:16px}
+  .cards-3{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+  .cards-4{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px;box-shadow:0 2px 0 rgba(0,0,0,.2)}
+  .card h3{margin:0 0 6px;font-size:1.05rem}
+  .card p{margin:0;color:var(--mute)}
+  .pill{display:inline-block;padding:3px 10px;border-radius:999px;background:#0e7490;color:#cffafe;font-size:.78rem;font-weight:600;margin-right:6px}
+  .pill.mod1{background:#0e7490;color:#cffafe}
+  .pill.mod2{background:#6d28d9;color:#ede9fe}
+  .pill.mod3{background:#b45309;color:#fef3c7}
+  .pill.mod4{background:#047857;color:#d1fae5}
+  .pill.mod5{background:#be185d;color:#fce7f3}
+  .pill.mod6{background:#4338ca;color:#e0e7ff}
+  .pill.mod7{background:#b91c1c;color:#fee2e2}
+  .pill.mod8{background:#0369a1;color:#e0f2fe}
+  .progress{height:8px;background:#0b1222;border-radius:999px;overflow:hidden;margin-top:10px}
+  .progress>div{height:100%;background:linear-gradient(90deg,#22d3ee,#6366f1);transition:width .3s}
+  .btn{background:#0ea5e9;color:#fff;border:0;padding:10px 16px;border-radius:10px;cursor:pointer;font-weight:600}
+  .btn:hover{filter:brightness(1.1)}
+  .btn.ghost{background:transparent;border:1px solid var(--border);color:var(--ink)}
+  .btn.ghost:hover{background:#1a2540}
+  .btn.good{background:var(--good)}
+  .btn.bad{background:var(--bad)}
+  .btn.warn{background:var(--warn)}
+  .btn[disabled]{opacity:.45;cursor:not-allowed}
+  .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .kv{display:flex;gap:8px;align-items:baseline}
+  .kv b{color:var(--ink)}
+  .kv span{color:var(--mute)}
+  details{background:#16213a;border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin:8px 0}
+  details[open]{background:#17243f}
+  summary{cursor:pointer;font-weight:700;padding:4px 0;list-style:none}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:"▸ ";color:var(--accent);font-weight:700;margin-right:4px}
+  details[open] summary::before{content:"▾ "}
+  .keyterm{background:#0b1830;border-left:4px solid var(--accent);padding:8px 12px;margin:8px 0;border-radius:6px}
+  .keyterm b{color:#7dd3fc}
+  .formula{background:#0a2213;border-left:4px solid var(--good);padding:8px 12px;margin:8px 0;border-radius:6px;font-family:ui-monospace,Menlo,Consolas,monospace;color:#bbf7d0}
+  .tip{background:#1e1a06;border-left:4px solid var(--warn);padding:8px 12px;margin:8px 0;border-radius:6px;color:#fde68a}
+  .danger{background:#2b0a0a;border-left:4px solid var(--bad);padding:8px 12px;margin:8px 0;border-radius:6px;color:#fecaca}
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.95rem}
+  th,td{border:1px solid var(--border);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:#0b1830;color:#cbd5e1}
+  .module-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+  .module-tabs button{background:#162138;color:var(--ink);border:1px solid var(--border);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:.88rem}
+  .module-tabs button.active{background:linear-gradient(135deg,#0ea5e9,#6366f1);border-color:#0ea5e9;color:#fff}
+  /* Flashcards */
+  .flashcard{perspective:1200px;height:220px;cursor:pointer}
+  .flashcard .face{position:relative;width:100%;height:100%;transition:transform .6s;transform-style:preserve-3d}
+  .flashcard.flipped .face{transform:rotateY(180deg)}
+  .flashcard .front,.flashcard .back{position:absolute;inset:0;border-radius:14px;padding:18px;backface-visibility:hidden;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;border:1px solid var(--border)}
+  .flashcard .front{background:linear-gradient(135deg,#1e293b,#0f172a);font-weight:700;font-size:1.15rem}
+  .flashcard .back{background:linear-gradient(135deg,#0b3b4a,#0e7490);color:#e0f7fa;transform:rotateY(180deg);font-size:.95rem;overflow-y:auto}
+  .flash-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+  select,input[type=text]{background:#0b1222;color:var(--ink);border:1px solid var(--border);border-radius:8px;padding:8px 10px}
+  /* Quiz */
+  .q-box{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px;margin:14px 0}
+  .q-text{font-weight:600;margin-bottom:12px}
+  .q-opts{display:grid;gap:8px}
+  .q-opt{background:#0b1830;border:1px solid var(--border);padding:10px 14px;border-radius:10px;cursor:pointer;display:flex;gap:10px;align-items:flex-start}
+  .q-opt:hover{background:#12223e}
+  .q-opt input{margin-top:3px}
+  .q-opt.correct{background:#062e1a;border-color:#22c55e}
+  .q-opt.wrong{background:#2e0606;border-color:#ef4444}
+  .rationale{margin-top:12px;padding:10px 12px;background:#0b1830;border-left:4px solid var(--accent);border-radius:6px;color:#cbd5e1}
+  .score-banner{background:linear-gradient(135deg,#6366f1,#0ea5e9);border-radius:14px;padding:22px;text-align:center;margin:16px 0}
+  .score-banner h3{margin:0 0 6px;font-size:1.6rem}
+  .score-banner p{margin:0;color:#e0e7ff}
+  /* Diagrams */
+  .diagram-wrap{background:#0b1222;border:1px solid var(--border);border-radius:14px;padding:16px;margin:12px 0}
+  .diagram-wrap svg{width:100%;height:auto;max-height:520px}
+  .legend{font-size:.85rem;color:var(--mute);margin-top:8px}
+  .clickable{cursor:pointer;transition:opacity .2s, transform .2s}
+  .clickable:hover{opacity:.8;transform:scale(1.02)}
+  footer{text-align:center;color:var(--mute);margin-top:40px;font-size:.85rem}
+  .stat-box{display:flex;flex-direction:column;gap:4px}
+  .stat-box b{font-size:1.8rem;color:#7dd3fc}
+  .stat-box span{color:var(--mute);font-size:.85rem}
+  @media (max-width:700px){
+    .brand h1{font-size:.95rem}
+    nav.tabs button{padding:6px 10px;font-size:.82rem}
+    h2.section-title{font-size:1.25rem}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo">CS</div>
+    <div>
+      <h1>CSCP Master Study App</h1>
+      <small>Certified Supply Chain Professional — 8 modules · flashcards · quizzes · diagrams</small>
+    </div>
+  </div>
+  <nav class="tabs" id="mainTabs">
+    <button data-view="dashboard" class="active">Dashboard</button>
+    <button data-view="modules">Modules</button>
+    <button data-view="flashcards">Flashcards</button>
+    <button data-view="quiz">Quiz</button>
+    <button data-view="mock">Mock Exam</button>
+    <button data-view="diagrams">Diagrams</button>
+    <button data-view="glossary">Glossary</button>
+  </nav>
+</header>
+
+<main>
+  <section class="view active" id="view-dashboard"></section>
+  <section class="view" id="view-modules"></section>
+  <section class="view" id="view-flashcards"></section>
+  <section class="view" id="view-quiz"></section>
+  <section class="view" id="view-mock"></section>
+  <section class="view" id="view-diagrams"></section>
+  <section class="view" id="view-glossary"></section>
+</main>
+
+<footer>
+  Built as a self-contained CSCP study companion · Progress stored locally in your browser.
+</footer>
+
+<script>
+/* ========================================================================
+   CSCP DATA — MODULES, FLASHCARDS, QUIZZES, MOCK EXAM, DIAGRAMS, GLOSSARY
+   ======================================================================== */
+const MODULES = []; // populated below
+const FLASHCARDS = []; // populated below
+const QUIZZES = {}; // per-module key -> [questions]
+const MOCK_EXAM = []; // populated below
+const DIAGRAMS = []; // populated below
+const GLOSSARY = []; // populated below
+</script>
+<script id="data-script">
+/* ================= MODULE DATA ================= */
+MODULES.push({
+  id:"m1", shortTitle:"Mod 1 · Demand/Forecast",
+  title:"Module 1 — Supply Chains, Demand Management & Forecasting",
+  blurb:"Foundations of supply chain, demand analysis, demand planning, and all major forecasting techniques.",
+  sections:[
+    {open:true,title:"A. Introduction to Supply Chains",body:`
+      <p>A <b>supply chain</b> is the global network used to deliver products and services from raw materials to end customers through an engineered flow of <b>information, physical distribution, and cash</b>. A basic chain includes <b>supplier → producer → distributor → retailer → customer</b>.</p>
+      <div class="keyterm"><b>Three flows:</b> Information (orders, forecasts, status) · Product/Service (from raw material to consumer) · Funds (generally upstream, opposite of product flow).</div>
+      <div class="keyterm"><b>Value and balance:</b> Each link must add <b>value</b> greater than its cost. Goals: balance supply and demand while creating a service-profit chain.</div>
+      <h4>Vertical vs. lateral (horizontal) integration</h4>
+      <table><tr><th>Vertical</th><th>Lateral / horizontal</th></tr>
+      <tr><td>Single firm owns multiple stages (upstream = backward integration; downstream = forward). Gains control, reduces transaction costs, but needs heavy capital and adds rigidity.</td>
+      <td>Partnerships across the chain via contracts, alliances, or joint ventures. Retains focus on core competencies; gains agility but requires trust and governance.</td></tr></table>
+      <h4>Stages of supply chain evolution</h4>
+      <ol>
+        <li><b>Multiple dysfunction</b> — silos, no shared data, reactive firefighting.</li>
+        <li><b>Semifunctional enterprise</b> — functions optimize themselves; limited cross-functional integration.</li>
+        <li><b>Integrated enterprise</b> — internal cross-functional alignment; S&amp;OP in place.</li>
+        <li><b>Extended enterprise</b> — tier-1 suppliers and key customers linked; shared forecasts (e.g., CPFR).</li>
+        <li><b>Orchestrated supply chain</b> — multi-tier collaboration, real-time visibility, network-wide optimization.</li>
+      </ol>
+      <div class="tip"><b>Exam cue:</b> The CSCP expects you to identify maturity stage from description and map appropriate strategy (e.g., stage 1 needs basic integration, not advanced analytics).</div>
+      <h4>Manufacturing vs. service supply chains</h4>
+      <p>Service chains often lack inventory buffer (production = consumption) — they emphasize capacity and scheduling flexibility. Specialized chains include reverse (returns), fast-fashion, and perishable / cold-chain.</p>
+    `},
+    {title:"B. Demand Analysis & Patterns",body:`
+      <h4>Demand analysis road map</h4>
+      <p>Combine <b>SWOT</b>, <b>market research</b>, <b>product assessment</b>, and macro/microeconomic data to understand demand drivers before you forecast.</p>
+      <div class="keyterm"><b>SWOT:</b> Strengths/Weaknesses are internal; Opportunities/Threats are external. Used to align capabilities with market conditions.</div>
+      <h4>Market research types</h4>
+      <ul>
+        <li><b>Primary</b> — surveys, focus groups, interviews; costly but current.</li>
+        <li><b>Secondary</b> — published data, trade reports, internal records.</li>
+        <li><b>Qualitative</b> — attitudes, preferences; <b>quantitative</b> — numeric share, volume, price elasticity.</li>
+      </ul>
+      <h4>Product life cycle (PLC)</h4>
+      <p><b>Introduction → Growth → Maturity → Decline</b>. Each phase changes demand pattern and forecasting technique.</p>
+      <table><tr><th>Stage</th><th>Volume</th><th>Forecast method</th><th>Priority</th></tr>
+        <tr><td>Introduction</td><td>Low, uncertain</td><td>Judgmental, Delphi</td><td>Trial / awareness</td></tr>
+        <tr><td>Growth</td><td>Rising quickly</td><td>Associative / trend</td><td>Expand capacity</td></tr>
+        <tr><td>Maturity</td><td>Stable, seasonal</td><td>Time-series, seasonal indexes</td><td>Efficiency, cost</td></tr>
+        <tr><td>Decline</td><td>Falling</td><td>Naïve / trend</td><td>Reduce inventory / exit</td></tr></table>
+      <h4>Macroeconomic drivers</h4>
+      <div class="keyterm"><b>GDP (real):</b> inflation-adjusted output. Rising real GDP ≈ expanding demand. Uses a <b>weighted average price</b> (fixed basket) to strip inflation.</div>
+      <div class="keyterm"><b>Inflation</b>: general rise in prices; <b>Deflation</b>: general fall. Both distort demand signals — always analyze in real terms.</div>
+      <p>Business cycles have four phases: expansion, peak, recession, trough. A <b>recession</b> = 2 consecutive quarters of negative real GDP growth; a <b>depression</b> is a severe, prolonged downturn.</p>
+      <h4>Microeconomic concepts</h4>
+      <div class="formula">Price elasticity of demand = % Δ quantity demanded / % Δ price</div>
+      <ul>
+        <li>|E| &gt; 1 → elastic (luxury, many substitutes)</li>
+        <li>|E| &lt; 1 → inelastic (necessities, few substitutes)</li>
+        <li>|E| = 1 → unit-elastic</li>
+      </ul>
+      <p><b>Marginal analysis</b> — compare marginal cost to marginal revenue; expand output while MR &gt; MC.</p>
+      <h4>Short-/medium-term demand patterns</h4>
+      <ul>
+        <li><b>Trend</b> — sustained direction (up/down).</li>
+        <li><b>Cycle</b> — multi-year business cycle.</li>
+        <li><b>Seasonality</b> — repeating within a year.</li>
+        <li><b>Promotions / internal</b> — self-induced.</li>
+        <li><b>Random / irregular</b> — noise you can't forecast.</li>
+      </ul>
+    `},
+    {title:"C. Demand Management",body:`
+      <h4>Demand plan</h4>
+      <p>The <b>demand plan</b> translates forecasts + market/promo intel into a consensus view of future demand that drives S&amp;OP, MPS, and procurement.</p>
+      <div class="keyterm"><b>Inputs:</b> statistical forecast, sales input, marketing/promotion calendar, customer commitments, new product intros, econometric data.</div>
+      <div class="keyterm"><b>Planning horizon &amp; revision period:</b> horizon must match decision cycle (e.g., 18 months for capacity); revise monthly in rolling fashion.</div>
+      <h4>Communication discipline</h4>
+      <p>Communicate soon, structured, and focused — send the right info to the right stakeholders so they can act.</p>
+      <h4>PDCA cycle (Deming / Shewhart)</h4>
+      <p><b>Plan → Do → Check → Act</b>. Used for continuous improvement of demand management: plan the forecast/process, execute, compare to actuals, adjust the process.</p>
+      <h4>The Four Ps and demand shaping</h4>
+      <ul>
+        <li><b>Product</b> — features, variants, SKUs</li>
+        <li><b>Price</b> — everyday, promotional, bundle</li>
+        <li><b>Placement</b> — channels, regions, availability</li>
+        <li><b>Promotion</b> — advertising, incentives, PR</li>
+      </ul>
+      <p><b>Demand shaping</b> = deliberately using the 4 Ps (and pricing tactics like dynamic pricing, discounts) to steer demand toward available supply.</p>
+      <h4>Product life cycle management</h4>
+      <p>Managing NPI (New Product Introduction) schedules, phase-in/phase-out, and retirement plans. Higher NPI frequency → higher demand uncertainty, more safety stock, shorter forecast horizons.</p>
+    `},
+    {title:"D. Forecasting",body:`
+      <h4>Five principles of forecasting</h4>
+      <ol>
+        <li>Base forecasts on <b>demand</b>, not orders (orders are constrained by supply).</li>
+        <li>Forecasts are <b>(almost) always wrong</b> — plan for error.</li>
+        <li>Always include an <b>estimate of error</b>.</li>
+        <li>Forecasts are <b>more accurate for groups</b> than for individual items.</li>
+        <li>Forecasts are <b>more accurate short-term</b> than long-term.</li>
+      </ol>
+      <h4>Forecasting process</h4>
+      <ol><li>Determine purpose &amp; horizon</li><li>Select items/groups</li><li>Gather data</li><li>Select technique</li><li>Forecast</li><li>Measure error</li><li>Adjust &amp; improve</li></ol>
+      <h4>Qualitative methods</h4>
+      <ul>
+        <li><b>Judgmental / expert opinion</b> — sales force composite, executive opinion.</li>
+        <li><b>Delphi</b> — iterative anonymous expert rounds until convergence; best for long-range, NPI, tech forecasts.</li>
+        <li><b>Combination</b> — blend qualitative with quantitative for new products.</li>
+      </ul>
+      <h4>Quantitative: time-series</h4>
+      <div class="formula">Simple moving average (n=3): F<sub>t+1</sub> = (D<sub>t</sub>+D<sub>t-1</sub>+D<sub>t-2</sub>)/3</div>
+      <div class="formula">Weighted MA: F<sub>t+1</sub> = Σ(w<sub>i</sub>·D<sub>i</sub>) &nbsp; where Σw<sub>i</sub>=1</div>
+      <div class="formula">Exponential smoothing: F<sub>t+1</sub> = α·D<sub>t</sub> + (1-α)·F<sub>t</sub> &nbsp; (0&lt;α&lt;1)</div>
+      <p>Higher α = more weight to recent demand (faster response, noisier). Use <b>deseasonalize → forecast → reseasonalize</b> when seasonality is present.</p>
+      <h4>Seasonal index</h4>
+      <div class="formula">Seasonal index = Avg period demand / Avg all periods</div>
+      <p>Deseasonalized demand = Actual / Seasonal index. Re-apply index after forecasting the deseasonalized series.</p>
+      <h4>Associative forecasting (causal)</h4>
+      <ul>
+        <li><b>Simple regression</b>: Y = a + bX (one predictor).</li>
+        <li><b>Multiple regression</b>: multiple independent variables (price, advertising, GDP).</li>
+        <li><b>Leading indicator</b> — changes <em>before</em> demand (housing starts → appliance demand).</li>
+        <li><b>Correlation ≠ causation</b>; validate causality before using.</li>
+      </ul>
+      <h4>Forecast error metrics</h4>
+      <div class="formula">Error<sub>t</sub> = Actual<sub>t</sub> − Forecast<sub>t</sub></div>
+      <div class="formula">MAD = Σ|Error|/n &nbsp;(Mean Absolute Deviation)</div>
+      <div class="formula">MSE = Σ(Error²)/n &nbsp;(penalizes large errors)</div>
+      <div class="formula">MAPE = (Σ|Error/Actual|)/n × 100% &nbsp;(comparable across series)</div>
+      <div class="formula">Bias / Running Sum of Forecast Errors (RSFE) = Σ(Error)</div>
+      <div class="formula">Tracking signal = RSFE / MAD &nbsp;(within ±4 typical; ±6 alert)</div>
+      <div class="tip">If tracking signal trends outside ±4 → forecast is biased; investigate and re-parameterize.</div>
+    `},
+  ]
+});
+
+MODULES.push({
+  id:"m2", shortTitle:"Mod 2 · Global Networks",
+  title:"Module 2 — Global Supply Chain Networks",
+  blurb:"Network design, IT systems (ERP/APS/WMS/TMS), visibility, e-business, master data, global considerations.",
+  sections:[
+    {open:true,title:"A. Supply Chain Design & Optimization",body:`
+      <p><b>Supply chain design</b> translates business strategy into a physical and information network that balances <b>efficiency, responsiveness, and resilience</b>.</p>
+      <div class="keyterm"><b>Efficient vs. responsive design (Fisher):</b> Functional products (stable demand) → efficient, low-cost chains. Innovative products (uncertain demand) → responsive, flexible chains.</div>
+      <div class="keyterm"><b>Resilience:</b> ability to recover from disruption. Built through redundancy, flexibility, visibility, and strong supplier relationships.</div>
+      <h4>Network configuration decisions</h4>
+      <ul>
+        <li>Number, location, capacity of facilities</li>
+        <li>Centralized vs. decentralized distribution</li>
+        <li>Transportation modes &amp; routes</li>
+        <li>Make-or-buy at each node</li>
+        <li>Inventory placement and postponement</li>
+      </ul>
+      <h4>Benefit-cost analysis (BCA) for IT</h4>
+      <div class="formula">ROI = (Benefits − Costs) / Costs × 100%</div>
+      <p><b>Tangible benefits</b> = inventory reduction, cycle-time cut, labor savings. <b>Intangible benefits</b> = better decisions, customer satisfaction, morale. Costs include licenses, hardware, integration, training, change management.</p>
+      <h4>Nucleus firm & cross-functional teams</h4>
+      <p>The <b>nucleus firm</b> (focal firm) orchestrates partners and makes network-level decisions. Success requires cross-functional teams with shared KPIs.</p>
+    `},
+    {title:"B. End-to-End Connectivity & Visibility — ERP, APS, WMS, TMS",body:`
+      <h4>ERP (Enterprise Resource Planning)</h4>
+      <p>Single, integrated database of master data + transactions across finance, HR, sales, manufacturing, procurement. Benefits: real-time integration, single source of truth, process discipline. Risks: cost, long implementation, change resistance.</p>
+      <div class="keyterm"><b>Configuration vs. customization:</b> configure = adjust parameters within delivered functionality (preferred, easy to upgrade); customize = modify code (risky, breaks upgrades).</div>
+      <div class="keyterm"><b>Best-of-breed:</b> pick the best specialized system per function and integrate. More capability per module but integration is complex.</div>
+      <h4>APS (Advanced Planning & Scheduling)</h4>
+      <p>Uses constraint-based optimization and memory-resident models to plan demand, supply, and capacity simultaneously across a network. Benefits: better promise dates (CTP/ATP), feasible plans, what-if analysis.</p>
+      <h4>SCEM (Supply Chain Event Management)</h4>
+      <p>Monitors events in real time against thresholds; generates alerts and drives corrective action. Core to <b>active visibility</b> and exception management.</p>
+      <h4>WMS (Warehouse Management)</h4>
+      <p>Receives, putaway, slotting, picking, packing, shipping, cycle counting, yard management. Integrates with ERP, TMS, voice-pick, RF/RFID.</p>
+      <h4>TMS (Transportation Management)</h4>
+      <p>Mode selection, routing, rate shopping, load consolidation, tracking, freight audit. Supports <b>collaborative transportation management (CTM)</b> across carriers and shippers.</p>
+      <h4>Supply chain integration methods</h4>
+      <table><tr><th>Method</th><th>What it is</th></tr>
+        <tr><td>Quick-response (QR)</td><td>Retailer shares POS with suppliers to replenish faster (esp. fashion).</td></tr>
+        <tr><td>Continuous replenishment (CRP)</td><td>Supplier auto-replenishes based on actual consumption.</td></tr>
+        <tr><td>Vendor-Managed Inventory (VMI)</td><td>Supplier owns the replenishment decision; customer shares stock &amp; demand data.</td></tr>
+        <tr><td>CPFR</td><td>Collaborative Planning, Forecasting &amp; Replenishment — shared forecasts &amp; plans.</td></tr>
+        <tr><td>Distributor integration</td><td>Common systems &amp; service levels across a distributor network.</td></tr></table>
+      <h4>E-business & e-commerce</h4>
+      <ul>
+        <li><b>B2B</b> — supplier portals, EDI, buy-side/sell-side e-commerce, exchanges.</li>
+        <li><b>B2C</b> — online retail, direct-to-consumer.</li>
+        <li><b>Layers</b>: content, community, commerce, collaboration.</li>
+      </ul>
+    `},
+    {title:"C. Data, Privacy & Middleware",body:`
+      <h4>Master data</h4>
+      <p>Non-transactional, high-value reference data: <b>customers, suppliers, items/SKUs, BOMs, routings, locations, prices</b>. Critical to maintain <b>data quality</b> — accuracy, completeness, consistency, timeliness.</p>
+      <h4>Data capture methods</h4>
+      <ul>
+        <li>Barcodes (UPC, EAN)</li><li>RFID (passive/active tags)</li>
+        <li>GPS</li><li>IoT sensors</li><li>EDI &amp; APIs</li>
+      </ul>
+      <h4>Middleware & APIs</h4>
+      <p><b>Middleware</b> connects front-end (customer-facing) to back-end (ERP) systems. <b>APIs</b> (REST, SOAP) enable real-time data exchange; EDI (X12, EDIFACT) enables batch structured messaging.</p>
+      <h4>Legal, privacy, cybersecurity</h4>
+      <ul>
+        <li><b>GDPR</b> (EU) — consent-based personal data processing; data-subject rights.</li>
+        <li><b>HIPAA</b> (US) — health data.</li>
+        <li><b>Cybersecurity:</b> encryption, access control, intrusion detection, multi-factor auth, SOC monitoring.</li>
+      </ul>
+    `},
+    {title:"D. International Considerations",body:`
+      <h4>Currency &amp; financial risk</h4>
+      <p>Exchange-rate volatility affects landed cost and margins. Mitigations: <b>natural hedge</b> (match revenues/costs in currency), forward contracts, currency clauses in supply agreements.</p>
+      <h4>Incoterms 2020</h4>
+      <p>Rules from ICC defining buyer/seller obligations for delivery, risk transfer, and cost of international shipments. Any mode vs. sea/inland waterway only:</p>
+      <table><tr><th>Any mode</th><th>Sea/inland waterway only</th></tr>
+        <tr><td>EXW, FCA, CPT, CIP, DAP, DPU, DDP</td><td>FAS, FOB, CFR, CIF</td></tr></table>
+      <div class="keyterm"><b>EXW</b> (Ex Works) = seller minimum; buyer takes risk at seller's door.<br><b>DDP</b> (Delivered Duty Paid) = seller maximum; seller delivers, cleared, to buyer's location.</div>
+      <h4>Trade regulations</h4>
+      <ul>
+        <li><b>Harmonized System (HS) codes</b> classify goods for customs &amp; tariffs.</li>
+        <li><b>FTZ / free trade zone</b> — defer/avoid duties until release to home market.</li>
+        <li><b>Country of origin</b> rules impact duty rates and FTAs.</li>
+        <li><b>C-TPAT / AEO</b> — trusted-trader programs accelerating customs.</li>
+      </ul>
+    `},
+  ]
+});
+
+MODULES.push({
+  id:"m3", shortTitle:"Mod 3 · Sourcing",
+  title:"Module 3 — Sourcing Products & Services",
+  blurb:"Make-vs-buy, TCO, category strategy, Kraljic, supplier relationships, contracts, product design influence.",
+  sections:[
+    {open:true,title:"A. Aligning Sourcing to Demand",body:`
+      <h4>Sourcing vs. procurement</h4>
+      <div class="keyterm"><b>Sourcing</b> = strategic process: identify need, select supplier, negotiate contract, manage relationship.<br><b>Procurement</b> = tactical transaction: release PO, receive, pay.</div>
+      <h4>Make-versus-buy</h4>
+      <p>Key questions:</p>
+      <ol>
+        <li>Is the activity a <b>core competency</b>?</li>
+        <li>Consequences of <b>lost skills/knowledge</b>?</li>
+        <li>Total <b>landed cost / TCO</b>?</li>
+        <li>Capacity, quality, IP, strategic risk?</li>
+      </ol>
+      <p><b>Make</b> when: core competency, protects IP, strategic control needed, lower total cost with utilization. <b>Buy</b> when: commodity, supplier has scale, frees capital, access to specialized skill.</p>
+      <h4>Contracting & outsourcing</h4>
+      <ul>
+        <li><b>Outsourcing</b> = contracting an external party to perform an activity previously done internally.</li>
+        <li><b>Offshoring</b> = moving work to another country (can be outsourced or captive).</li>
+        <li><b>Reshoring / nearshoring</b> = bringing work back closer to home due to cost/risk shifts.</li>
+      </ul>
+      <h4>Total Cost of Ownership (TCO)</h4>
+      <p>All costs over the life of the purchase: acquisition, ownership, disposal.</p>
+      <div class="formula">TCO = Purchase price + Transportation + Duties/taxes + Quality/inspection + Inventory carrying + Installation + Maintenance + Support + Disposal − Salvage</div>
+      <div class="tip"><b>Landed cost</b> specifically covers the cost to land goods at destination (price + freight + duties + insurance + handling). TCO is broader.</div>
+      <p><b>Should-cost analysis</b> — buyer models what the product <em>should</em> cost (material + labor + overhead + margin) to benchmark supplier quotes.</p>
+    `},
+    {title:"B. Category Strategy — Kraljic Matrix",body:`
+      <p>The <b>Kraljic portfolio matrix</b> segments spend by two axes:</p>
+      <ul>
+        <li><b>Profit impact</b> / strategic importance (low → high)</li>
+        <li><b>Supply risk</b> / market complexity (low → high)</li>
+      </ul>
+      <table><tr><th></th><th>Low risk</th><th>High risk</th></tr>
+        <tr><th>Low profit impact</th><td><b>Non-critical</b> — routine items. Strategy: simplify, e-procure, blanket orders, automate.</td><td><b>Bottleneck</b> — low spend, scarce supply. Strategy: ensure supply, safety stock, qualify alternates.</td></tr>
+        <tr><th>High profit impact</th><td><b>Leverage</b> — high spend, many suppliers. Strategy: competitive bidding, consolidate spend, exploit buying power.</td><td><b>Strategic</b> — high spend, scarce supply. Strategy: long-term partnership, joint development, risk share.</td></tr></table>
+      <h4>Supplier segments & relationships</h4>
+      <p>Type of relationship depends on mutual need &amp; strategic fit:</p>
+      <ul>
+        <li><b>Transactional / arm's length</b> — price focus, short term.</li>
+        <li><b>Preferred supplier</b> — multi-year, performance rating.</li>
+        <li><b>Strategic alliance</b> — co-investment, shared risk/reward.</li>
+        <li><b>Partnership / joint venture</b> — deep integration, shared IP.</li>
+      </ul>
+      <h4>Supply base analysis & right-sizing</h4>
+      <p><b>Spend analysis</b> categorizes and ranks spend (Pareto / 80-20). <b>Right-sizing</b> balances risk reduction (multiple suppliers) vs. leverage (fewer suppliers). Approaches: single, dual, multiple sourcing; supplier rationalization.</p>
+    `},
+    {title:"C. Product Design Influence & Specifications",body:`
+      <h4>Traditional vs. concurrent design</h4>
+      <p><b>Traditional</b> = sequential (design → procure → produce), slow, late supplier input. <b>Concurrent engineering</b> = cross-functional team including suppliers from the start; reduces cost, time, and quality problems.</p>
+      <div class="keyterm"><b>Design for X (DFX):</b> design for manufacturing, assembly, serviceability, environment, cost, logistics, supply chain.</div>
+      <h4>Specifications</h4>
+      <ul>
+        <li><b>Performance</b> spec — describes what the item must do; supplier has freedom.</li>
+        <li><b>Design / technical</b> spec — exact dimensions, materials, process.</li>
+        <li><b>Commercial / market</b> — brand, model, grade.</li>
+      </ul>
+      <p><b>Standardization</b> reduces variety; <b>modularity</b> supports mass customization &amp; postponement.</p>
+      <h4>Value engineering / value analysis</h4>
+      <p>Cross-functional review of a product's function vs. cost to eliminate unnecessary cost without losing function or quality.</p>
+    `},
+    {title:"D. Procurement & Negotiation",body:`
+      <h4>Procurement cycle</h4>
+      <p>Requisition → RFx (RFI / RFP / RFQ) → bid evaluation → negotiation → contract → PO → receipt → invoice match (3-way) → payment (P2P).</p>
+      <h4>Contract types</h4>
+      <ul>
+        <li><b>Fixed-price (FFP)</b> — supplier bears cost risk; use for stable, well-defined scope.</li>
+        <li><b>Cost-reimbursable</b> — buyer bears cost risk; includes CPFF, CPIF, CPAF.</li>
+        <li><b>T&amp;M</b> — time &amp; materials; used when scope uncertain.</li>
+        <li><b>Indefinite delivery (IDIQ, blanket)</b> — umbrella contract; releases by PO.</li>
+      </ul>
+      <h4>Negotiation styles</h4>
+      <p><b>Distributive</b> (win-lose, fixed pie) vs. <b>integrative</b> (win-win, expand the pie). Know your <b>BATNA</b> (best alternative to a negotiated agreement) and ZOPA (zone of possible agreement).</p>
+      <h4>Supplier evaluation & metrics</h4>
+      <p>Common KPIs: <b>on-time delivery, quality PPM, price variance, fill rate, lead time, responsiveness</b>. Use weighted scorecards to compare.</p>
+    `},
+  ]
+});
+
+MODULES.push({
+  id:"m4", shortTitle:"Mod 4 · Internal Ops",
+  title:"Module 4 — Internal Operations & Inventory",
+  blurb:"S&OP, MPS, MRP, DRP, capacity planning, lean, TOC, inventory models (EOQ, ROP, ABC), Six Sigma.",
+  sections:[
+    {open:true,title:"A. Planning Operations — S&OP, MPS, MRP, DRP",body:`
+      <h4>Manufacturing planning & control hierarchy</h4>
+      <p>Strategic → Tactical → Operational:</p>
+      <ol>
+        <li><b>Business plan</b> — financial, multi-year.</li>
+        <li><b>S&amp;OP</b> (Sales &amp; Operations Planning) — balances demand and supply at family level; monthly; 12–18 month horizon.</li>
+        <li><b>Master production schedule (MPS)</b> — end-item level; weekly buckets; 3–12 months.</li>
+        <li><b>MRP</b> — component/material level; explodes BOMs.</li>
+        <li><b>PAC</b> (production activity control) — shop floor dispatching.</li>
+      </ol>
+      <h4>Master scheduling calculations</h4>
+      <div class="formula">PAB (Projected Available Balance) = Prior PAB + MPS − max(Forecast, Customer Orders)</div>
+      <div class="formula">ATP (Available-to-Promise) = MPS in this period + Prior PAB − Σ Customer orders before next MPS receipt</div>
+      <div class="keyterm"><b>Time fences:</b> Demand fence (frozen — no changes, MPS firm) · Planning fence (trading — changes with authorization) · Beyond planning fence (liquid).</div>
+      <h4>MRP</h4>
+      <p>Inputs: <b>MPS, BOM, inventory records, lead times</b>. Outputs: <b>planned orders</b> (purchase/work orders), reschedule messages, exception reports.</p>
+      <p>Logic: <b>netting → lot-sizing → offsetting → exploding</b>.</p>
+      <div class="formula">Net requirement = Gross requirement − On-hand − Scheduled receipts + Safety stock</div>
+      <p>Lot-sizing: lot-for-lot, fixed order quantity, POQ, EOQ, Least-total-cost.</p>
+      <h4>DRP (Distribution Requirements Planning)</h4>
+      <p>Extends MRP logic into the distribution network. Pulls net requirements from DCs back to the plant. <b>Push</b> = central pushes stock to DCs; <b>pull</b> = DC requests based on local demand (preferred for responsiveness).</p>
+    `},
+    {title:"B. Capacity & Production Activity Control",body:`
+      <h4>Capacity planning hierarchy</h4>
+      <ol>
+        <li><b>Resource planning</b> (long-term, aligned with S&amp;OP)</li>
+        <li><b>Rough-cut capacity planning (RCCP)</b> — validates MPS against critical resources</li>
+        <li><b>Capacity requirements planning (CRP)</b> — detailed, against MRP</li>
+        <li><b>Input/Output control</b> — PAC-level, tracks planned vs. actual</li>
+      </ol>
+      <h4>Capacity strategies</h4>
+      <ul>
+        <li><b>Lead</b> — add capacity in anticipation of demand; hedge.</li>
+        <li><b>Lag</b> — add only after demand proves; cost-driven.</li>
+        <li><b>Match / tracking</b> — small incremental adds.</li>
+      </ul>
+      <h4>Measuring capacity</h4>
+      <div class="formula">Utilization = Actual output / Design capacity</div>
+      <div class="formula">Efficiency = Actual output / Standard (effective) output</div>
+      <div class="formula">Rated capacity = Available time × Utilization × Efficiency</div>
+      <p><b>Demonstrated capacity</b> = recent average of actual output.</p>
+      <h4>Theory of Constraints (TOC)</h4>
+      <p>Goldratt: throughput = sales − variable cost; constraint (bottleneck) determines throughput. <b>Five focusing steps:</b> Identify → Exploit → Subordinate → Elevate → Repeat.</p>
+      <p><b>Drum-Buffer-Rope (DBR)</b>: constraint paces the plant (drum); buffers protect it; rope syncs release.</p>
+    `},
+    {title:"C. Lean, JIT & Six Sigma",body:`
+      <h4>Lean principles</h4>
+      <p>Specify value (customer view) → map the value stream → create flow → pull at customer rate (takt) → pursue perfection.</p>
+      <div class="keyterm"><b>Seven wastes (TIMWOOD / DOWNTIME):</b> Defects, Overproduction, Waiting, Non-utilized talent, Transportation, Inventory, Motion, Extra processing.</div>
+      <h4>Lean tools</h4>
+      <ul>
+        <li><b>5S</b> — Sort, Set-in-order, Shine, Standardize, Sustain</li>
+        <li><b>Kanban</b> — visual pull signals</li>
+        <li><b>SMED</b> — single-minute exchange of dies (setup reduction)</li>
+        <li><b>Poka-yoke</b> — mistake-proofing</li>
+        <li><b>Jidoka</b> — autonomation; stop the line on defect</li>
+        <li><b>Heijunka</b> — level loading/mix</li>
+        <li><b>Value stream map (VSM)</b></li>
+        <li><b>Gemba walk</b> — go see</li>
+      </ul>
+      <h4>Just-in-Time (JIT)</h4>
+      <p>Produce and deliver only what is needed, when needed, in the quantity needed. Requires level demand, short setups, reliable suppliers, high quality.</p>
+      <h4>Six Sigma / DMAIC</h4>
+      <p>Data-driven defect reduction to ≤3.4 DPMO. <b>Define → Measure → Analyze → Improve → Control.</b> Tools: Ishikawa, Pareto, SPC/control charts, Cp/Cpk, DOE, hypothesis testing.</p>
+      <p><b>Lean Six Sigma</b> combines waste (lean) and variation (Six Sigma) reduction.</p>
+    `},
+    {title:"D. Inventory Management",body:`
+      <h4>Functions & types</h4>
+      <p>Buffers <b>demand/supply uncertainty</b>, <b>lead time</b>, <b>cycle</b> (batching), <b>pipeline</b> (in-transit), <b>hedge</b>, <b>anticipation</b> (seasonal, promo).</p>
+      <div class="keyterm"><b>MRO</b> — maintenance, repair, operating supplies (not in finished product).</div>
+      <h4>ABC analysis (Pareto)</h4>
+      <p>Classify SKUs by annual dollar volume: <b>A</b> ≈ 70–80% of value in 10–20% of items; <b>B</b> middle; <b>C</b> ≈ 5% of value in 50%+ of items. Tight control on A (cycle count monthly), loose on C.</p>
+      <h4>EOQ — Economic Order Quantity</h4>
+      <div class="formula">EOQ = √( 2·D·S / H )</div>
+      <p>where D = annual demand, S = setup/order cost, H = holding cost per unit per year.</p>
+      <div class="formula">Total cost = (D/Q)·S + (Q/2)·H &nbsp; — minimized at Q = EOQ</div>
+      <div class="formula">Number of orders = D / EOQ &nbsp;·&nbsp; Cycle time = EOQ / D</div>
+      <h4>Reorder point & safety stock</h4>
+      <div class="formula">ROP = d·LT + SS &nbsp; (d = daily demand, LT = lead time in days)</div>
+      <div class="formula">Safety stock = z · σ<sub>LT</sub> &nbsp;where z is the service-level factor (95% → 1.65; 98% → 2.05; 99% → 2.33)</div>
+      <h4>Periodic review (P-model)</h4>
+      <p>Review at fixed interval T, order-up-to level M. <b>Order quantity = M − Inventory on hand at review</b>. More safety stock than Q-model because cover T+LT.</p>
+      <h4>Key metrics</h4>
+      <div class="formula">Inventory turns = COGS / Average inventory</div>
+      <div class="formula">Days of supply = Avg inventory / Avg daily usage</div>
+      <div class="formula">Fill rate = Units shipped on time / Units ordered</div>
+      <div class="formula">Perfect order = % orders on time, complete, damage-free, correctly documented</div>
+      <h4>Quality & cost of quality</h4>
+      <p>Four categories: <b>Prevention · Appraisal · Internal failure · External failure</b>. Investment in prevention/appraisal typically reduces failure costs more than 1:1.</p>
+    `},
+  ]
+});
+
+MODULES.push({
+  id:"m5", shortTitle:"Mod 5 · Logistics",
+  title:"Module 5 — Forward & Reverse Logistics",
+  blurb:"Warehousing, materials handling, transportation modes & pricing, 3PL/4PL, reverse logistics, Incoterms.",
+  sections:[
+    {open:true,title:"A. Logistics Value & 3PL / 4PL",body:`
+      <p><b>Logistics</b> manages the physical, informational and financial flows between supply chain entities — time, place, and form utility.</p>
+      <div class="keyterm"><b>Seven Rs:</b> right product, right quantity, right condition, right place, right time, right customer, right cost.</div>
+      <h4>Logistics service providers</h4>
+      <table><tr><th>Type</th><th>Scope</th></tr>
+        <tr><td><b>1PL</b></td><td>Firm owns and does its own logistics.</td></tr>
+        <tr><td><b>2PL</b></td><td>Asset-based carrier (trucking, shipping line).</td></tr>
+        <tr><td><b>3PL</b></td><td>Outsourced provider performing transport, warehousing, value-add services.</td></tr>
+        <tr><td><b>4PL</b></td><td>Lead logistics integrator — manages multiple 3PLs + tech for the client.</td></tr>
+        <tr><td><b>5PL</b></td><td>Network orchestrator leveraging digital/e-business for end-to-end optimization.</td></tr></table>
+      <h4>3PL/4PL considerations</h4>
+      <p>Advantages: scale, expertise, flexibility, lower capital. Risks: loss of control, IP exposure, dependency. Contract terms: SLAs, gainshare, volume guarantees, exit clauses.</p>
+      <h4>Logistics tactics</h4>
+      <ul>
+        <li>Coordinate cross-functional execution</li>
+        <li>Integrate chain to reduce inventory via information</li>
+        <li>Regulate number of partners</li>
+        <li><b>Risk pooling</b> — centralizing inventory reduces total safety stock (variance adds in quadrature)</li>
+      </ul>
+    `},
+    {title:"B. Warehousing & Materials Handling",body:`
+      <h4>Warehouse strategy</h4>
+      <ul>
+        <li><b>Owned</b> (private) — fixed cost, control; <b>leased</b> (public/contract) — variable, flexible.</li>
+        <li>Number of DCs: trade off transportation + inventory + facility costs. Adding DCs increases inventory (√n law) but decreases outbound transport.</li>
+        <li>Location: minimize landed cost, proximity to customers, labor, tax incentives.</li>
+      </ul>
+      <h4>Warehouse functions</h4>
+      <p>Receive → putaway → storage → picking → packing → shipping. <b>Cross-docking</b> = bypass storage, directly transfer inbound to outbound. <b>Pick-to-light</b>, voice-pick, and goods-to-person improve pick rates.</p>
+      <h4>Stock location methods</h4>
+      <ul>
+        <li><b>Fixed</b> location — each SKU has a home.</li>
+        <li><b>Random</b>/dynamic — any empty slot.</li>
+        <li><b>Zone</b> / <b>ABC velocity</b> — fast movers near ship area.</li>
+      </ul>
+      <h4>Materials handling</h4>
+      <p>Manual · mechanized (forklifts, conveyors, tow lines, cranes, carousels) · automated (AGV, AS/RS, sortation, robotics, live racks).</p>
+    `},
+    {title:"C. Transportation — Modes & Pricing",body:`
+      <h4>Five modes</h4>
+      <table><tr><th>Mode</th><th>Best for</th><th>Cost / Speed</th></tr>
+        <tr><td><b>Rail</b></td><td>Heavy, bulk, long land moves</td><td>Low cost / slow</td></tr>
+        <tr><td><b>Road / truck</b></td><td>Door-to-door, mid-distance</td><td>Medium cost / medium</td></tr>
+        <tr><td><b>Water</b></td><td>International bulk, low value/weight</td><td>Lowest / slowest</td></tr>
+        <tr><td><b>Air</b></td><td>High value, perishable, urgent</td><td>Highest / fastest</td></tr>
+        <tr><td><b>Pipeline</b></td><td>Liquids, gases</td><td>Very low / slow</td></tr>
+        <tr><td><b>Intermodal</b></td><td>Container; two+ modes w/o rehandling</td><td>Balanced</td></tr></table>
+      <h4>Truckload options</h4>
+      <ul>
+        <li><b>FTL</b> (full truckload)</li>
+        <li><b>LTL</b> (less-than-truckload) — freight from multiple shippers, based on class &amp; distance</li>
+        <li><b>Parcel</b> — small packages, express carriers</li>
+      </ul>
+      <h4>Freight rate & charges</h4>
+      <ul>
+        <li><b>Line-haul</b> — distance-based</li>
+        <li><b>Accessorial</b> — detention, fuel, lift-gate, inside delivery</li>
+        <li><b>Demurrage/detention</b> — equipment tie-up charges</li>
+        <li><b>FAK</b> (freight-all-kinds) — flat rate for mixed loads</li>
+        <li><b>Tariff</b> — published rate schedule</li>
+      </ul>
+      <h4>Roles & documentation</h4>
+      <ul>
+        <li><b>Shipper (consignor)</b>, <b>consignee</b>, <b>carrier</b>, <b>freight forwarder</b>, <b>customs broker</b>, <b>NVOCC</b>.</li>
+        <li><b>Bill of Lading (BOL)</b> — contract of carriage &amp; receipt of goods.</li>
+        <li><b>Commercial invoice</b>, <b>packing list</b>, <b>certificate of origin</b>, <b>letter of credit</b>.</li>
+      </ul>
+    `},
+    {title:"D. Reverse Logistics & Sustainability in Logistics",body:`
+      <p><b>Reverse logistics</b> = flow of products/materials from the customer back toward origin for return, repair, remanufacture, recycle, or disposal.</p>
+      <div class="keyterm"><b>5 Rs of reverse logistics:</b> Returns, Reselling, Repairs, Repackaging, Recycling.</div>
+      <h4>Product recovery hierarchy (preferred → least)</h4>
+      <ol>
+        <li>Repair</li>
+        <li>Refurbish</li>
+        <li>Remanufacture</li>
+        <li>Recycle (materials)</li>
+        <li>Dispose (landfill/incineration)</li>
+      </ol>
+      <h4>Closed-loop supply chain</h4>
+      <p>Designed to handle both forward &amp; reverse flows as one system. Drivers: regulation (EU WEEE, RoHS), extended producer responsibility (EPR), circular economy, brand protection.</p>
+      <h4>Green / sustainable logistics</h4>
+      <p>Route optimization, load consolidation, modal shift to rail/water, alt fuels, returnable packaging, carbon reporting (GHG Protocol).</p>
+    `},
+  ]
+});
+
+MODULES.push({
+  id:"m6", shortTitle:"Mod 6 · Relationships",
+  title:"Module 6 — Supply Chain Relationships",
+  blurb:"CRM & SRM, segmentation, customer service metrics, relationship types, collaboration, performance management.",
+  sections:[
+    {open:true,title:"A. Customer Relationship Management (CRM)",body:`
+      <h4>Customer segmentation</h4>
+      <p>Group customers so you can differentiate service. Common bases:</p>
+      <ul>
+        <li><b>Value</b> — lifetime value, margin, share of wallet</li>
+        <li><b>Needs</b> — service level required, responsiveness expectations</li>
+        <li><b>Channel</b> preference — retail, online, B2B, direct</li>
+        <li><b>Behavior</b> — loyalty, frequency, recency, monetary (RFM)</li>
+      </ul>
+      <div class="keyterm"><b>VoC (Voice of the Customer):</b> systematic capture of customer expectations/preferences — surveys, NPS, interviews, analytics — feeds product &amp; service design.</div>
+      <h4>Scope of CRM</h4>
+      <p>Sales, marketing, service, analytics, customer data warehousing, personalization, loyalty programs.</p>
+      <h4>Strategies by relationship type</h4>
+      <table><tr><th>Type</th><th>Tactic</th></tr>
+        <tr><td>Transactional</td><td>Efficient self-service, low-cost channels</td></tr>
+        <tr><td>Preferred</td><td>Account management, service recovery</td></tr>
+        <tr><td>Partner</td><td>Dedicated teams, joint planning, tailored SLAs</td></tr>
+        <tr><td>Alliance</td><td>Co-investment, co-innovation, shared KPIs</td></tr></table>
+      <h4>Customer service metrics</h4>
+      <ul>
+        <li><b>Fill rate</b> = units (or orders) shipped from stock / units ordered</li>
+        <li><b>OTIF</b> — on-time in-full</li>
+        <li><b>Perfect order</b> — OTIF + damage-free + correctly documented</li>
+        <li><b>Order cycle time</b></li>
+        <li><b>NPS</b>, CSAT, CES (effort)</li>
+      </ul>
+    `},
+    {title:"B. Supplier Relationship Management (SRM)",body:`
+      <p><b>SRM</b> = integrated approach to managing supplier interactions: selection, development, performance management, innovation, risk.</p>
+      <h4>Relationship spectrum</h4>
+      <p>Arm's-length → preferred → strategic → alliance → joint venture / integrated.</p>
+      <h4>Supplier development</h4>
+      <ul>
+        <li>Training &amp; technical support</li>
+        <li>Joint Kaizen events / on-site assessment</li>
+        <li>Financial support for capacity / quality</li>
+        <li>Process / quality certification support (ISO 9001, IATF 16949)</li>
+      </ul>
+      <h4>Performance measurement</h4>
+      <p>Balanced scorecards with <b>QCDFR</b> dimensions: Quality, Cost, Delivery, Flexibility, Responsiveness. Review cadence varies by criticality.</p>
+      <h4>SRM technology</h4>
+      <p>Supplier portals, e-sourcing/e-auctions, contract lifecycle management (CLM), spend analytics, supplier info management (SIM).</p>
+    `},
+    {title:"C. Collaboration & Integration",body:`
+      <h4>Collaboration continuum</h4>
+      <ol>
+        <li>Information sharing</li>
+        <li>Coordinated operations</li>
+        <li>Joint planning (S&amp;OP w/ key partners)</li>
+        <li>Shared risks &amp; rewards</li>
+        <li>Co-development / innovation</li>
+      </ol>
+      <h4>CPFR (Collaborative Planning, Forecasting & Replenishment)</h4>
+      <p>Four activities: strategy &amp; planning · demand &amp; supply management · execution · analysis. Partners share forecasts and replenishment plans, collaboratively resolve exceptions.</p>
+      <h4>Trust & governance</h4>
+      <p>Formal contracts + relational norms (trust, commitment, communication). Use joint steering committees, balanced scorecards, open-book costing.</p>
+    `},
+    {title:"D. Performance Management & Metrics",body:`
+      <h4>SCOR-based metrics</h4>
+      <p>The <b>SCOR</b> (Supply Chain Operations Reference) model defines 5 process areas (<b>Plan, Source, Make, Deliver, Return</b>) and three performance groups:</p>
+      <ul>
+        <li><b>Customer-facing</b>: Reliability (perfect order), Responsiveness (order fulfillment cycle time), Agility (adapt to changes).</li>
+        <li><b>Internal-facing</b>: Cost (COGS %, cash-to-cash), Assets (inventory days, return on assets).</li>
+      </ul>
+      <div class="formula">Cash-to-cash cycle time = DIO + DSO − DPO</div>
+      <div class="keyterm"><b>Balanced Scorecard (Kaplan &amp; Norton):</b> Financial · Customer · Internal process · Learning &amp; growth.</div>
+      <h4>Benchmarking</h4>
+      <p>Compare KPIs vs. internal, competitive, functional, or generic best-in-class. Follow PDCA to close gaps.</p>
+    `},
+  ]
+});
+
+MODULES.push({
+  id:"m7", shortTitle:"Mod 7 · Risk",
+  title:"Module 7 — Supply Chain Risk",
+  blurb:"Risk identification, analysis (qualitative & quantitative), response strategies, business continuity, security & compliance.",
+  sections:[
+    {open:true,title:"A. Risk Management Framework",body:`
+      <p>Risk = effect of uncertainty on objectives (ISO 31000). Can be positive (opportunity) or negative (threat).</p>
+      <h4>Risk management process</h4>
+      <ol>
+        <li><b>Identify</b> — risk register.</li>
+        <li><b>Analyze</b> — qualitative (P×I matrix) and/or quantitative (EMV, Monte Carlo).</li>
+        <li><b>Evaluate &amp; prioritize</b>.</li>
+        <li><b>Treat / respond</b>.</li>
+        <li><b>Monitor &amp; communicate</b>.</li>
+      </ol>
+      <h4>Frameworks</h4>
+      <ul>
+        <li><b>ISO 31000</b> — principles &amp; guidelines.</li>
+        <li><b>ISO 31010</b> — risk assessment techniques (Delphi, HAZOP, FMEA, bow-tie, Monte Carlo).</li>
+        <li><b>COSO ERM</b> — governance, strategy, performance, review, communication.</li>
+        <li><b>GRC</b> — Governance, Risk, Compliance.</li>
+      </ul>
+      <h4>Attitudes toward risk</h4>
+      <p>Risk-averse, risk-neutral, risk-seeking. The <b>risk appetite</b> sets the level of risk the organization is willing to accept.</p>
+    `},
+    {title:"B. Risk Identification & Types",body:`
+      <h4>Risk register</h4>
+      <p>Catalog of: risk ID, description, category, cause, probability, impact, owner, response plan, triggers, status.</p>
+      <h4>Categories of supply chain risk</h4>
+      <ul>
+        <li><b>Operational</b> — supplier failure, quality, capacity, labor.</li>
+        <li><b>Demand</b> — forecast error, volatility, cannibalization.</li>
+        <li><b>Supply</b> — single-source, geopolitical, commodity price.</li>
+        <li><b>Logistics</b> — disruption, port closures, weather.</li>
+        <li><b>Financial</b> — FX, credit, liquidity.</li>
+        <li><b>Strategic</b> — competitive, reputation, M&amp;A.</li>
+        <li><b>Environmental</b> — natural disasters, climate, pandemic.</li>
+        <li><b>Cyber / data</b> — breach, ransomware, IP theft.</li>
+        <li><b>Compliance / legal</b> — regulation, trade, sanctions.</li>
+      </ul>
+      <h4>Loss of tangible vs. intangible assets</h4>
+      <p>Tangible: inventory, facilities, equipment. Intangible: brand, customer trust, IP.</p>
+    `},
+    {title:"C. Risk Analysis & Response",body:`
+      <h4>Qualitative analysis — P×I matrix</h4>
+      <p>Score probability (Low/Med/High or 1–5) and impact (same scale). Multiply for risk score; plot on heat map. Use <b>urgency</b> and <b>data quality</b> modifiers.</p>
+      <h4>Quantitative analysis</h4>
+      <div class="formula">EMV (Expected Monetary Value) = Σ (Probability × Impact)</div>
+      <ul>
+        <li><b>Sensitivity analysis</b> — how output changes with each input.</li>
+        <li><b>Monte Carlo simulation</b> — distribution of outcomes via repeated random sampling.</li>
+        <li><b>Decision tree</b> — chain of probabilistic decisions with EMV.</li>
+      </ul>
+      <h4>Response strategies — threats</h4>
+      <ul>
+        <li><b>Avoid</b> — eliminate cause (not source the region).</li>
+        <li><b>Transfer</b> — insurance, contract, hedge.</li>
+        <li><b>Mitigate</b> — reduce P or I (safety stock, multi-source).</li>
+        <li><b>Accept</b> — conscious choice; reserve if passive.</li>
+      </ul>
+      <h4>Response strategies — opportunities</h4>
+      <p>Exploit · Enhance · Share · Accept.</p>
+      <h4>Action plans & triggers</h4>
+      <p>Document triggers (early warning signals) and pre-defined responses. Use <b>contingency reserves</b> (budget/time) for known risks and <b>management reserves</b> for unknowns.</p>
+    `},
+    {title:"D. Business Continuity, Security & Compliance",body:`
+      <h4>Business continuity planning (BCP)</h4>
+      <p>Ensure critical processes continue through disruption.</p>
+      <ul>
+        <li><b>BIA</b> (Business Impact Analysis) identifies critical processes and impacts over time.</li>
+        <li><b>RTO</b> — Recovery Time Objective</li>
+        <li><b>RPO</b> — Recovery Point Objective (max acceptable data loss window)</li>
+        <li><b>MTPD</b> — Maximum Tolerable Period of Disruption</li>
+      </ul>
+      <p>Plan includes: crisis management, disaster recovery (IT), alternate sites, communications.</p>
+      <h4>Supply chain security</h4>
+      <ul>
+        <li><b>C-TPAT</b> (US Customs-Trade Partnership Against Terrorism)</li>
+        <li><b>AEO</b> (EU Authorized Economic Operator)</li>
+        <li><b>ISO 28000</b> — supply chain security management</li>
+        <li><b>TAPA</b> — Transported Asset Protection Association</li>
+      </ul>
+      <h4>Compliance & ethics</h4>
+      <ul>
+        <li><b>FCPA</b> / UK Bribery Act</li>
+        <li><b>Sarbanes-Oxley (SOX)</b> — financial controls</li>
+        <li><b>Dodd-Frank §1502</b> — conflict minerals</li>
+        <li><b>UN Global Compact</b>, labor, human rights, OECD guidelines</li>
+        <li><b>Modern Slavery Act</b></li>
+      </ul>
+    `},
+  ]
+});
+
+MODULES.push({
+  id:"m8", shortTitle:"Mod 8 · Strategy & Tech",
+  title:"Module 8 — Optimization, Sustainability & Technology",
+  blurb:"Strategy & SCOR, sustainability (TBL), emerging tech (IoT, AI, blockchain), continuous improvement, implementation.",
+  sections:[
+    {open:true,title:"A. Strategy & Supply Chain Alignment",body:`
+      <h4>Strategy hierarchy</h4>
+      <p>Organizational strategy → Business strategy → Functional (supply chain, marketing, HR, IT).</p>
+      <div class="keyterm"><b>Porter's generic strategies:</b> Cost leadership · Differentiation · Focus (cost-focus or differentiation-focus).</div>
+      <h4>Porter's Five Forces</h4>
+      <ol>
+        <li>Threat of new entrants</li>
+        <li>Bargaining power of buyers</li>
+        <li>Bargaining power of suppliers</li>
+        <li>Threat of substitutes</li>
+        <li>Competitive rivalry</li>
+      </ol>
+      <h4>Business model components</h4>
+      <p>Value proposition · Target customer · Channels · Customer relationships · Revenue model · Key resources · Key activities · Key partners · Cost structure.</p>
+      <h4>Supply chain strategy archetypes</h4>
+      <ul>
+        <li><b>Efficient</b> (Fisher) — functional products, low cost.</li>
+        <li><b>Responsive</b> — innovative products, high variety.</li>
+        <li><b>Risk-hedging</b> — shared resources to pool risk.</li>
+        <li><b>Agile</b> — responsive + risk-hedging.</li>
+      </ul>
+    `},
+    {title:"B. SCOR Model & Continuous Improvement",body:`
+      <h4>SCOR processes</h4>
+      <p><b>Plan · Source · Make · Deliver · Return · Enable.</b> Each has Level 1 (process type), Level 2 (category), Level 3 (element) detail.</p>
+      <h4>SCOR performance attributes</h4>
+      <table><tr><th>Attribute</th><th>Example Metric</th></tr>
+        <tr><td>Reliability</td><td>Perfect order</td></tr>
+        <tr><td>Responsiveness</td><td>Order fulfillment cycle time</td></tr>
+        <tr><td>Agility</td><td>Upside supply chain flexibility</td></tr>
+        <tr><td>Cost</td><td>Total supply chain cost, COGS</td></tr>
+        <tr><td>Asset mgmt.</td><td>Cash-to-cash, inventory days</td></tr></table>
+      <h4>Continuous improvement</h4>
+      <ul>
+        <li><b>Kaizen</b> — small incremental improvements, bottom-up.</li>
+        <li><b>Kaikaku</b> — radical transformation.</li>
+        <li><b>Benchmarking</b> — internal, competitive, functional, generic.</li>
+        <li><b>PDCA</b> &amp; <b>DMAIC</b> loops.</li>
+        <li><b>Lean Six Sigma</b> combines waste &amp; variation reduction.</li>
+      </ul>
+      <h4>Change management</h4>
+      <p><b>Kotter's 8 steps</b> (urgency, coalition, vision, communicate, empower, wins, consolidate, anchor) · <b>ADKAR</b> (Awareness, Desire, Knowledge, Ability, Reinforcement).</p>
+    `},
+    {title:"C. Sustainability — Triple Bottom Line",body:`
+      <div class="keyterm"><b>Triple Bottom Line (Elkington):</b> People · Planet · Profit — measure success across social, environmental, and economic dimensions.</div>
+      <h4>Standards & frameworks</h4>
+      <ul>
+        <li><b>GRI</b> — Global Reporting Initiative</li>
+        <li><b>ISO 14001</b> — environmental management systems</li>
+        <li><b>ISO 26000</b> — social responsibility</li>
+        <li><b>ISO 50001</b> — energy management</li>
+        <li><b>SA8000</b> — social accountability / labor</li>
+        <li><b>UN SDGs</b> — 17 sustainable development goals</li>
+        <li><b>CDP</b> — carbon disclosure</li>
+        <li><b>Science Based Targets (SBTi)</b> — decarbonization</li>
+      </ul>
+      <h4>Circular economy</h4>
+      <p>Design out waste, keep products/materials in use, regenerate natural systems. Principles of <b>reduce, reuse, recycle, recover, redesign</b>. Moves beyond linear "take-make-dispose."</p>
+      <h4>Green supply chain practices</h4>
+      <ul>
+        <li>Supplier code of conduct + audits</li>
+        <li>Packaging reduction / returnable</li>
+        <li>Network / mode optimization for CO₂</li>
+        <li>Renewable energy in facilities</li>
+        <li>Product stewardship &amp; EPR</li>
+        <li>Life-cycle assessment (LCA, cradle-to-grave/gate)</li>
+      </ul>
+    `},
+    {title:"D. Emerging Technology",body:`
+      <h4>Core supply chain tech stack</h4>
+      <ul>
+        <li><b>ERP</b> — transactional system of record</li>
+        <li><b>APS</b> — constraint-based planning</li>
+        <li><b>SCM control tower</b> — end-to-end visibility, exception management</li>
+        <li><b>WMS / TMS / YMS</b></li>
+        <li><b>PLM</b> — product lifecycle management</li>
+        <li><b>MES</b> — manufacturing execution</li>
+      </ul>
+      <h4>Advanced & emerging</h4>
+      <ul>
+        <li><b>IoT</b> — sensors, RFID, connected assets.</li>
+        <li><b>Big data / cloud</b> — scalable compute &amp; storage.</li>
+        <li><b>AI / ML</b> — demand sensing, anomaly detection, dynamic pricing, computer vision QC.</li>
+        <li><b>Robotics &amp; automation</b> — AS/RS, AMR, cobots, automated sortation.</li>
+        <li><b>3D printing / additive</b> — spare parts, customization, postponement.</li>
+        <li><b>Blockchain / DLT</b> — provenance, smart contracts, reduced counterfeit.</li>
+        <li><b>Digital twin</b> — virtual replica for simulation &amp; optimization.</li>
+        <li><b>Autonomous vehicles / drones</b>.</li>
+        <li><b>AR/VR</b> — training, pick-by-vision.</li>
+      </ul>
+      <h4>Implementation & adoption</h4>
+      <p>Build business case (ROI / NPV) · pilot · scale · sustain. Consider data readiness, integration, governance, people/skills, cyber security. Beware of <b>shiny-object syndrome</b> — tech must serve the strategy.</p>
+      <h4>Omni-channel & digital customer experience</h4>
+      <p>Integrate physical, digital, and mobile channels around the customer. Supply chain enabling: ship-from-store, BOPIS (buy online pick up in-store), curbside, ship-to-home, returns-anywhere. Unified inventory visibility and fulfillment orchestration.</p>
+    `},
+  ]
+});
+
+/* ================= FLASHCARDS ================= */
+const fc = (m,q,a)=>FLASHCARDS.push({id:FLASHCARDS.length+1,m,q,a});
+
+/* Module 1 */
+fc("m1","Supply chain","Global network to deliver products/services from raw materials to end customers via engineered flows of information, physical distribution, and cash.");
+fc("m1","Three supply chain flows","Information, product/service, funds (cash flows upstream, goods downstream).");
+fc("m1","Vertical integration","Single firm owns multiple stages (backward=upstream, forward=downstream). Gains control; needs capital; adds rigidity.");
+fc("m1","Lateral (horizontal) integration","Partnerships/alliances across firms in the chain. Keeps focus on core competencies; requires trust and governance.");
+fc("m1","Stage 1 supply chain maturity","Multiple dysfunction — silos, no shared data, reactive firefighting.");
+fc("m1","Stage 5 supply chain maturity","Orchestrated — multi-tier collaboration, real-time visibility, network-wide optimization.");
+fc("m1","SWOT","Strengths & Weaknesses (internal) + Opportunities & Threats (external). Aligns capabilities with market.");
+fc("m1","Product life cycle stages","Introduction → Growth → Maturity → Decline.");
+fc("m1","Real GDP","Inflation-adjusted output using fixed-basket weighted average prices; reflects true demand growth.");
+fc("m1","Price elasticity of demand","%ΔQ demanded ÷ %ΔP. |E|>1 elastic; |E|<1 inelastic; |E|=1 unit-elastic.");
+fc("m1","Recession vs. depression","Recession = 2 consecutive quarters of negative real GDP growth; depression = severe prolonged downturn.");
+fc("m1","Demand patterns","Trend, cycle, seasonality, promotion/internal drivers, random (irregular).");
+fc("m1","Demand plan","Consensus forward-looking view combining forecast, sales, marketing, customer commitments; drives S&OP.");
+fc("m1","PDCA","Plan-Do-Check-Act — Deming cycle for continuous improvement.");
+fc("m1","Four Ps of marketing","Product, Price, Placement (channel), Promotion.");
+fc("m1","Demand shaping","Deliberately using 4 Ps / pricing to steer demand toward available supply.");
+fc("m1","Delphi method","Iterative anonymous expert rounds until convergence; used for long-range / new-product forecasts.");
+fc("m1","Five principles of forecasting","1) Based on demand not orders 2) almost always wrong 3) include error estimate 4) more accurate for groups 5) more accurate short-term.");
+fc("m1","Simple moving average","F(t+1) = average of last n periods' actual demand. Smoother with larger n, slower to respond.");
+fc("m1","Weighted moving average","Assigns higher weight to recent demand; weights sum to 1.");
+fc("m1","Exponential smoothing","F(t+1) = α·D(t) + (1-α)·F(t). Higher α → faster response to changes.");
+fc("m1","Seasonal index","Average period demand ÷ average of all periods. Use to deseasonalize / reseasonalize.");
+fc("m1","Simple regression","Y = a + bX; one predictor (e.g., advertising → sales).");
+fc("m1","MAD (Mean Absolute Deviation)","Σ|Error|/n — measure of average forecast error magnitude.");
+fc("m1","MAPE","(Σ|Error/Actual|)/n × 100%. Scale-free; comparable across items.");
+fc("m1","Bias (RSFE)","Running Sum of Forecast Errors. Non-zero bias means systematically too high/low.");
+fc("m1","Tracking signal","RSFE / MAD. Within ±4 normal; ±6 alert — forecast biased.");
+fc("m1","Leading indicator","Changes before the demand it predicts (housing starts → appliance demand).");
+
+/* Module 2 */
+fc("m2","Efficient vs. responsive supply chain (Fisher)","Functional products → efficient (low-cost). Innovative products → responsive (flexible, high variety).");
+fc("m2","Resilience","Ability to recover from disruption via redundancy, flexibility, visibility, and strong relationships.");
+fc("m2","ERP","Single integrated database and transactional system spanning finance, HR, sales, operations, procurement.");
+fc("m2","Configuration vs. customization","Configure = adjust delivered parameters (preferred). Customize = modify code (breaks upgrades).");
+fc("m2","APS","Advanced Planning & Scheduling — constraint-based, memory-resident optimization of demand/supply/capacity.");
+fc("m2","SCEM","Supply Chain Event Management — monitors real-time events against thresholds; triggers alerts.");
+fc("m2","WMS","Warehouse Management System — receive, putaway, pick, pack, ship, cycle count, yard management.");
+fc("m2","TMS","Transportation Management System — mode, routing, rate shop, consolidation, tracking, freight audit.");
+fc("m2","VMI","Vendor-Managed Inventory — supplier decides replenishment; customer shares data.");
+fc("m2","CPFR","Collaborative Planning, Forecasting & Replenishment — partners jointly plan and manage exceptions.");
+fc("m2","EDI","Electronic Data Interchange — structured, computer-to-computer exchange of business documents (X12, EDIFACT).");
+fc("m2","API","Application Programming Interface — enables real-time data exchange (REST/SOAP).");
+fc("m2","Master data","Non-transactional reference data — items, BOMs, customers, suppliers, locations — foundation for all processes.");
+fc("m2","Risk pooling","Centralizing inventory reduces aggregate safety stock (variance adds in quadrature).");
+fc("m2","Postponement","Delay final product configuration until customer order known; reduces finished-goods risk.");
+fc("m2","GDPR","EU regulation requiring consent-based personal data handling and data-subject rights.");
+fc("m2","Incoterms","ICC rules defining who pays/bears risk at each point in international shipment (e.g., EXW, FOB, DDP).");
+fc("m2","EXW","Ex Works — seller minimum obligation; buyer takes risk at seller's door.");
+fc("m2","DDP","Delivered Duty Paid — seller maximum obligation; delivers cleared goods to buyer's location.");
+fc("m2","Free Trade Zone (FTZ)","Secure area where duties are deferred or waived until goods enter home commerce.");
+fc("m2","Harmonized System (HS) code","International product classification for customs duties/tariffs.");
+fc("m2","C-TPAT","US Customs-Trade Partnership Against Terrorism — trusted trader program for faster clearance.");
+fc("m2","Currency hedging","Forward/future contracts or natural hedge (match currency of revenues & costs) to manage FX risk.");
+fc("m2","Cash-to-cash cycle time","DIO + DSO − DPO. Lower is better (less working capital tied up).");
+fc("m2","Nucleus firm","Focal firm that orchestrates supply chain partners and network decisions.");
+
+/* Module 3 */
+fc("m3","Sourcing vs. procurement","Sourcing = strategic (select/negotiate/manage). Procurement = tactical transaction (PO, receive, pay).");
+fc("m3","Make-vs-buy drivers","Core competency? Lost skill risk? TCO? Capacity? IP/strategic risk?");
+fc("m3","TCO","Total Cost of Ownership: acquisition + ownership + disposal costs over asset life.");
+fc("m3","Landed cost","Price + freight + duties + insurance + handling to deliver goods at destination.");
+fc("m3","Should-cost analysis","Buyer models what item should cost (materials + labor + overhead + margin) to benchmark quotes.");
+fc("m3","Kraljic matrix axes","Profit impact (low/high) × Supply risk (low/high).");
+fc("m3","Strategic quadrant (Kraljic)","High profit impact + high risk → long-term partnership, joint development, risk share.");
+fc("m3","Leverage quadrant (Kraljic)","High profit + low risk → competitive bidding, consolidate spend, exploit buying power.");
+fc("m3","Bottleneck quadrant (Kraljic)","Low profit + high risk → ensure supply, safety stock, qualify alternates.");
+fc("m3","Non-critical quadrant (Kraljic)","Low profit + low risk → simplify, e-procure, automate.");
+fc("m3","Outsourcing","Contracting external party to perform previously internal activity.");
+fc("m3","Offshoring","Moving work to another country (may be captive or outsourced).");
+fc("m3","Reshoring / nearshoring","Bringing work back home / closer to home due to cost, quality, or risk shifts.");
+fc("m3","Spend analysis","Categorize & rank spend; typically follows Pareto 80-20.");
+fc("m3","Supplier segments","Transactional → preferred → strategic → alliance — increasing integration and commitment.");
+fc("m3","Concurrent engineering","Cross-functional design incl. suppliers from start; reduces time & cost vs. sequential design.");
+fc("m3","DFX","Design for Manufacturing / Assembly / Serviceability / Environment / Supply Chain.");
+fc("m3","Performance spec vs. design spec","Performance = what it must do; Design = exact dimensions/materials/process.");
+fc("m3","Standardization","Reduce variety of components; aids scale, lowers cost, reduces inventory.");
+fc("m3","Modularity","Common interfaces enable mass customization and postponement.");
+fc("m3","Value engineering","Cross-functional review of function vs. cost to eliminate unnecessary cost without losing function.");
+fc("m3","RFx","RFI (info), RFP (proposal/solution), RFQ (quote/price) — sourcing solicitation documents.");
+fc("m3","Fixed-price contract","Supplier bears cost risk; use for stable, well-defined scope.");
+fc("m3","Cost-reimbursable contract","Buyer bears cost risk; used when scope uncertain (CPFF, CPIF, CPAF).");
+fc("m3","BATNA","Best Alternative To Negotiated Agreement — your walkaway option; sets negotiation power.");
+fc("m3","Supplier scorecard","Weighted QCDFR metrics — Quality, Cost, Delivery, Flexibility, Responsiveness.");
+
+/* Module 4 */
+fc("m4","S&OP","Sales & Operations Planning — monthly, family-level, 12–18 months; balances demand & supply.");
+fc("m4","Master Production Schedule (MPS)","End-item-level schedule; weekly buckets; drives MRP.");
+fc("m4","MRP inputs","MPS, BOM, inventory records, lead times.");
+fc("m4","MRP logic","Netting → lot-sizing → offsetting → exploding (level-by-level).");
+fc("m4","PAB formula","Prior PAB + MPS − max(Forecast, Customer Orders).");
+fc("m4","ATP","Available-to-Promise = MPS this period + prior PAB − Σ customer orders before next MPS receipt.");
+fc("m4","Time fences","Demand (frozen, MPS firm), planning (changes w/ auth), beyond planning (liquid).");
+fc("m4","DRP","Distribution Requirements Planning — extends MRP into the distribution network.");
+fc("m4","Push vs. pull distribution","Push = central allocates; Pull = DC requests from local demand (more responsive).");
+fc("m4","RCCP","Rough-Cut Capacity Planning — validates MPS against critical resources before MRP.");
+fc("m4","CRP","Capacity Requirements Planning — detailed capacity check against MRP planned orders.");
+fc("m4","Utilization","Actual output ÷ design capacity.");
+fc("m4","Efficiency","Actual output ÷ standard (effective) output.");
+fc("m4","Rated capacity","Available time × utilization × efficiency.");
+fc("m4","Demonstrated capacity","Recent average actual output.");
+fc("m4","Capacity strategies","Lead (anticipate), Lag (after demand), Match (incremental).");
+fc("m4","TOC five focusing steps","Identify → Exploit → Subordinate → Elevate → Repeat the constraint.");
+fc("m4","DBR","Drum-Buffer-Rope — constraint paces the system; buffers protect it; rope syncs release.");
+fc("m4","Seven wastes (TIMWOOD)","Transport, Inventory, Motion, Waiting, Over-processing, Overproduction, Defects (sometimes +talent).");
+fc("m4","5S","Sort, Set-in-order, Shine, Standardize, Sustain.");
+fc("m4","Kanban","Visual pull signal authorizing production or replenishment.");
+fc("m4","Poka-yoke","Mistake-proofing mechanism that prevents/detects errors.");
+fc("m4","Heijunka","Level-loading of mix & volume; supports JIT flow.");
+fc("m4","SMED","Single-Minute Exchange of Dies — setup-time reduction methodology.");
+fc("m4","Six Sigma DMAIC","Define, Measure, Analyze, Improve, Control.");
+fc("m4","Six Sigma quality level","≤3.4 defects per million opportunities (DPMO).");
+fc("m4","ABC analysis","A = top ~70–80% of value / 10–20% items; tight control. C = low value / many items; loose control.");
+fc("m4","EOQ","√(2DS/H). Balances ordering/setup cost against holding cost.");
+fc("m4","Reorder point (ROP)","d·LT + safety stock. Trigger point to place an order.");
+fc("m4","Safety stock","z·σ(LT). Buffer against demand/lead-time variability at desired service level.");
+fc("m4","Periodic review (P-model)","Review at fixed interval; order up to target. Needs more safety stock than Q-model.");
+fc("m4","Inventory turns","COGS ÷ average inventory. Higher = faster-moving stock.");
+fc("m4","Days of supply","Avg inventory ÷ avg daily usage.");
+fc("m4","Cost of quality","Prevention + Appraisal + Internal failure + External failure.");
+
+/* Module 5 */
+fc("m5","Logistics Seven Rs","Right product, quantity, condition, place, time, customer, cost.");
+fc("m5","3PL","Third-party logistics provider performing transport, warehousing, value-adds on behalf of shipper.");
+fc("m5","4PL","Lead logistics integrator managing multiple 3PLs + technology for the client.");
+fc("m5","Cross-docking","Direct transfer of inbound to outbound with no/minimal storage; speeds flow, reduces inventory.");
+fc("m5","FTL vs LTL","Full truckload (single shipper, whole trailer) vs. less-than-truckload (multiple shippers).");
+fc("m5","Intermodal","Container moves across 2+ modes (truck/rail/water) with no product re-handling.");
+fc("m5","BOL","Bill of Lading — contract of carriage and receipt of goods.");
+fc("m5","NVOCC","Non-Vessel-Operating Common Carrier — consolidates LCL freight without owning vessels.");
+fc("m5","Demurrage / detention","Charges for holding equipment (container/trailer) beyond allotted free time.");
+fc("m5","FAK","Freight-All-Kinds — flat rate for mixed commodities; simplifies billing.");
+fc("m5","Cross-dock vs. distribution center","Cross-dock moves product without storage; DC holds inventory as buffer.");
+fc("m5","AGV / AMR","Automated Guided Vehicle (fixed path) / Autonomous Mobile Robot (flexible navigation).");
+fc("m5","Stock location: random vs. fixed","Random = any empty slot (better utilization); fixed = each SKU has a home (simpler picking).");
+fc("m5","Reverse logistics 5 Rs","Returns, Reselling, Repairs, Repackaging, Recycling.");
+fc("m5","Closed-loop supply chain","Designed for both forward AND reverse flows as a single integrated system.");
+fc("m5","Extended Producer Responsibility (EPR)","Producer responsible for products through end of life (recycling, take-back).");
+fc("m5","Product recovery hierarchy","Repair > refurbish > remanufacture > recycle > dispose.");
+fc("m5","WEEE","EU Waste Electrical & Electronic Equipment directive — take-back & recycling of e-waste.");
+fc("m5","RoHS","Restriction of Hazardous Substances — limits lead, mercury, cadmium, etc., in electronics.");
+fc("m5","Green logistics","Route optimization, load consolidation, modal shift, returnable packaging, alternative fuels.");
+fc("m5","Pipeline inventory","In-transit stock; carry cost based on lead time and daily demand.");
+fc("m5","Square-root law of inventory","Centralizing inventory from N warehouses reduces safety stock by factor √N.");
+
+/* Module 6 */
+fc("m6","Customer segmentation bases","Value, needs, channel preference, behavior (RFM).");
+fc("m6","RFM","Recency, Frequency, Monetary — customer behavior segmentation.");
+fc("m6","NPS","Net Promoter Score = % promoters − % detractors. Measures customer loyalty.");
+fc("m6","Voice of the Customer (VoC)","Systematic capture of customer expectations/preferences feeding product & service design.");
+fc("m6","OTIF","On-Time In-Full delivery performance metric.");
+fc("m6","Perfect order","On-time + in-full + damage-free + correctly documented.");
+fc("m6","Fill rate","Units (or orders) shipped from stock ÷ units ordered.");
+fc("m6","SRM","Supplier Relationship Management — integrated approach to sourcing, performance, development, risk.");
+fc("m6","CLM","Contract Lifecycle Management — tools to author, negotiate, execute, monitor contracts.");
+fc("m6","Balanced Scorecard","Financial + Customer + Internal Process + Learning & Growth perspectives (Kaplan & Norton).");
+fc("m6","QCDFR metrics","Quality, Cost, Delivery, Flexibility, Responsiveness — balanced supplier/operations KPIs.");
+fc("m6","SCOR performance attributes","Reliability, Responsiveness, Agility (customer-facing), Cost, Asset Management (internal).");
+fc("m6","SCOR Level 1 processes","Plan, Source, Make, Deliver, Return, Enable.");
+fc("m6","Benchmarking types","Internal, competitive, functional, generic.");
+fc("m6","CRM core technologies","Customer data warehouse, segmentation, marketing automation, sales force automation, service tools.");
+fc("m6","Collaboration continuum","Info sharing → coordinated ops → joint planning → shared risk/reward → co-development.");
+fc("m6","CPFR four activities","Strategy & planning, demand & supply mgmt, execution, analysis.");
+fc("m6","Customer lifetime value (CLV)","Projected net profit from entire future customer relationship — basis for segmentation & retention spend.");
+fc("m6","Order cycle time","Total elapsed time from customer order placement to delivery.");
+
+/* Module 7 */
+fc("m7","Risk (ISO 31000)","Effect of uncertainty on objectives — can be positive (opportunity) or negative (threat).");
+fc("m7","Risk appetite","Amount of risk an organization is willing to accept in pursuit of its objectives.");
+fc("m7","Risk register","Catalog of identified risks with probability, impact, owner, response, triggers, status.");
+fc("m7","COSO ERM","Enterprise Risk Management framework — governance, strategy, performance, review, communication.");
+fc("m7","ISO 31010","Risk assessment techniques — Delphi, HAZOP, FMEA, bow-tie, Monte Carlo, etc.");
+fc("m7","Qualitative risk analysis","Probability × Impact heat map with urgency/data-quality modifiers.");
+fc("m7","EMV (Expected Monetary Value)","Σ (Probability × Impact) — quantitative risk metric.");
+fc("m7","Monte Carlo simulation","Repeated random sampling of inputs → distribution of outputs; quantifies risk range.");
+fc("m7","Decision tree","Chain of probabilistic decision nodes evaluated by EMV.");
+fc("m7","Threat responses","Avoid, Transfer, Mitigate, Accept.");
+fc("m7","Opportunity responses","Exploit, Enhance, Share, Accept.");
+fc("m7","BCP","Business Continuity Plan — process to keep critical operations running through disruption.");
+fc("m7","BIA","Business Impact Analysis — identifies critical processes and impact over time to set RTO/RPO.");
+fc("m7","RTO","Recovery Time Objective — target time to resume a process after disruption.");
+fc("m7","RPO","Recovery Point Objective — maximum tolerable data loss measured in time.");
+fc("m7","Contingency vs. management reserve","Contingency = known risks; Management = unknown unknowns.");
+fc("m7","C-TPAT / AEO","Government trusted-trader programs reducing inspection & clearance time.");
+fc("m7","FCPA","US Foreign Corrupt Practices Act — prohibits bribery of foreign officials.");
+fc("m7","SOX","Sarbanes-Oxley — financial reporting controls & CEO/CFO certifications.");
+fc("m7","Conflict minerals (Dodd-Frank §1502)","Requires due diligence / disclosure of tin, tantalum, tungsten, gold from conflict regions.");
+fc("m7","Bow-tie analysis","Visualizes threats → event → consequences with preventive and mitigating controls.");
+
+/* Module 8 */
+fc("m8","Porter's generic strategies","Cost leadership, Differentiation, Focus (cost-focus / differentiation-focus).");
+fc("m8","Porter's Five Forces","New entrants, buyer power, supplier power, substitutes, rivalry.");
+fc("m8","Efficient vs. responsive supply chain","Match strategy to product type — Fisher's framework.");
+fc("m8","SCOR metrics (customer-facing)","Reliability, Responsiveness, Agility.");
+fc("m8","SCOR metrics (internal-facing)","Cost, Asset management.");
+fc("m8","Kaizen vs. Kaikaku","Kaizen = small incremental improvement; Kaikaku = radical transformation.");
+fc("m8","Kotter 8 steps","Urgency → coalition → vision → communicate → empower → quick wins → consolidate → anchor culture.");
+fc("m8","ADKAR","Awareness, Desire, Knowledge, Ability, Reinforcement — individual change model.");
+fc("m8","Triple Bottom Line","People, Planet, Profit — social, environmental, economic outcomes.");
+fc("m8","GRI","Global Reporting Initiative — sustainability reporting standards.");
+fc("m8","ISO 14001","Environmental management system standard.");
+fc("m8","ISO 26000","Social responsibility guidance standard.");
+fc("m8","SA8000","Social Accountability — labor standards certification.");
+fc("m8","UN SDGs","17 Sustainable Development Goals adopted 2015 to achieve by 2030.");
+fc("m8","Science Based Targets (SBTi)","Corporate emissions targets aligned with climate science (1.5°C pathway).");
+fc("m8","Circular economy","Design out waste, keep materials in use, regenerate systems — beyond linear take-make-dispose.");
+fc("m8","Life Cycle Assessment (LCA)","Cradle-to-grave environmental impact analysis.");
+fc("m8","IoT","Internet of Things — networked sensors/devices providing real-time data.");
+fc("m8","Digital twin","Virtual replica of physical asset/process for simulation, monitoring, optimization.");
+fc("m8","Blockchain / DLT","Distributed immutable ledger enabling provenance, smart contracts, reduced counterfeit.");
+fc("m8","AI / ML in SC","Demand sensing, anomaly detection, dynamic pricing, computer-vision QC, predictive maintenance.");
+fc("m8","Additive / 3D printing","On-demand printing of parts; supports spares, customization, postponement.");
+fc("m8","Omni-channel","Unified customer experience across physical, digital, mobile channels; enabled by shared inventory visibility.");
+fc("m8","BOPIS","Buy Online, Pick up In-Store — omni-channel fulfillment using store inventory.");
+fc("m8","Control tower","Centralized end-to-end visibility, exception management, and decision support across the chain.");
+
+/* ================= QUIZZES ================= */
+QUIZZES.m1 = [
+  {q:"Which of the following is NOT one of the three primary flows in a supply chain?",options:["Information","Product/Service","Funds","Authority"],answer:3,rationale:"The three flows are information, product/service, and funds. Authority is an organizational concept, not a supply chain flow."},
+  {q:"A firm that buys its key supplier is engaging in which type of integration?",options:["Forward vertical","Backward vertical","Horizontal","Lateral alliance"],answer:1,rationale:"Backward vertical integration = acquiring upstream suppliers. Forward = downstream."},
+  {q:"A supply chain described as 'functions each optimize themselves without cross-functional integration' is at which maturity stage?",options:["Stage 1 Multiple dysfunction","Stage 2 Semifunctional enterprise","Stage 3 Integrated enterprise","Stage 4 Extended enterprise"],answer:1,rationale:"Stage 2 exhibits functional silos optimizing individually. Stage 1 is deeper dysfunction with no coordination at all."},
+  {q:"Real GDP is computed by applying a weighted average price to control for what?",options:["Seasonality","Exchange rate","Inflation","Population"],answer:2,rationale:"Real GDP uses fixed-basket prices to strip out inflation so growth reflects true output change."},
+  {q:"A product with |price elasticity of demand| = 0.4 is best described as:",options:["Highly elastic","Inelastic","Unit elastic","Perfectly elastic"],answer:1,rationale:"|E|<1 is inelastic — quantity changes less than proportionally to price."},
+  {q:"Which forecasting principle states you should forecast based on demand rather than orders?",options:["Principle 1","Principle 2","Principle 3","Principle 4"],answer:0,rationale:"Principle 1 — orders are constrained by supply; true demand must drive the forecast."},
+  {q:"Exponential smoothing with α = 0.8 will:",options:["Respond slowly to changes in demand","Respond quickly to recent changes","Give equal weight to all periods","Produce identical results to a 3-period moving average"],answer:1,rationale:"Higher α puts more weight on the most recent demand, causing the forecast to respond faster (also noisier)."},
+  {q:"Which method is most appropriate for long-range forecasting of a new product with no demand history?",options:["Simple moving average","Exponential smoothing","Delphi technique","Naïve method"],answer:2,rationale:"Delphi — iterative anonymous expert consensus — is the preferred qualitative method for NPI and long-horizon forecasts."},
+  {q:"A tracking signal consistently reads +5.5 over several periods. This suggests:",options:["Forecasts are accurate","Forecasts are biased low","Forecasts are biased high","Random noise only"],answer:1,rationale:"A positive tracking signal means actual > forecast on balance, i.e., the forecast is systematically too low. ±4 to ±6 indicates bias."},
+  {q:"Which of the following best captures the 'Act' phase of the PDCA cycle?",options:["Set targets and metrics","Execute the plan","Compare actual vs. target","Standardize successes or correct deviations"],answer:3,rationale:"The Act phase institutionalizes what worked or corrects what didn't, setting up the next PDCA cycle."},
+  {q:"Deseasonalizing demand requires dividing actual demand by:",options:["Trend value","Seasonal index","Weighted moving average","Regression coefficient"],answer:1,rationale:"Actual ÷ seasonal index removes seasonal effect before applying trend/time-series methods; then reseasonalize at the end."},
+  {q:"MAPE is defined as:",options:["Σ Error / n","Σ |Error| / n","(Σ |Error / Actual|) / n × 100%","Σ Error² / n"],answer:2,rationale:"MAPE = Mean Absolute Percentage Error; scale-free so you can compare across items."},
+  {q:"Which demand pattern component represents repeating within-year variation?",options:["Trend","Cycle","Seasonality","Random"],answer:2,rationale:"Seasonality = predictable repeating pattern within a year (quarterly, monthly, weekly)."},
+  {q:"The 4 Ps of marketing include all EXCEPT:",options:["Price","Placement","Planning","Promotion"],answer:2,rationale:"The Ps are Product, Price, Placement (channel), Promotion. Planning is not one of the 4 Ps."},
+  {q:"Forecasts are generally MORE accurate when:",options:["For individual items vs. groups","For long horizons vs. short","For groups vs. individual items","When they include no error estimate"],answer:2,rationale:"Principle 4 — aggregation reduces randomness, so group (category/family) forecasts are more accurate than individual SKUs."},
+];
+
+QUIZZES.m2 = [
+  {q:"Which supply chain design is best for functional products with stable demand?",options:["Responsive","Efficient","Agile","Risk-hedging"],answer:1,rationale:"Fisher's framework: functional products → efficient, low-cost chain. Innovative products → responsive."},
+  {q:"The PRIMARY benefit of ERP is:",options:["Best-of-breed functionality per module","Single integrated database and transactional backbone","No customization ever required","Elimination of all master data issues"],answer:1,rationale:"ERP's core value is one source of truth across functions; best-of-breed trades integration for best functionality."},
+  {q:"Configuration is preferred over customization because it:",options:["Allows unlimited code changes","Preserves upgrade path","Is always cheaper at year 1","Eliminates the need for training"],answer:1,rationale:"Configuration uses delivered functionality and survives upgrades; customization breaks upgrades and raises TCO."},
+  {q:"Which integration method involves the supplier owning the replenishment decision for the customer?",options:["CPFR","VMI","Quick Response","Cross-docking"],answer:1,rationale:"VMI = Vendor-Managed Inventory; supplier decides when and how much to replenish based on shared data."},
+  {q:"CPFR stands for:",options:["Continuous Planning, Forecasting & Replenishment","Collaborative Planning, Forecasting & Replenishment","Consolidated Procurement, Forecasting & Reporting","Customer Planning for Rapid Response"],answer:1,rationale:"Collaborative Planning, Forecasting & Replenishment — shared forecasts and replenishment plans with partners."},
+  {q:"Under Incoterms, EXW:",options:["Places maximum responsibility on the seller","Places maximum responsibility on the buyer","Is used only for sea shipments","Requires seller to clear goods for export"],answer:1,rationale:"Ex Works = seller's minimum obligation; buyer takes over at the seller's premises."},
+  {q:"DDP (Delivered Duty Paid) means:",options:["Seller delivers to the first carrier only","Buyer is responsible for import duties","Seller bears risk until goods reach buyer's named place, duties paid","Terms only for inland water transport"],answer:2,rationale:"DDP = maximum seller obligation — duties paid, delivered to buyer's named place."},
+  {q:"Risk pooling reduces safety stock because:",options:["Centralized variance is the sum of variances","Central inventory sees less demand","Aggregated demand has lower relative variability","Suppliers always deliver faster"],answer:2,rationale:"Aggregated demand has lower CV (variance adds in quadrature); safety stock ∝ σ, so pooling lowers total SS by √n."},
+  {q:"Which of the following is a middleware/API purpose?",options:["Store master data","Provide transactional financial ledgers","Connect disparate systems for real-time data exchange","Replace the ERP"],answer:2,rationale:"Middleware and APIs enable real-time data exchange between front-end, ERP, and external systems."},
+  {q:"The HS (Harmonized System) code is used for:",options:["Carrier rate tariffs","Customs classification and duties","ERP master data","Cybersecurity audits"],answer:1,rationale:"HS codes classify goods internationally for customs duty and trade statistics."},
+  {q:"A Free Trade Zone (FTZ) primarily allows firms to:",options:["Pay duties immediately on arrival","Defer or avoid duties until goods enter commerce","Avoid all regulations","Bypass customs entirely"],answer:1,rationale:"In an FTZ, duties are deferred or avoided until goods leave the zone into the home market."},
+  {q:"Which technology MOST directly provides real-time alerts when supply chain events deviate from plan?",options:["ERP transactional modules","APS","SCEM","WMS"],answer:2,rationale:"Supply Chain Event Management monitors events in real time against thresholds and triggers alerts."},
+  {q:"In a cash-to-cash cycle, a LOWER number is achieved by:",options:["Increasing DIO and DSO","Decreasing DPO","Decreasing DIO and DSO while increasing DPO","Ignoring inventory turns"],answer:2,rationale:"Cash-to-cash = DIO + DSO − DPO. Less inventory and faster collections while paying suppliers later reduce it."},
+  {q:"The nucleus firm in a supply chain is:",options:["The largest tier-2 supplier","A 3PL logistics provider","The focal firm that orchestrates network decisions","The end customer"],answer:2,rationale:"The nucleus (focal) firm is the orchestrator that leads design and cross-partner decisions."},
+  {q:"GDPR primarily governs:",options:["Supply chain carbon emissions","Cross-border tariffs","Processing of personal data of EU residents","Anti-bribery compliance"],answer:2,rationale:"GDPR = EU General Data Protection Regulation; consent-based processing of personal data."},
+];
+
+QUIZZES.m3 = [
+  {q:"Sourcing vs. procurement: sourcing is best described as:",options:["The transactional act of issuing a PO","The strategic process of supplier selection and relationship management","The same thing as procurement","Always outsourced to a 3PL"],answer:1,rationale:"Sourcing is strategic; procurement is tactical (PO, receive, pay)."},
+  {q:"Which is NOT a typical make-vs-buy consideration?",options:["Core competency","Lost skills/knowledge risk","TCO / landed cost","Competitor's brand color"],answer:3,rationale:"Core competency, skill retention, and TCO are core considerations. Competitor aesthetics are not."},
+  {q:"TCO typically includes all EXCEPT:",options:["Acquisition price","Inventory carrying cost","Disposal cost","Competitor's marketing budget"],answer:3,rationale:"TCO covers all costs across the ownership lifecycle of the buying firm — not competitors' costs."},
+  {q:"On the Kraljic matrix, items with HIGH profit impact and HIGH supply risk are:",options:["Non-critical","Leverage","Bottleneck","Strategic"],answer:3,rationale:"Strategic items — treat with long-term partnership, joint development, risk share."},
+  {q:"Leverage items (Kraljic) are characterized by:",options:["Low profit impact, low risk","High profit impact, low risk","Low profit impact, high risk","High profit impact, high risk"],answer:1,rationale:"Leverage: high spend, many suppliers — exploit buying power through bidding and consolidation."},
+  {q:"A 'should-cost' analysis is used to:",options:["Determine the landed cost","Model what an item should cost from first principles (materials + labor + overhead + margin)","Audit supplier books","Calculate EOQ"],answer:1,rationale:"Should-cost benchmarks supplier quotes against a bottom-up cost model."},
+  {q:"Concurrent engineering provides which benefit over traditional sequential design?",options:["Slower time to market","Late supplier involvement","Reduced development time and cost","Single-function decisions"],answer:2,rationale:"Concurrent engineering integrates cross-functional teams — including suppliers — early, reducing time and cost."},
+  {q:"DFM stands for:",options:["Design for Manufacturing","Design for Marketing","Demand for Materials","Data flow Mapping"],answer:0,rationale:"DFM = Design for Manufacturing — one of the DFX family (DFA, DFS, DFE, etc.)."},
+  {q:"A performance specification:",options:["Dictates exact dimensions and materials","Describes the functional outcome the item must achieve","Is used only for commodities","Cannot be used with outsourced suppliers"],answer:1,rationale:"Performance specs give supplier freedom in HOW while constraining WHAT the product must achieve."},
+  {q:"Value engineering focuses on:",options:["Maximizing aesthetic value","Cutting cost while preserving function","Adding features irrespective of cost","Marketing communications"],answer:1,rationale:"VE/VA eliminates unnecessary cost without sacrificing function or quality."},
+  {q:"Which contract type transfers cost risk to the supplier?",options:["Fixed-price","Cost-plus-fixed-fee","Time & materials","Cost-reimbursable"],answer:0,rationale:"Under fixed-price, the supplier bears overrun risk; buyer pays agreed price regardless of supplier cost."},
+  {q:"BATNA is:",options:["A type of contract","Your best alternative to a negotiated agreement","A freight term","A sourcing event"],answer:1,rationale:"BATNA anchors your walkaway value — you should never accept terms worse than your BATNA."},
+  {q:"Supplier right-sizing balances:",options:["Quality vs. speed","Risk reduction (more suppliers) vs. leverage (fewer suppliers)","Make vs. buy","Domestic vs. offshore"],answer:1,rationale:"More suppliers → less single-source risk; fewer suppliers → more volume leverage. Right-size balances these."},
+  {q:"Spend analysis typically reveals:",options:["Perfect parity across all suppliers","A Pareto (80-20) distribution","That all spend is strategic","Equal spending by category"],answer:1,rationale:"Spend almost always follows 80-20: a few suppliers/categories account for most spend."},
+  {q:"A preferred supplier relationship usually implies:",options:["Lowest price only","Multi-year performance-based relationship","No measurable KPIs","One-time transaction"],answer:1,rationale:"Preferred suppliers have performance scorecards and multi-year engagement; not pure spot buying."},
+];
+
+QUIZZES.m4 = [
+  {q:"S&OP is conducted at which level of detail?",options:["SKU-level, daily","Product-family, monthly","Work center, hourly","Component, weekly"],answer:1,rationale:"S&OP works at product-family level with monthly cadence over 12–18 months."},
+  {q:"ATP (Available-to-Promise) is calculated as:",options:["Forecast minus customer orders","MPS in this period + prior PAB − customer orders before the next MPS receipt","Beginning inventory + receipts","EOQ × lead time"],answer:1,rationale:"ATP = supply available to promise to new orders between MPS receipts — discrete ATP formula."},
+  {q:"A demand fence (time fence) is a period in which:",options:["Forecasts are freely changed","MPS is frozen; no changes allowed","MRP doesn't run","Capacity is unconstrained"],answer:1,rationale:"Demand / inside time fence = frozen window; changes require significant authorization."},
+  {q:"MRP inputs include all EXCEPT:",options:["MPS","Bills of material","Inventory records","Daily shipping manifests"],answer:3,rationale:"MRP inputs: MPS, BOM, inventory records, lead times. Shipping manifests are outbound execution documents."},
+  {q:"MRP logic sequence is:",options:["Exploding → offsetting → netting","Netting → lot-sizing → offsetting → exploding","Lot-sizing → netting → exploding","Offsetting → exploding → netting"],answer:1,rationale:"Standard MRP flow: net gross requirements, apply lot-sizing, offset for lead time, explode to next BOM level."},
+  {q:"RCCP (Rough-Cut Capacity Planning) validates:",options:["The MRP plan in detail","The MPS against critical resources","Daily dispatch lists","Shipping capacity"],answer:1,rationale:"RCCP is an MPS-level capacity check on critical work centers before MRP runs."},
+  {q:"Utilization = ?",options:["Actual output / Design capacity","Actual output / Standard output","Standard output / Design capacity","Hours × Efficiency"],answer:0,rationale:"Utilization = actual output (or hours) ÷ design capacity (or scheduled hours). Efficiency compares to standard."},
+  {q:"The Theory of Constraints' FIRST focusing step is:",options:["Elevate","Exploit","Identify the constraint","Subordinate"],answer:2,rationale:"The 5 steps: Identify → Exploit → Subordinate → Elevate → Repeat."},
+  {q:"In lean, which is NOT one of the seven wastes?",options:["Overproduction","Defects","Transportation","Documentation"],answer:3,rationale:"TIMWOOD: Transport, Inventory, Motion, Waiting, Over-processing, Overproduction, Defects. Some add 'non-utilized talent' as an 8th."},
+  {q:"SMED's goal is to:",options:["Reduce setup/changeover time","Improve product quality","Increase batch size","Eliminate inventory"],answer:0,rationale:"Single-Minute Exchange of Dies — reduce setup time to single-digit minutes to enable small batches."},
+  {q:"DMAIC is associated with:",options:["Lean only","Six Sigma","TOC","ISO 9001"],answer:1,rationale:"DMAIC = Define, Measure, Analyze, Improve, Control — Six Sigma project framework."},
+  {q:"ABC analysis classifies items by:",options:["Alphabet","Annual dollar usage / importance","Weight","Color"],answer:1,rationale:"ABC ranks items by annual dollar usage; A items highest control, C lowest."},
+  {q:"EOQ formula is:",options:["√(2DS/H)","D × S × H","2DH / S","(D+S)/H"],answer:0,rationale:"EOQ = √(2·D·S/H) — balances ordering/setup and holding cost."},
+  {q:"Safety stock for 95% service level uses a z-factor of approximately:",options:["1.00","1.28","1.65","2.33"],answer:2,rationale:"z≈1.65 for 95% one-tailed service level. 1.28 ≈ 90%; 2.33 ≈ 99%."},
+  {q:"Inventory turns = ?",options:["COGS / Average inventory","Sales / Safety stock","EOQ × cycle time","Average inventory / Daily demand"],answer:0,rationale:"Turns = COGS ÷ average inventory — how many times stock cycles per year."},
+];
+
+QUIZZES.m5 = [
+  {q:"Which of the following is NOT one of the Seven Rs of logistics?",options:["Right product","Right quantity","Right receipt","Right time"],answer:2,rationale:"Seven Rs: right product, quantity, condition, place, time, customer, cost. 'Right receipt' is not one."},
+  {q:"A 4PL is BEST described as:",options:["A shipper that owns its own trucks","An asset-heavy carrier","A lead logistics integrator managing multiple 3PLs and tech","A customs broker"],answer:2,rationale:"4PL = lead orchestrator; asset-light, manages multiple 3PLs and the technology stack."},
+  {q:"Cross-docking primarily aims to:",options:["Store goods for longer","Bypass storage, transferring inbound directly to outbound","Increase order cycle time","Simplify customs clearance"],answer:1,rationale:"Cross-docking moves products directly from receiving to shipping with minimal or no storage."},
+  {q:"Which mode of transport is BEST for low-value, bulk, international shipments?",options:["Air","Truck","Water","Parcel"],answer:2,rationale:"Water/ocean freight is the lowest cost per unit-mile but the slowest — ideal for bulk, low-value international."},
+  {q:"A bill of lading functions as:",options:["Only a receipt for goods","A contract of carriage and receipt of goods","A customs declaration only","A marketing brochure"],answer:1,rationale:"A BOL is simultaneously a contract of carriage, receipt of goods, and (if negotiable) document of title."},
+  {q:"Demurrage is a charge for:",options:["Fuel","Excessive use of a carrier's equipment (detention beyond free time)","Insurance","Customs clearance"],answer:1,rationale:"Demurrage (and detention) charges equipment held beyond allotted free time at port/DC/shipper."},
+  {q:"Increasing the number of distribution centers typically:",options:["Increases transportation cost and reduces inventory","Increases inventory and reduces outbound transportation cost","Has no inventory effect","Is always cheaper overall"],answer:1,rationale:"More DCs → more safety stock (√n law) AND shorter last-mile → lower outbound transport. Optimum balances these."},
+  {q:"Reverse logistics product recovery is MOST preferred in which hierarchy order?",options:["Dispose > Recycle > Remanufacture > Refurbish > Repair","Repair > Refurbish > Remanufacture > Recycle > Dispose","Recycle > Repair > Dispose > Refurbish","Refurbish > Dispose > Recycle > Repair"],answer:1,rationale:"Best-to-worst: Repair, Refurbish, Remanufacture, Recycle, Dispose."},
+  {q:"WEEE applies to:",options:["Food products","Electrical/electronic waste in the EU","Currency exchange","Transport emissions"],answer:1,rationale:"WEEE = EU Waste Electrical and Electronic Equipment Directive, drives take-back/recycling."},
+  {q:"Random stock location (vs. fixed) generally provides:",options:["Slower picking, better accuracy","Better space utilization, more complex without WMS","Lower overall cost with zero system","Reduces need for training"],answer:1,rationale:"Random/dynamic slotting maximizes space utilization but requires a WMS to track locations."},
+  {q:"LTL freight is:",options:["Dedicated trailer for one shipper","Shared trailer, multiple shippers, classed freight","Always air","Over dimensional-only"],answer:1,rationale:"LTL (Less-than-Truckload) consolidates freight from multiple shippers; priced on class and distance."},
+  {q:"Risk pooling via centralization cuts aggregate safety stock approximately by factor:",options:["N","log N","√N","N²"],answer:2,rationale:"Square-root law: total safety stock ratio ≈ 1/√N compared to N independent locations."},
+  {q:"Which is part of extended producer responsibility (EPR)?",options:["Consumer pays all disposal costs","Producer responsible for product end-of-life","Only retailers handle returns","Governments absorb all waste"],answer:1,rationale:"EPR makes the producer financially/physically responsible for end-of-life management."},
+  {q:"Collaborative Transportation Management (CTM) primarily seeks to:",options:["Reduce collaboration","Optimize transport by sharing information across shippers and carriers","Eliminate carriers","Increase empty miles"],answer:1,rationale:"CTM aligns shipper/carrier plans — reduces empty miles, balances loads, improves service."},
+  {q:"Green logistics tactics include all EXCEPT:",options:["Modal shift to rail/water","Returnable packaging","Route optimization","Increasing empty backhauls"],answer:3,rationale:"Reducing — not increasing — empty backhauls lowers emissions."},
+];
+
+QUIZZES.m6 = [
+  {q:"RFM segmentation groups customers by:",options:["Region, Frequency, Mass","Recency, Frequency, Monetary","Role, Function, Margin","Region, Function, Market"],answer:1,rationale:"RFM = how recently, how often, how much — a classic behavior-based customer segmentation."},
+  {q:"Perfect order performance requires ALL of the following EXCEPT:",options:["On time","In full","Damage-free","Lowest price"],answer:3,rationale:"Perfect order = OTIF + damage-free + correctly documented. Price isn't part of it."},
+  {q:"NPS (Net Promoter Score) is calculated as:",options:["% promoters − % detractors","% promoters / % detractors","Average rating on 0-10","Number of customers / surveys"],answer:0,rationale:"NPS = % promoters (9-10) − % detractors (0-6); passives (7-8) don't count."},
+  {q:"SRM stands for:",options:["Sales Resource Management","Supplier Relationship Management","Strategic Risk Mitigation","Service Reliability Metrics"],answer:1,rationale:"SRM manages supplier interactions: selection, performance, development, innovation, risk."},
+  {q:"The Balanced Scorecard has FOUR perspectives. Which is NOT one?",options:["Financial","Customer","Internal process","Marketing ROI"],answer:3,rationale:"Kaplan & Norton: Financial, Customer, Internal Process, Learning & Growth."},
+  {q:"Cash-to-cash cycle time equals:",options:["DIO + DSO + DPO","DIO + DSO − DPO","DSO − DPO","DIO − DSO + DPO"],answer:1,rationale:"Cash-to-cash = inventory days + receivable days − payable days."},
+  {q:"SCOR Level 1 processes are:",options:["Plan, Source, Make, Deliver, Return (+Enable)","Create, Collect, Communicate","Lead, Lag, Match","Identify, Build, Run"],answer:0,rationale:"SCOR defines Plan, Source, Make, Deliver, Return — plus Enable in later versions."},
+  {q:"Which SCOR performance attribute is MOST captured by 'order fulfillment cycle time'?",options:["Reliability","Responsiveness","Cost","Asset management"],answer:1,rationale:"Responsiveness = speed; Reliability = perfect order; Agility = flexibility/adaptability."},
+  {q:"CPFR's four collaborative activities include:",options:["Brand, Price, Promotion, Place","Strategy & planning, Demand & supply mgmt, Execution, Analysis","Plan, Source, Make, Deliver","Recruit, Retain, Reward, Renew"],answer:1,rationale:"Those are the four CPFR activity clusters."},
+  {q:"Competitive benchmarking compares KPIs against:",options:["Internal departments only","Direct competitors","Any function across industries","Suppliers only"],answer:1,rationale:"Competitive = direct competitors. Functional = similar functions across industries. Generic = any best-in-class process."},
+  {q:"Which of the following best exemplifies voice-of-the-customer (VoC) capture?",options:["Internal cost audit","Customer survey + NPS analysis + VoC interviews","Supplier scorecard","Six Sigma DMAIC"],answer:1,rationale:"VoC uses surveys, interviews, and analytics to capture customer expectations."},
+  {q:"An SRM balanced scorecard typically measures:",options:["Only price","Quality, Cost, Delivery, Flexibility, Responsiveness","Only delivery","Only subjective feelings"],answer:1,rationale:"QCDFR captures the key supplier performance dimensions beyond cost."},
+  {q:"Customer lifetime value (CLV) helps firms:",options:["Forecast seasonality","Determine how much to invest in acquisition / retention","Compute EOQ","Set Incoterms"],answer:1,rationale:"CLV quantifies long-run customer profit so firms can size acquisition / retention spend."},
+  {q:"A strategic customer segment typically receives:",options:["Self-service low-cost channel only","Dedicated account management and tailored SLAs","No service differentiation","Mass-market promotions only"],answer:1,rationale:"Strategic customers warrant investment in relationship, people, and service customization."},
+  {q:"Contract Lifecycle Management (CLM) automates:",options:["Inventory replenishment","Authoring, negotiation, execution, and monitoring of contracts","Payroll","Shop-floor scheduling"],answer:1,rationale:"CLM = end-to-end digital management of contracts with suppliers/customers."},
+];
+
+QUIZZES.m7 = [
+  {q:"ISO 31000 defines risk as:",options:["Only negative outcomes","The effect of uncertainty on objectives","Only financial loss","Insurance premium × probability"],answer:1,rationale:"ISO 31000 defines risk as an 'effect of uncertainty on objectives' — positive or negative."},
+  {q:"A risk register typically includes all EXCEPT:",options:["Probability and impact","Risk owner","Response plan","Employee satisfaction score"],answer:3,rationale:"Risk register captures risk, category, cause, P/I, owner, response, triggers, status — not HR metrics."},
+  {q:"COSO ERM is focused on:",options:["Supply chain security only","Enterprise Risk Management framework","Inventory policy","Transportation classification"],answer:1,rationale:"COSO ERM is the widely used enterprise risk management framework."},
+  {q:"Expected Monetary Value (EMV) equals:",options:["Probability / Impact","Σ (Probability × Impact)","Max of Probability, Impact","Average of impacts"],answer:1,rationale:"EMV sums probability-weighted impacts for each risk/outcome."},
+  {q:"Monte Carlo simulation is used to:",options:["Calculate EOQ","Generate distributions of outcomes via repeated random sampling of inputs","Pick carriers","Classify ABC items"],answer:1,rationale:"Monte Carlo quantifies risk by sampling input distributions and computing output distribution."},
+  {q:"Which response strategy for threats seeks to reduce probability or impact without eliminating the risk?",options:["Avoid","Transfer","Mitigate","Accept"],answer:2,rationale:"Mitigate reduces P or I (e.g., multi-source, safety stock). Avoid eliminates the cause. Transfer shifts it (insurance). Accept = take it."},
+  {q:"Buying insurance is an example of which response strategy?",options:["Avoid","Accept","Transfer","Mitigate"],answer:2,rationale:"Insurance transfers the financial impact of a risk to a third party."},
+  {q:"RTO is:",options:["Recovery Time Objective — target time to restore a process","Return-to-Origin","Recovery Task Order","Rate of Transport Optimization"],answer:0,rationale:"RTO is the target time to restore a business process after disruption."},
+  {q:"RPO is:",options:["Return Processing Office","Recovery Point Objective — maximum tolerable data loss","Replenishment Order","Rate of Production Output"],answer:1,rationale:"RPO defines how much data (time) a firm can lose — sets backup/replication frequency."},
+  {q:"A BIA (Business Impact Analysis) establishes:",options:["Which processes are critical and what impact their disruption causes over time","Six Sigma control chart limits","Supplier scorecards","Capacity requirements"],answer:0,rationale:"A BIA is the foundation of a BCP — identifies critical processes and time-based impact."},
+  {q:"C-TPAT is a program designed to:",options:["Reduce customs/clearance time for trusted traders","Set Incoterms","Govern GDPR","Manage 3PL contracts"],answer:0,rationale:"C-TPAT is a US Customs-Trade Partnership to expedite clearance for security-certified firms."},
+  {q:"Dodd-Frank §1502 requires due diligence on:",options:["Bribery","Conflict minerals (3TG)","Anti-dumping","GMO labeling"],answer:1,rationale:"§1502 addresses tin, tantalum, tungsten, and gold sourced from conflict regions (DRC)."},
+  {q:"Contingency reserves address:",options:["Unknown unknowns","Identified/known risks already in register","Insurance premiums","Inventory buffers"],answer:1,rationale:"Contingency = known risks with quantified P/I. Management reserves = unknown unknowns."},
+  {q:"Which risk analysis is most appropriate for early-stage triage without quantitative data?",options:["Monte Carlo","P×I heat map (qualitative)","Sensitivity analysis","Decision tree"],answer:1,rationale:"Qualitative P×I matrix is the quick-triage technique before more detailed quantitative analysis."},
+  {q:"ISO 28000 addresses:",options:["Environmental management","Supply chain security management","Information security (general)","Energy management"],answer:1,rationale:"ISO 28000 is the security management standard specifically for supply chains."},
+];
+
+QUIZZES.m8 = [
+  {q:"Porter's generic strategies do NOT include:",options:["Cost leadership","Differentiation","Focus","Speculation"],answer:3,rationale:"The three generic strategies are cost leadership, differentiation, focus (with cost or differentiation sub-focus)."},
+  {q:"Which is NOT one of Porter's Five Forces?",options:["Threat of new entrants","Buyer power","Supplier power","Macroeconomic conditions"],answer:3,rationale:"Macroeconomics is PEST/PESTEL territory. Porter's 5F: entrants, buyers, suppliers, substitutes, rivalry."},
+  {q:"Fisher's framework suggests innovative products should use which type of supply chain?",options:["Efficient","Responsive","Reactive only","Linear only"],answer:1,rationale:"Innovative, variable-demand products require a responsive chain; efficient chains fit functional products."},
+  {q:"SCOR's reliability attribute is best captured by:",options:["Inventory days","Perfect order","Cash-to-cash","Capacity utilization"],answer:1,rationale:"Reliability = delivering the right product in the right condition, on time, in full — perfect order."},
+  {q:"Kaizen refers to:",options:["Radical transformation","Small, continuous, incremental improvements","Out-of-context reengineering","A specific software"],answer:1,rationale:"Kaizen = small, bottom-up, continuous improvement. Kaikaku = radical."},
+  {q:"Triple Bottom Line measures:",options:["Revenue, cost, profit","Social, environmental, economic (People/Planet/Profit)","Lead, lag, match","Plan, do, check"],answer:1,rationale:"TBL (Elkington) = 3 dimensions of sustainability."},
+  {q:"GRI is:",options:["A freight class","Global Reporting Initiative — sustainability reporting standards","A supplier ranking","An ERP module"],answer:1,rationale:"GRI sets widely used sustainability disclosure standards."},
+  {q:"ISO 14001 covers:",options:["Quality management","Environmental management systems","Occupational safety","Information security"],answer:1,rationale:"ISO 14001 is the EMS standard. 9001 = quality; 45001 = OH&S; 27001 = info security."},
+  {q:"Life Cycle Assessment (LCA) quantifies:",options:["Product financial cost only","Environmental impact from raw material extraction to end of life","Carbon tax","Employee training needs"],answer:1,rationale:"LCA measures cradle-to-grave/gate environmental impacts — energy, emissions, water, etc."},
+  {q:"A digital twin is:",options:["A second ERP instance","A virtual replica of a physical asset or process for simulation/monitoring/optimization","A backup tape","A VPN tunnel"],answer:1,rationale:"Digital twins mirror real assets to simulate behavior and optimize in real time."},
+  {q:"Blockchain's main supply chain benefit is:",options:["Free software","Immutable, distributed provenance and smart contracts","Elimination of suppliers","Guaranteed shipment speed"],answer:1,rationale:"Distributed ledger technology gives tamper-evident provenance and automated (smart) contracts."},
+  {q:"Kotter's 8 steps start with:",options:["Celebrate early wins","Anchor in culture","Create a sense of urgency","Enforce compliance"],answer:2,rationale:"Step 1: establish a sense of urgency to motivate change."},
+  {q:"BOPIS is:",options:["Business Ops Improvement Strategy","Buy Online Pick up In-Store","Base Offshoring Policy Indicator","Budget Operations Planning"],answer:1,rationale:"BOPIS is an omni-channel fulfillment model using store inventory for online orders."},
+  {q:"A control tower primarily provides:",options:["Flight tracking","End-to-end supply chain visibility, exception management, and decision support","Master data creation","Six Sigma control charts"],answer:1,rationale:"SCM control tower centralizes visibility, alerts, and collaboration across the chain."},
+  {q:"Circular economy emphasizes all EXCEPT:",options:["Design out waste","Keep materials in use","Regenerate natural systems","Maximize linear take-make-dispose flows"],answer:3,rationale:"Circular economy explicitly replaces linear flows with closed loops."},
+];
+
+/* ================= MOCK EXAM ================= */
+/* Start with all module quiz questions (tagged by module), then add 30 extra cross-domain items */
+Object.keys(QUIZZES).forEach(mid => {
+  QUIZZES[mid].forEach(q => MOCK_EXAM.push({...q, m: mid}));
+});
+const mex = (m,q,options,answer,rationale)=>MOCK_EXAM.push({m,q,options,answer,rationale});
+
+mex("m1","A firm's exponential-smoothing forecast with α=0.3 gave 500 units for April. Actual was 560. What is the forecast for May?",
+ ["500","518","548","572"],1,
+ "F(May) = 0.3·560 + 0.7·500 = 168 + 350 = 518.");
+mex("m1","Seasonal demand over four quarters is 100, 140, 90, 170. What is the seasonal index for Q2?",
+ ["0.80","1.12","1.40","0.72"],1,
+ "Average quarterly demand = (100+140+90+170)/4 = 125. Q2 index = 140/125 ≈ 1.12.");
+mex("m1","The main purpose of a demand plan is to:",
+ ["Replace S&OP","Provide a consensus view of future demand that drives planning and procurement","Set marketing budgets only","Set customer credit limits"],1,
+ "Demand plan unifies forecast, sales, marketing, and customer inputs into a consensus view used by S&OP, MPS, and purchasing.");
+mex("m2","A firm uses supplier portals and EDI to share demand signals. This aligns most with which integration method?",
+ ["CPFR","VMI","Quick Response","B2B e-commerce / EDI"],3,
+ "EDI + portals = B2B e-commerce/e-integration. CPFR requires shared forecasting & plans; VMI gives supplier replenishment decision.");
+mex("m2","A firm selects FOB as its Incoterm. This can only be used for:",
+ ["Air freight","Any mode","Sea / inland waterway","Rail freight"],2,
+ "FOB, FAS, CFR, CIF are reserved for sea/inland waterway transport in Incoterms 2020.");
+mex("m2","Under GDPR, a data subject's rights include all EXCEPT:",
+ ["Right to be informed","Right of access","Right to erasure","Right to demand profit-sharing"],3,
+ "GDPR rights include access, rectification, erasure, restriction, portability, objection — not profit sharing.");
+mex("m3","An item's annual demand is 2,400 units, ordering cost is $40, holding cost is $3/unit/year. EOQ equals:",
+ ["120","253","160","200"],1,
+ "EOQ = √(2·2400·40/3) = √64000 ≈ 253.");
+mex("m3","Single-sourcing tends to:",
+ ["Reduce volume leverage","Increase supply risk but maximize volume leverage","Always reduce total cost","Comply with all compliance needs"],1,
+ "Consolidating to one supplier maximizes purchasing leverage but concentrates risk (qualify backup capacity).");
+mex("m3","Dual sourcing balances:",
+ ["Cost and quality only","Leverage against supply risk","Demand and capacity","Make vs. buy"],1,
+ "Two qualified suppliers reduce single-point failure risk while preserving much of the spend leverage.");
+mex("m4","A product has daily demand of 40 units, lead time of 5 days, and safety stock of 80. The reorder point is:",
+ ["200","280","240","320"],1,
+ "ROP = d·LT + SS = 40·5 + 80 = 280.");
+mex("m4","A company has COGS of $10M and average inventory of $2M. Inventory turns = ?",
+ ["0.2","2","5","10"],2,
+ "Turns = COGS/avg inventory = 10/2 = 5.");
+mex("m4","Which is MOST consistent with the theory of constraints?",
+ ["Run every resource at 100%","Maximize utilization at non-bottlenecks","Subordinate everything to the pace of the constraint","Push inventory forward"],2,
+ "TOC subordinates non-constraints to the bottleneck — running others full-out creates WIP, not throughput.");
+mex("m4","A scrap rate of 4% is introduced before a work center. To produce 1,000 good units, how many should the process start?",
+ ["1,000","1,040","1,042","1,250"],2,
+ "Start = 1000 / (1 − 0.04) = 1000 / 0.96 ≈ 1041.7 → 1,042 units.");
+mex("m5","A container terminal charges demurrage after 5 free days. A shipment stays 9 days. How many demurrage days apply?",
+ ["0","4","5","9"],1,
+ "Demurrage = days beyond free time = 9 − 5 = 4.");
+mex("m5","A DC is evaluating ship-from-store vs. centralized e-commerce fulfillment. Ship-from-store BEST provides:",
+ ["Lowest per-order pick cost","Faster last-mile and better inventory utilization at store level","Full automation","Elimination of returns"],1,
+ "SFS leverages existing store inventory and nearby geography for faster, cheaper last-mile for many orders.");
+mex("m5","Which document is a 'contract of carriage' between shipper and carrier?",
+ ["Commercial invoice","Packing list","Bill of Lading","Certificate of origin"],2,
+ "BOL is the contract of carriage (and receipt of goods; negotiable BOL also represents title).");
+mex("m6","A retailer signs a CPFR program with a key supplier. Who should OWN forecast exception resolution?",
+ ["Retailer alone","Supplier alone","Joint / collaborative","Third-party"],2,
+ "CPFR is inherently collaborative — partners jointly identify and resolve forecast / order exceptions.");
+mex("m6","A balanced supplier scorecard weighting quality 40%, delivery 30%, cost 20%, responsiveness 10% is primarily used to:",
+ ["Choose Incoterms","Evaluate and rank suppliers objectively","Set EOQ","Optimize freight rates"],1,
+ "Weighted scorecards objectively compare suppliers across dimensions aligned with strategy.");
+mex("m6","Net Promoter Score is computed from customers rated 0-10 by:",
+ ["Average rating","% 9-10 minus % 0-6","% 7-10","Standard deviation"],1,
+ "NPS = % promoters (9–10) − % detractors (0–6); 7–8 are passives.");
+mex("m7","A risk has probability 20% and impact $500,000. Its EMV is:",
+ ["$100,000","$10,000","$250,000","$500,000"],0,
+ "EMV = 0.20 × $500,000 = $100,000.");
+mex("m7","A company contracts insurance for earthquake losses. This is a:",
+ ["Mitigation","Avoidance","Transfer","Acceptance"],2,
+ "Insurance transfers the financial impact of the risk to a third party.");
+mex("m7","Which risk response is best when impact is low AND probability is low?",
+ ["Avoid","Transfer","Mitigate","Accept"],3,
+ "Small risks are typically accepted (passive or active with reserve) rather than actively treated.");
+mex("m8","A firm moves from a linear 'take-make-dispose' to product take-back, refurbishment, and resale. This MOST exemplifies:",
+ ["Agile strategy","Circular economy","Outsourcing","Offshoring"],1,
+ "Reuse / refurb / resale are core circular-economy practices.");
+mex("m8","Which technology is most associated with tamper-evident provenance tracking?",
+ ["Blockchain / DLT","ERP","APS","WMS"],0,
+ "Blockchain's distributed immutable ledger creates auditable provenance records.");
+mex("m8","A supply chain strategy document that says 'we will compete on low total landed cost using global sourcing and high-volume standardized products' is an example of:",
+ ["Differentiation","Cost leadership","Focus differentiation","Agility"],1,
+ "Lowest total cost via scale and standardization is Porter's cost-leadership generic strategy.");
+mex("m8","The 17 UN SDGs include which of the following?",
+ ["Responsible consumption and production","Perfect order performance","Just-in-time manufacturing","Total productive maintenance"],0,
+ "SDG 12 = 'Responsible Consumption and Production'. The others are operational SC frameworks, not SDGs.");
+mex("m2","Information sharing that increases visibility but increases cyber attack surface is an example of:",
+ ["Risk elimination","Risk-reward trade-off","Cost reduction without trade-off","Regulatory violation automatically"],1,
+ "More openness → more risk; it's a trade-off to manage with security controls.");
+mex("m4","Which lot-sizing rule orders exactly the net requirement each period?",
+ ["EOQ","Fixed order quantity","Period order quantity","Lot-for-lot"],3,
+ "Lot-for-lot = order exactly the net requirement; minimizes inventory but requires many orders.");
+mex("m5","A company wants to reduce last-mile cost for an urban market. The BEST tactic is generally:",
+ ["Centralize in one large rural DC","Use micro-fulfillment / dark-store close to the customer","Move to rail only","Stop e-commerce"],1,
+ "Micro-fulfillment / dark stores shorten the last mile, lowering per-order delivery cost and time.");
+mex("m7","Key steps in a business continuity plan include all EXCEPT:",
+ ["Business impact analysis","Recovery strategies","Testing and updating","Publishing marketing ads"],3,
+ "BCP = BIA, strategies, documented plan, training, testing, maintenance.");
+mex("m1","The 'decoupling point' or 'push-pull boundary' is the point where:",
+ ["Orders stop","Forecast-driven activity transitions to order-driven activity","Deliveries happen","Capacity planning begins"],1,
+ "It's the boundary between forecast (push) upstream and customer-order (pull) downstream.");
+mex("m4","The purpose of the master production schedule is to:",
+ ["Do daily dispatch","Convert demand into a feasible plan for making end items","Replace MRP","Manage payables"],1,
+ "MPS sits between S&OP and MRP — it converts aggregate demand to end-item level feasible schedules.");
+mex("m3","A common purpose of the sourcing decision 'make' is:",
+ ["Protect a core competency or IP","Always lower cost","Free up capital","Access a niche skill"],0,
+ "'Make' when it protects IP or is a core competency; 'buy' when supplier has scale/expertise.");
+
+/* ================= DIAGRAMS ================= */
+DIAGRAMS.push({
+  title:"SCOR Model — Plan, Source, Make, Deliver, Return",
+  desc:"Click on any process box to learn what it covers.",
+  keys:{
+    Plan:"Balance aggregate demand and supply to develop a course of action that best meets sourcing, production, and delivery requirements.",
+    Source:"Procurement of goods and services — ordering, scheduling, receiving, verifying supplier performance.",
+    Make:"Transform inputs into finished goods — scheduling production, producing/testing, releasing.",
+    Deliver:"Order management, warehousing, transportation, customer delivery, invoicing.",
+    Return:"Reverse flows — returns of raw materials (to supplier) and finished goods (from customer) for any reason.",
+    Enable:"Supporting processes: manage rules, performance, data, HR, contracts, risk, compliance."
+  },
+  svg:`<svg viewBox="0 0 800 320" xmlns="http://www.w3.org/2000/svg" style="background:#0b1222;border-radius:10px">
+    <defs><marker id="arr" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#94a3b8"/></marker></defs>
+    <text x="400" y="30" fill="#e5e7eb" font-size="18" text-anchor="middle" font-weight="700">SCOR — Supply Chain Operations Reference</text>
+    <g class="clickable" data-key="Plan"><rect x="330" y="60" width="140" height="50" rx="8" fill="#0ea5e9"/><text x="400" y="92" fill="#fff" text-anchor="middle" font-weight="700">Plan</text></g>
+    <g class="clickable" data-key="Source"><rect x="60" y="140" width="140" height="60" rx="8" fill="#6366f1"/><text x="130" y="176" fill="#fff" text-anchor="middle" font-weight="700">Source</text></g>
+    <g class="clickable" data-key="Make"><rect x="330" y="140" width="140" height="60" rx="8" fill="#22c55e"/><text x="400" y="176" fill="#0b3514" text-anchor="middle" font-weight="700">Make</text></g>
+    <g class="clickable" data-key="Deliver"><rect x="600" y="140" width="140" height="60" rx="8" fill="#f59e0b"/><text x="670" y="176" fill="#4a2e05" text-anchor="middle" font-weight="700">Deliver</text></g>
+    <g class="clickable" data-key="Return"><rect x="330" y="230" width="140" height="50" rx="8" fill="#ef4444"/><text x="400" y="262" fill="#fff" text-anchor="middle" font-weight="700">Return</text></g>
+    <g class="clickable" data-key="Enable"><rect x="60" y="230" width="680" height="40" rx="8" fill="#475569" fill-opacity="0.3" stroke="#94a3b8" stroke-dasharray="4 3"/><text x="400" y="300" fill="#cbd5e1" text-anchor="middle" font-size="13">Enable (supporting: performance, rules, data, HR, risk, compliance)</text></g>
+    <line x1="400" y1="110" x2="130" y2="140" stroke="#94a3b8" marker-end="url(#arr)"/>
+    <line x1="400" y1="110" x2="400" y2="140" stroke="#94a3b8" marker-end="url(#arr)"/>
+    <line x1="400" y1="110" x2="670" y2="140" stroke="#94a3b8" marker-end="url(#arr)"/>
+    <line x1="200" y1="170" x2="330" y2="170" stroke="#94a3b8" marker-end="url(#arr)"/>
+    <line x1="470" y1="170" x2="600" y2="170" stroke="#94a3b8" marker-end="url(#arr)"/>
+    <line x1="400" y1="230" x2="130" y2="200" stroke="#ef4444" stroke-dasharray="4 3"/>
+    <line x1="400" y1="230" x2="400" y2="200" stroke="#ef4444" stroke-dasharray="4 3"/>
+    <line x1="400" y1="230" x2="670" y2="200" stroke="#ef4444" stroke-dasharray="4 3"/>
+  </svg>`
+});
+
+DIAGRAMS.push({
+  title:"Kraljic Purchasing Portfolio Matrix",
+  desc:"Classifies purchased items by profit impact × supply risk. Click each quadrant.",
+  keys:{
+    "Non-critical":"Low profit impact, low risk. Items: office supplies, MRO commodities. Strategy: simplify process, e-procurement, blanket orders, automation, consolidate.",
+    "Leverage":"High profit impact, low risk. Items: standard components in abundant supply. Strategy: consolidate spend, competitive bidding, exploit buying power.",
+    "Bottleneck":"Low profit impact, high risk. Items: scarce but low-spend parts. Strategy: ensure supply, safety stock, qualify alternates, standardize.",
+    "Strategic":"High profit impact, high risk. Items: critical custom components from few suppliers. Strategy: long-term partnership, joint development, risk sharing, supplier investment."
+  },
+  svg:`<svg viewBox="0 0 600 450" xmlns="http://www.w3.org/2000/svg" style="background:#0b1222;border-radius:10px">
+    <text x="300" y="30" fill="#e5e7eb" font-size="18" text-anchor="middle" font-weight="700">Kraljic Matrix</text>
+    <text x="20" y="240" fill="#94a3b8" font-size="13" transform="rotate(-90,20,240)" text-anchor="middle">Profit impact →</text>
+    <text x="300" y="430" fill="#94a3b8" font-size="13" text-anchor="middle">Supply risk →</text>
+    <g class="clickable" data-key="Non-critical"><rect x="60" y="250" width="240" height="150" rx="10" fill="#0ea5e9" fill-opacity="0.6"/><text x="180" y="320" fill="#fff" text-anchor="middle" font-weight="700">Non-critical</text><text x="180" y="340" fill="#e0f2fe" text-anchor="middle" font-size="12">low profit · low risk</text></g>
+    <g class="clickable" data-key="Bottleneck"><rect x="310" y="250" width="240" height="150" rx="10" fill="#f59e0b" fill-opacity="0.6"/><text x="430" y="320" fill="#fff" text-anchor="middle" font-weight="700">Bottleneck</text><text x="430" y="340" fill="#fef3c7" text-anchor="middle" font-size="12">low profit · high risk</text></g>
+    <g class="clickable" data-key="Leverage"><rect x="60" y="90" width="240" height="150" rx="10" fill="#22c55e" fill-opacity="0.6"/><text x="180" y="160" fill="#fff" text-anchor="middle" font-weight="700">Leverage</text><text x="180" y="180" fill="#dcfce7" text-anchor="middle" font-size="12">high profit · low risk</text></g>
+    <g class="clickable" data-key="Strategic"><rect x="310" y="90" width="240" height="150" rx="10" fill="#ef4444" fill-opacity="0.6"/><text x="430" y="160" fill="#fff" text-anchor="middle" font-weight="700">Strategic</text><text x="430" y="180" fill="#fee2e2" text-anchor="middle" font-size="12">high profit · high risk</text></g>
+    <line x1="60" y1="245" x2="550" y2="245" stroke="#94a3b8"/>
+    <line x1="305" y1="85" x2="305" y2="405" stroke="#94a3b8"/>
+  </svg>`
+});
+
+DIAGRAMS.push({
+  title:"Porter's Five Forces",
+  desc:"Industry attractiveness framework. Click each force for strategic implications.",
+  keys:{
+    "Rivalry":"Central force: how intensely competitors vie for position. Drivers: number/size of competitors, industry growth, differentiation, exit barriers, fixed costs.",
+    "New Entrants":"Threat from new firms. Barriers: capital, scale, switching cost, distribution access, regulation, patents, brand loyalty.",
+    "Buyers":"Bargaining power: concentration, volume, standardization, switching costs, backward-integration threat, price sensitivity.",
+    "Suppliers":"Bargaining power: supplier concentration, unique inputs, switching cost, forward integration threat, substitute availability.",
+    "Substitutes":"Threat that alternative products/services can replace yours (price-performance, switching cost, buyer propensity)."
+  },
+  svg:`<svg viewBox="0 0 700 480" xmlns="http://www.w3.org/2000/svg" style="background:#0b1222;border-radius:10px">
+    <text x="350" y="28" fill="#e5e7eb" font-size="18" text-anchor="middle" font-weight="700">Porter's Five Forces</text>
+    <g class="clickable" data-key="Rivalry"><circle cx="350" cy="240" r="85" fill="#0ea5e9" fill-opacity="0.7"/><text x="350" y="240" text-anchor="middle" fill="#fff" font-weight="700">Competitive</text><text x="350" y="258" text-anchor="middle" fill="#fff" font-weight="700">Rivalry</text></g>
+    <g class="clickable" data-key="New Entrants"><circle cx="350" cy="80" r="55" fill="#22c55e" fill-opacity="0.7"/><text x="350" y="78" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">New</text><text x="350" y="95" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">Entrants</text></g>
+    <g class="clickable" data-key="Substitutes"><circle cx="350" cy="400" r="55" fill="#f59e0b" fill-opacity="0.7"/><text x="350" y="404" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">Substitutes</text></g>
+    <g class="clickable" data-key="Suppliers"><circle cx="120" cy="240" r="55" fill="#6366f1" fill-opacity="0.8"/><text x="120" y="244" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">Suppliers</text></g>
+    <g class="clickable" data-key="Buyers"><circle cx="580" cy="240" r="55" fill="#ef4444" fill-opacity="0.8"/><text x="580" y="244" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">Buyers</text></g>
+    <line x1="350" y1="135" x2="350" y2="155" stroke="#94a3b8"/>
+    <line x1="350" y1="325" x2="350" y2="345" stroke="#94a3b8"/>
+    <line x1="175" y1="240" x2="265" y2="240" stroke="#94a3b8"/>
+    <line x1="435" y1="240" x2="525" y2="240" stroke="#94a3b8"/>
+  </svg>`
+});
+
+DIAGRAMS.push({
+  title:"Push / Pull Boundary & Decoupling Point",
+  desc:"Forecast-driven (push) upstream transitions to customer-order-driven (pull) downstream at the decoupling point.",
+  keys:{
+    Push:"Upstream of the decoupling point: forecast-driven. Economies of scale, long lead times, make-to-stock.",
+    Pull:"Downstream: driven by actual customer orders. Responsive, make-to-order, lower finished-goods risk.",
+    Decoupling:"The point at which the dominant driver switches from forecast to order. Choice depends on lead time tolerance and variety required.",
+    MTS:"Make-to-Stock — high finished-goods inventory, short customer lead time (consumer products).",
+    ATO:"Assemble-to-Order — stock modules, configure on order (laptops, autos).",
+    MTO:"Make-to-Order — no finished goods; produce after receiving order (industrial).",
+    ETO:"Engineer-to-Order — design after receiving order (aerospace, custom projects)."
+  },
+  svg:`<svg viewBox="0 0 800 360" xmlns="http://www.w3.org/2000/svg" style="background:#0b1222;border-radius:10px">
+    <text x="400" y="30" fill="#e5e7eb" font-size="18" text-anchor="middle" font-weight="700">Push / Pull and the Decoupling Point</text>
+    <g class="clickable" data-key="Push"><rect x="60" y="70" width="300" height="60" rx="8" fill="#0ea5e9" fill-opacity="0.7"/><text x="210" y="106" fill="#fff" text-anchor="middle" font-weight="700">PUSH — forecast-driven</text></g>
+    <g class="clickable" data-key="Decoupling"><rect x="360" y="60" width="60" height="80" rx="6" fill="#fde047"/><text x="390" y="105" fill="#1f2937" text-anchor="middle" font-size="12" font-weight="700">Decoupling</text></g>
+    <g class="clickable" data-key="Pull"><rect x="420" y="70" width="300" height="60" rx="8" fill="#22c55e" fill-opacity="0.8"/><text x="570" y="106" fill="#fff" text-anchor="middle" font-weight="700">PULL — order-driven</text></g>
+    <text x="60" y="170" fill="#94a3b8" font-size="13">Inventory strategies — decoupling point moves right ↘ customer:</text>
+    <g class="clickable" data-key="MTS"><rect x="60" y="190" width="150" height="50" rx="6" fill="#6366f1"/><text x="135" y="222" fill="#fff" text-anchor="middle" font-weight="700">Make-to-Stock</text></g>
+    <g class="clickable" data-key="ATO"><rect x="225" y="190" width="150" height="50" rx="6" fill="#6366f1" fill-opacity="0.8"/><text x="300" y="222" fill="#fff" text-anchor="middle" font-weight="700">Assemble-to-Order</text></g>
+    <g class="clickable" data-key="MTO"><rect x="390" y="190" width="150" height="50" rx="6" fill="#6366f1" fill-opacity="0.6"/><text x="465" y="222" fill="#fff" text-anchor="middle" font-weight="700">Make-to-Order</text></g>
+    <g class="clickable" data-key="ETO"><rect x="555" y="190" width="165" height="50" rx="6" fill="#6366f1" fill-opacity="0.4"/><text x="637" y="222" fill="#fff" text-anchor="middle" font-weight="700">Engineer-to-Order</text></g>
+    <text x="60" y="275" fill="#cbd5e1" font-size="12">← higher finished-goods inventory, shorter customer lead time</text>
+    <text x="740" y="275" fill="#cbd5e1" font-size="12" text-anchor="end">lower inventory, longer customer lead time →</text>
+    <text x="60" y="315" fill="#94a3b8" font-size="11">Push: economies of scale, long lead times</text>
+    <text x="740" y="315" fill="#94a3b8" font-size="11" text-anchor="end">Pull: responsive, customized</text>
+  </svg>`
+});
+
+DIAGRAMS.push({
+  title:"Bullwhip Effect",
+  desc:"Small variance at the customer amplifies as it travels upstream. Click each node.",
+  keys:{
+    "Customer":"Base demand pattern — relatively stable.",
+    "Retailer":"Adds a bit of variation (local promos, reorder policy).",
+    "Distributor":"Amplifies via batching and order lead time.",
+    "Manufacturer":"Large swings; safety stock and capacity suffer.",
+    "Supplier":"Whiplash — biggest variability, longest exposure.",
+    "Causes":"Demand signal processing, order batching, price fluctuations (promos), rationing/shortage gaming, long lead times.",
+    "Remedies":"Share POS / demand data, reduce batch size, EDLP pricing, allocate by past sales in shortage, shorter lead times, VMI/CPFR."
+  },
+  svg:`<svg viewBox="0 0 800 340" xmlns="http://www.w3.org/2000/svg" style="background:#0b1222;border-radius:10px">
+    <text x="400" y="28" fill="#e5e7eb" font-size="18" text-anchor="middle" font-weight="700">Bullwhip Effect — demand amplification upstream</text>
+    <g class="clickable" data-key="Customer"><rect x="30" y="220" width="110" height="50" rx="6" fill="#22c55e"/><text x="85" y="251" fill="#062e1a" font-weight="700" text-anchor="middle">Customer</text></g>
+    <g class="clickable" data-key="Retailer"><rect x="170" y="200" width="110" height="50" rx="6" fill="#0ea5e9"/><text x="225" y="231" fill="#fff" font-weight="700" text-anchor="middle">Retailer</text></g>
+    <g class="clickable" data-key="Distributor"><rect x="310" y="170" width="120" height="50" rx="6" fill="#6366f1"/><text x="370" y="201" fill="#fff" font-weight="700" text-anchor="middle">Distributor</text></g>
+    <g class="clickable" data-key="Manufacturer"><rect x="460" y="130" width="130" height="50" rx="6" fill="#f59e0b"/><text x="525" y="161" fill="#4a2e05" font-weight="700" text-anchor="middle">Manufacturer</text></g>
+    <g class="clickable" data-key="Supplier"><rect x="620" y="80" width="140" height="50" rx="6" fill="#ef4444"/><text x="690" y="111" fill="#fff" font-weight="700" text-anchor="middle">Supplier</text></g>
+    <path d="M30 290 Q170 285 225 280 T370 260 T525 220 T690 100" fill="none" stroke="#fb7185" stroke-width="3"/>
+    <text x="100" y="305" fill="#94a3b8" font-size="11">variability ≈ low</text>
+    <text x="660" y="70" fill="#94a3b8" font-size="11">variability ≈ high</text>
+    <g class="clickable" data-key="Causes"><rect x="30" y="10" width="230" height="32" rx="6" fill="#334155"/><text x="145" y="32" fill="#cbd5e1" text-anchor="middle" font-size="13">Click: Causes</text></g>
+    <g class="clickable" data-key="Remedies"><rect x="540" y="10" width="230" height="32" rx="6" fill="#334155"/><text x="655" y="32" fill="#cbd5e1" text-anchor="middle" font-size="13">Click: Remedies</text></g>
+  </svg>`
+});
+
+DIAGRAMS.push({
+  title:"ABC Analysis (Pareto / 80-20)",
+  desc:"Classify inventory by annual $ usage so controls match value. Click any class.",
+  keys:{
+    "A items":"~10–20% of SKUs but ~70–80% of annual $ value. Tight control: monthly cycle counts, low safety stock relative to value, top-management review.",
+    "B items":"Moderate value (~15–25% of dollars), moderate control — quarterly counts, mid-range safety stock.",
+    "C items":"~50%+ of SKUs, ~5–10% of dollars. Loose control — bulk orders, annual counts, generous safety stock."
+  },
+  svg:`<svg viewBox="0 0 700 360" xmlns="http://www.w3.org/2000/svg" style="background:#0b1222;border-radius:10px">
+    <text x="350" y="28" fill="#e5e7eb" font-size="18" text-anchor="middle" font-weight="700">ABC Analysis — cumulative $ vs. cumulative items</text>
+    <!-- axes -->
+    <line x1="60" y1="300" x2="660" y2="300" stroke="#94a3b8"/>
+    <line x1="60" y1="60" x2="60" y2="300" stroke="#94a3b8"/>
+    <text x="360" y="330" fill="#94a3b8" text-anchor="middle" font-size="12">% of SKUs (cumulative)</text>
+    <text x="30" y="180" fill="#94a3b8" font-size="12" transform="rotate(-90,30,180)" text-anchor="middle">% of $ (cumulative)</text>
+    <!-- Pareto curve -->
+    <path d="M60 300 Q140 90 240 75 T660 65" fill="none" stroke="#0ea5e9" stroke-width="3"/>
+    <!-- classification bands -->
+    <g class="clickable" data-key="A items"><rect x="60" y="60" width="140" height="240" fill="#ef4444" fill-opacity="0.15"/><text x="130" y="90" fill="#fecaca" text-anchor="middle" font-weight="700">A — top value</text><text x="130" y="108" fill="#fecaca" text-anchor="middle" font-size="11">~20% items · 80% $</text></g>
+    <g class="clickable" data-key="B items"><rect x="200" y="60" width="200" height="240" fill="#f59e0b" fill-opacity="0.12"/><text x="300" y="90" fill="#fde68a" text-anchor="middle" font-weight="700">B — moderate</text><text x="300" y="108" fill="#fde68a" text-anchor="middle" font-size="11">~30% items · 15% $</text></g>
+    <g class="clickable" data-key="C items"><rect x="400" y="60" width="260" height="240" fill="#22c55e" fill-opacity="0.12"/><text x="530" y="90" fill="#bbf7d0" text-anchor="middle" font-weight="700">C — low value</text><text x="530" y="108" fill="#bbf7d0" text-anchor="middle" font-size="11">~50% items · 5% $</text></g>
+  </svg>`
+});
+
+DIAGRAMS.push({
+  title:"Product Life Cycle & Forecast Technique",
+  desc:"Demand shape and best forecast approach by PLC stage.",
+  keys:{
+    "Introduction":"Low, uncertain demand. High marketing spend. Use qualitative/Delphi; analog/look-alike.",
+    "Growth":"Rapidly rising sales. Capacity expansion. Use trend / associative forecasts.",
+    "Maturity":"Stable volume with seasonality. Focus on efficiency and promotions. Use time-series with seasonality.",
+    "Decline":"Falling sales. Manage EOL inventory, consider reintroduction or retirement. Use naïve / declining trend."
+  },
+  svg:`<svg viewBox="0 0 700 340" xmlns="http://www.w3.org/2000/svg" style="background:#0b1222;border-radius:10px">
+    <text x="350" y="28" fill="#e5e7eb" font-size="18" text-anchor="middle" font-weight="700">Product Life Cycle</text>
+    <line x1="60" y1="280" x2="660" y2="280" stroke="#94a3b8"/>
+    <line x1="60" y1="60" x2="60" y2="280" stroke="#94a3b8"/>
+    <text x="360" y="318" fill="#94a3b8" text-anchor="middle" font-size="12">Time →</text>
+    <text x="30" y="170" fill="#94a3b8" font-size="12" transform="rotate(-90,30,170)" text-anchor="middle">Demand</text>
+    <path d="M60 275 Q200 250 280 150 Q360 60 440 70 Q520 80 560 160 Q600 240 660 260" stroke="#22d3ee" stroke-width="3" fill="none"/>
+    <g class="clickable" data-key="Introduction"><rect x="80" y="200" width="130" height="30" rx="5" fill="#0ea5e9"/><text x="145" y="221" fill="#fff" text-anchor="middle" font-size="13" font-weight="700">Introduction</text></g>
+    <g class="clickable" data-key="Growth"><rect x="230" y="200" width="130" height="30" rx="5" fill="#22c55e"/><text x="295" y="221" fill="#062e1a" text-anchor="middle" font-size="13" font-weight="700">Growth</text></g>
+    <g class="clickable" data-key="Maturity"><rect x="380" y="200" width="130" height="30" rx="5" fill="#f59e0b"/><text x="445" y="221" fill="#4a2e05" text-anchor="middle" font-size="13" font-weight="700">Maturity</text></g>
+    <g class="clickable" data-key="Decline"><rect x="530" y="200" width="130" height="30" rx="5" fill="#ef4444"/><text x="595" y="221" fill="#fff" text-anchor="middle" font-size="13" font-weight="700">Decline</text></g>
+  </svg>`
+});
+
+DIAGRAMS.push({
+  title:"Incoterms 2020 — Risk & Cost Transfer",
+  desc:"Seller's obligation grows left to right. Click each term.",
+  keys:{
+    "EXW":"Ex Works — seller's minimum: buyer collects at seller's premises; buyer bears all risk and cost thereafter.",
+    "FCA":"Free Carrier — seller delivers to named carrier/place; risk transfers upon hand-off.",
+    "FAS":"Free Alongside Ship (sea only) — seller delivers alongside vessel at named port.",
+    "FOB":"Free On Board (sea only) — risk passes when goods are on board at port of shipment.",
+    "CFR":"Cost and Freight (sea only) — seller pays freight to destination port; risk transfers at origin.",
+    "CIF":"Cost, Insurance, Freight (sea only) — CFR + seller provides insurance.",
+    "CPT":"Carriage Paid To — seller pays carriage to named destination; risk transfers when handed to first carrier.",
+    "CIP":"Carriage and Insurance Paid — CPT + seller provides insurance (higher coverage in 2020 version).",
+    "DAP":"Delivered At Place — seller delivers to named place, ready for unloading; buyer handles import clearance.",
+    "DPU":"Delivered at Place Unloaded — seller delivers AND unloads at destination.",
+    "DDP":"Delivered Duty Paid — seller's maximum: delivered cleared, duties paid at buyer's named place."
+  },
+  svg:`<svg viewBox="0 0 820 420" xmlns="http://www.w3.org/2000/svg" style="background:#0b1222;border-radius:10px">
+    <text x="410" y="28" fill="#e5e7eb" font-size="18" text-anchor="middle" font-weight="700">Incoterms 2020</text>
+    <text x="60" y="60" fill="#94a3b8" font-size="12">Any transport mode</text>
+    <text x="60" y="230" fill="#94a3b8" font-size="12">Sea / inland waterway only</text>
+    <text x="410" y="400" fill="#94a3b8" font-size="12" text-anchor="middle">← Seller's obligation grows →</text>
+    <g><rect x="60" y="70" width="730" height="8" fill="#334155"/></g>
+    ${['EXW','FCA','CPT','CIP','DAP','DPU','DDP'].map((t,i)=>`
+      <g class="clickable" data-key="${t}">
+        <rect x="${60+i*105}" y="90" width="95" height="50" rx="6" fill="#0ea5e9" fill-opacity="${0.5+i*0.07}"/>
+        <text x="${60+i*105+47}" y="122" fill="#fff" text-anchor="middle" font-weight="700">${t}</text>
+      </g>`).join("")}
+    <g><rect x="60" y="240" width="420" height="8" fill="#334155"/></g>
+    ${['FAS','FOB','CFR','CIF'].map((t,i)=>`
+      <g class="clickable" data-key="${t}">
+        <rect x="${60+i*105}" y="260" width="95" height="50" rx="6" fill="#6366f1" fill-opacity="${0.5+i*0.1}"/>
+        <text x="${60+i*105+47}" y="292" fill="#fff" text-anchor="middle" font-weight="700">${t}</text>
+      </g>`).join("")}
+    <text x="60" y="355" fill="#cbd5e1" font-size="11">Seller minimum ← EXW</text>
+    <text x="790" y="355" fill="#cbd5e1" font-size="11" text-anchor="end">DDP → Seller maximum</text>
+  </svg>`
+});
+
+DIAGRAMS.push({
+  title:"Reverse Logistics Flow",
+  desc:"Flows back up the chain from end-customer. Product recovery hierarchy.",
+  keys:{
+    "Customer":"Originates the return — reasons: defective, wrong item, buyer's remorse, recall, EOL.",
+    "Collection":"Returns center, retail drop-off, RMA portal. Captures reason code for analytics.",
+    "Triage":"Inspect and disposition: resell, repair, refurbish, remanufacture, recycle, or dispose.",
+    "Repair":"Restore original function. Least resource use; most preferred.",
+    "Refurbish":"Restore to near-new condition; may include minor upgrades.",
+    "Remanufacture":"Disassemble, replace worn parts, rebuild to original spec. Usable with warranty.",
+    "Recycle":"Recover raw materials for other products (close material loop).",
+    "Dispose":"Final resort — landfill/incineration; hazardous items handled per regulation."
+  },
+  svg:`<svg viewBox="0 0 800 360" xmlns="http://www.w3.org/2000/svg" style="background:#0b1222;border-radius:10px">
+    <text x="400" y="28" fill="#e5e7eb" font-size="18" text-anchor="middle" font-weight="700">Reverse Logistics — return & recovery</text>
+    <g class="clickable" data-key="Customer"><rect x="40" y="150" width="130" height="50" rx="8" fill="#22d3ee"/><text x="105" y="181" fill="#0b3b4a" font-weight="700" text-anchor="middle">Customer</text></g>
+    <g class="clickable" data-key="Collection"><rect x="200" y="150" width="130" height="50" rx="8" fill="#0ea5e9"/><text x="265" y="181" fill="#fff" font-weight="700" text-anchor="middle">Collection</text></g>
+    <g class="clickable" data-key="Triage"><rect x="360" y="150" width="130" height="50" rx="8" fill="#6366f1"/><text x="425" y="181" fill="#fff" font-weight="700" text-anchor="middle">Triage</text></g>
+    <g class="clickable" data-key="Repair"><rect x="530" y="60" width="120" height="40" rx="6" fill="#22c55e"/><text x="590" y="86" fill="#062e1a" font-weight="700" text-anchor="middle">Repair</text></g>
+    <g class="clickable" data-key="Refurbish"><rect x="530" y="110" width="120" height="40" rx="6" fill="#34d399"/><text x="590" y="136" fill="#062e1a" font-weight="700" text-anchor="middle">Refurbish</text></g>
+    <g class="clickable" data-key="Remanufacture"><rect x="530" y="160" width="120" height="40" rx="6" fill="#f59e0b"/><text x="590" y="186" fill="#4a2e05" font-weight="700" text-anchor="middle">Remanufacture</text></g>
+    <g class="clickable" data-key="Recycle"><rect x="530" y="210" width="120" height="40" rx="6" fill="#fb7185"/><text x="590" y="236" fill="#5e0418" font-weight="700" text-anchor="middle">Recycle</text></g>
+    <g class="clickable" data-key="Dispose"><rect x="530" y="260" width="120" height="40" rx="6" fill="#ef4444"/><text x="590" y="286" fill="#fff" font-weight="700" text-anchor="middle">Dispose</text></g>
+    <line x1="170" y1="175" x2="200" y2="175" stroke="#94a3b8" stroke-width="2"/>
+    <line x1="330" y1="175" x2="360" y2="175" stroke="#94a3b8" stroke-width="2"/>
+    <line x1="490" y1="175" x2="530" y2="80" stroke="#94a3b8"/>
+    <line x1="490" y1="175" x2="530" y2="130" stroke="#94a3b8"/>
+    <line x1="490" y1="175" x2="530" y2="180" stroke="#94a3b8"/>
+    <line x1="490" y1="175" x2="530" y2="230" stroke="#94a3b8"/>
+    <line x1="490" y1="175" x2="530" y2="280" stroke="#94a3b8"/>
+    <text x="400" y="330" fill="#94a3b8" text-anchor="middle" font-size="12">Preferred ↑ (recovery hierarchy) ↓ Least preferred</text>
+  </svg>`
+});
+
+/* ================= GLOSSARY ================= */
+const g = (term,def)=>GLOSSARY.push({term,def});
+g("ABC analysis","Ranking of items by annual dollar volume into A (highest value, tightest control), B (mid), and C (lowest value, loosest control) classes.");
+g("Agile supply chain","A chain designed for rapid response to customer demands and market changes, often combining responsive + risk-hedging approaches.");
+g("APS","Advanced Planning & Scheduling — constraint-based planning of demand, supply, and capacity using optimization.");
+g("ATP","Available-to-Promise — quantity of supply uncommitted to customer orders; used to promise new orders.");
+g("Autonomation (Jidoka)","Ability of a process to detect defects and stop automatically so problems are not passed on.");
+g("Backward integration","Acquiring or controlling an upstream supplier.");
+g("Balanced Scorecard","Kaplan & Norton framework measuring Financial, Customer, Internal Process, and Learning & Growth performance.");
+g("BATNA","Best Alternative To a Negotiated Agreement — the walkaway option that anchors negotiation power.");
+g("Benchmarking","Comparing KPIs and practices against internal, competitive, functional, or generic best-in-class references.");
+g("BIA","Business Impact Analysis — identifies critical processes and quantifies disruption impact over time.");
+g("Bill of Lading (BOL)","Contract of carriage issued by a carrier, serving also as a receipt and (if negotiable) a document of title.");
+g("Blockchain","Distributed, immutable ledger technology used for provenance, smart contracts, and reducing counterfeits.");
+g("Bottleneck","The resource whose capacity limits the throughput of the system; target of TOC.");
+g("BOPIS","Buy Online, Pick up In-Store — omni-channel fulfillment using store inventory.");
+g("Bullwhip effect","Amplification of demand variability as it moves upstream in the supply chain.");
+g("Business continuity plan (BCP)","Documented process to keep critical operations running through and recovering from disruption.");
+g("Cash-to-cash cycle","DIO + DSO − DPO — measures working capital tied up in operations.");
+g("Carrying cost","Inventory holding cost: capital cost + storage + insurance + obsolescence, typically 20–30% of item value per year.");
+g("Cat. strategy (category)","Coordinated approach for managing a group of related purchased items using portfolio analysis (e.g., Kraljic).");
+g("CIF","Cost, Insurance and Freight — sea-only Incoterm where seller pays freight + insurance to destination port; risk transfers at origin port.");
+g("CIP","Carriage and Insurance Paid — any-mode Incoterm; seller carriage + insurance to named destination; risk transfers at first carrier.");
+g("CLM","Contract Lifecycle Management — authoring, negotiation, execution, and monitoring of contracts.");
+g("Closed-loop supply chain","Network designed to support both forward and reverse flows as an integrated system.");
+g("Collaborative transportation mgmt (CTM)","Shipper-carrier collaboration to share plans and optimize loads, routes, and assets.");
+g("Concurrent engineering","Cross-functional design involving suppliers early to reduce time, cost, and quality problems.");
+g("Contingency reserve","Budget or time reserved for known risks with quantified impact and probability.");
+g("Control tower","Centralized end-to-end visibility, exception management, and decision-support platform for the supply chain.");
+g("COSO ERM","Enterprise Risk Management framework from the Committee of Sponsoring Organizations.");
+g("CPFR","Collaborative Planning, Forecasting and Replenishment — shared forecasts and replenishment with partners.");
+g("CRM","Customer Relationship Management — integrated people, process, and technology to manage customer interactions.");
+g("Cross-docking","Transfer of inbound freight directly to outbound with little or no storage.");
+g("CTPAT","US Customs-Trade Partnership Against Terrorism — trusted-trader security program.");
+g("Cycle counting","Ongoing counting of a portion of inventory each period rather than one annual count.");
+g("DAP","Delivered At Place — Incoterm; seller delivers ready for unloading at named destination.");
+g("DBR","Drum-Buffer-Rope — TOC scheduling: constraint is the drum, buffers protect it, rope synchronizes release.");
+g("DDP","Delivered Duty Paid — Incoterm; seller's maximum obligation.");
+g("Decoupling point","The point in the supply chain where forecast-driven push meets order-driven pull.");
+g("Delphi method","Structured, iterative, anonymous expert forecasting to reach consensus.");
+g("Demand management","Process of planning, communicating, influencing, and prioritizing demand.");
+g("DFM / DFA / DFX","Design for Manufacturing / Assembly / (any X) — designing to ease production, service, or other objectives.");
+g("DIO / DSO / DPO","Days Inventory Outstanding / Days Sales Outstanding / Days Payable Outstanding.");
+g("Digital twin","Virtual replica of physical asset or process used for simulation and optimization.");
+g("DMAIC","Six Sigma improvement cycle: Define, Measure, Analyze, Improve, Control.");
+g("DPMO","Defects Per Million Opportunities — Six Sigma measure (≤3.4 at six-sigma level).");
+g("DRP","Distribution Requirements Planning — extends MRP logic to the distribution network.");
+g("EDI","Electronic Data Interchange — structured, computer-to-computer business message exchange.");
+g("EMV","Expected Monetary Value — Σ probability × impact.");
+g("EOQ","Economic Order Quantity = √(2DS/H); balances ordering vs. holding cost.");
+g("EPR","Extended Producer Responsibility — producer is accountable for product end-of-life.");
+g("ERP","Enterprise Resource Planning — integrated transactional system of record.");
+g("ETO","Engineer-to-Order — design after receipt of customer order.");
+g("EXW","Ex Works — Incoterm; seller's minimum obligation.");
+g("FCPA","US Foreign Corrupt Practices Act — prohibits bribery of foreign officials.");
+g("FEFO / FIFO / LIFO","First-Expired-First-Out / First-In-First-Out / Last-In-First-Out inventory rotation.");
+g("Fill rate","Units (or orders) shipped from stock ÷ units ordered.");
+g("FOB","Free On Board — sea/waterway Incoterm; risk transfers when goods on board at origin port.");
+g("FTZ","Free Trade Zone — secure area where duties are deferred until goods leave the zone to home market.");
+g("Gainsharing","Incentive agreement where parties share benefits from cost reductions / improvements.");
+g("GDPR","EU General Data Protection Regulation — personal data protection and rights.");
+g("GRI","Global Reporting Initiative — sustainability reporting standards.");
+g("Hedging","Financial/operational techniques to mitigate exposure to risk (e.g., FX forward, dual sourcing).");
+g("Heijunka","Level loading / mix — smoothing production to enable JIT.");
+g("HS code","Harmonized System — international product classification code for customs duties.");
+g("Incoterms","ICC international trade terms defining buyer/seller responsibilities.");
+g("Intermodal","Container movement across two or more modes without re-handling product.");
+g("IoT","Internet of Things — connected sensors and devices.");
+g("ISO 9001 / 14001 / 31000 / 27001 / 28000","Quality / Environmental / Risk / Information Security / Supply Chain Security management standards.");
+g("JIT","Just-In-Time — produce/deliver only what is needed when needed.");
+g("Kaizen / Kaikaku","Small continuous improvement / radical transformation.");
+g("Kanban","Visual pull signal authorizing production or replenishment.");
+g("Kraljic matrix","Sourcing portfolio framework with profit impact × supply risk quadrants.");
+g("Landed cost","All costs to deliver goods at destination: price + freight + duties + insurance + handling.");
+g("LCA","Life Cycle Assessment — cradle-to-grave environmental impact analysis.");
+g("Lead time","Elapsed time between initiation and completion (purchase LT, manufacturing LT, customer LT).");
+g("Lean","Philosophy focused on eliminating waste and maximizing customer value through flow and pull.");
+g("LTL","Less-than-Truckload — freight consolidated from multiple shippers.");
+g("Make-to-order (MTO)","Produce only after receiving customer order; minimal finished-goods inventory.");
+g("Make-to-stock (MTS)","Produce to forecast, hold finished goods for immediate fulfillment.");
+g("MAD / MSE / MAPE","Forecast error metrics — Mean Absolute Deviation / Mean Squared Error / Mean Absolute Percentage Error.");
+g("Master data","Core reference data: items, BOMs, customers, suppliers, locations.");
+g("MPS","Master Production Schedule — end-item schedule driving MRP.");
+g("MRP","Material Requirements Planning — explodes MPS through BOM to plan component orders.");
+g("NPS","Net Promoter Score = % promoters − % detractors.");
+g("OEE","Overall Equipment Effectiveness = Availability × Performance × Quality.");
+g("OTIF","On-Time In-Full — delivery performance metric.");
+g("Perfect order","OTIF + damage-free + correctly documented.");
+g("Periodic review (P-model)","Inventory system with fixed review interval and order-up-to level.");
+g("Planning fence","Time window within which MPS changes require authorization but may still be allowed.");
+g("Poka-yoke","Mistake-proofing device or method preventing/detecting errors.");
+g("Postponement","Delaying final product configuration until customer order is known to reduce inventory risk.");
+g("PDCA","Plan-Do-Check-Act continuous improvement cycle.");
+g("Push / Pull","Forecast-driven upstream (push) vs. customer-order-driven downstream (pull).");
+g("Quick Response","Rapid replenishment method using POS data sharing (esp. fashion/retail).");
+g("Rationing/shortage game","Supply chain behavior during shortages where orders are allocated by past sales; causes inflated ordering.");
+g("RCCP","Rough-Cut Capacity Planning — validates MPS against critical resources.");
+g("Resilience","Capacity to recover from disruption via redundancy, flexibility, visibility, partnerships.");
+g("Return merchandise authorization (RMA)","Number/document authorizing a product return.");
+g("RFID","Radio-frequency identification — tagged items automatically detected at readers.");
+g("RFx","Sourcing solicitations: RFI, RFP, RFQ.");
+g("Risk appetite","Level of risk an organization is willing to accept in pursuit of its objectives.");
+g("Risk register","Catalog of identified risks with P, I, owner, response, triggers, status.");
+g("ROP","Reorder Point = demand during lead time + safety stock.");
+g("RPO / RTO","Recovery Point / Recovery Time Objective for business continuity.");
+g("S&OP","Sales & Operations Planning — monthly, family-level demand/supply balancing process.");
+g("Safety stock","Buffer against demand and lead-time variability = z · σ_LT.");
+g("SCM control tower","Platform for end-to-end visibility, exception management, decision support.");
+g("SCOR","Supply Chain Operations Reference model — Plan, Source, Make, Deliver, Return, Enable.");
+g("Seasonal index","Avg demand in period ÷ overall average demand.");
+g("Service-level factor (z)","Standard-normal multiplier chosen for desired service level (95% ≈ 1.65).");
+g("Should-cost","Bottom-up cost model benchmarking what an item should cost.");
+g("Six Sigma","Data-driven improvement methodology targeting ≤3.4 DPMO using DMAIC.");
+g("SMED","Single-Minute Exchange of Dies — setup-time reduction methodology.");
+g("SOX","Sarbanes-Oxley Act — US financial reporting controls.");
+g("Spend analysis","Categorized summary and ranking of spending (often Pareto).");
+g("SRM","Supplier Relationship Management.");
+g("Sustainable development","Development meeting present needs without compromising future generations.");
+g("SWOT","Strengths, Weaknesses, Opportunities, Threats.");
+g("TCO","Total Cost of Ownership — acquisition + ownership + disposal over asset life.");
+g("TMS","Transportation Management System.");
+g("TOC","Theory of Constraints — manage throughput by focusing on the bottleneck.");
+g("Triple Bottom Line","People, Planet, Profit measurement of sustainability.");
+g("Utilization","Actual output ÷ design capacity.");
+g("Value stream map (VSM)","Lean tool mapping material and information flow to expose waste.");
+g("VMI","Vendor-Managed Inventory — supplier decides replenishment based on shared data.");
+g("VoC","Voice of the Customer — systematic capture of customer preferences and expectations.");
+g("WMS","Warehouse Management System.");
+g("Yield management","Dynamic pricing/availability to maximize revenue (airlines, hotels).");
+g("YMS","Yard Management System — manages trailers and containers in the yard.");
+g("Takt time","Available production time ÷ customer demand rate — the pace at which units must be produced to match demand.");
+g("3PL / 4PL","Third-party / fourth-party logistics providers.");
+g("WEEE","EU Waste Electrical and Electronic Equipment directive requiring take-back/recycling.");
+g("RoHS","EU Restriction of Hazardous Substances in electronics.");
+g("C-TPAT / AEO","Trusted-trader programs (US / EU) accelerating customs clearance.");
+g("Dodd-Frank §1502","US law requiring disclosure of conflict minerals (3TG) sourcing.");
+g("UN SDGs","17 Sustainable Development Goals (2015–2030) spanning social, economic, environmental targets.");
+g("GHG Protocol","Standard for corporate greenhouse-gas accounting (Scopes 1, 2, 3).");
+g("Scope 1/2/3 emissions","Direct / indirect from purchased energy / value chain (including suppliers and product use) emissions.");
+g("Omni-channel","Integrated customer experience across physical, digital, and mobile channels with unified inventory.");
+g("FMEA","Failure Mode and Effects Analysis — risk/quality tool rating Severity × Occurrence × Detection.");
+g("Pareto principle","80-20 rule — most effects come from a few causes.");
+g("Ishikawa / fishbone","Cause-and-effect diagram for root-cause analysis.");
+g("Statistical Process Control (SPC)","Control-chart-based monitoring of process variation.");
+g("Cp / Cpk","Process capability indexes — process spread vs. spec limits; Cpk accounts for centering.");
+g("Hoshin Kanri","Policy deployment aligning strategy to daily work.");
+g("Heuristic","Rule-of-thumb solution used when exact optimization is impractical.");
+
+</script>
+<script id="app-script">
+/* =============== APP LOGIC =============== */
+const LS_KEY = "cscp_app_v1";
+const state = Object.assign({
+  moduleRead: {},          // moduleId -> bool
+  quizScores: {},          // moduleId -> {best, last, attempts}
+  mockBest: null,
+  flashSeen: {},
+  flashKnown: {},
+  activeModule: "m1",
+  activeQuizModule: "m1",
+  activeFlashFilter: "all",
+}, JSON.parse(localStorage.getItem(LS_KEY) || "{}"));
+
+const save = () => localStorage.setItem(LS_KEY, JSON.stringify(state));
+
+/* ---------- Tab Navigation ---------- */
+document.querySelectorAll("#mainTabs button").forEach(b=>{
+  b.onclick = () => {
+    document.querySelectorAll("#mainTabs button").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+    const v = document.getElementById("view-"+b.dataset.view);
+    v.classList.add("active");
+    renderView(b.dataset.view);
+    window.scrollTo({top:0,behavior:"smooth"});
+  };
+});
+
+function renderView(v){
+  if(v==="dashboard") renderDashboard();
+  if(v==="modules") renderModules();
+  if(v==="flashcards") renderFlashcards();
+  if(v==="quiz") renderQuiz();
+  if(v==="mock") renderMock();
+  if(v==="diagrams") renderDiagrams();
+  if(v==="glossary") renderGlossary();
+}
+
+/* ---------- Dashboard ---------- */
+function renderDashboard(){
+  const totalFlash = FLASHCARDS.length;
+  const known = Object.values(state.flashKnown).filter(Boolean).length;
+  const totalQ = Object.values(QUIZZES).reduce((a,b)=>a+b.length,0);
+  const modulesDone = Object.values(state.moduleRead).filter(Boolean).length;
+  const bestScores = MODULES.map(m=>state.quizScores[m.id]?.best ?? null);
+  const avgBest = bestScores.filter(x=>x!=null).reduce((a,b)=>a+b,0) / Math.max(1,bestScores.filter(x=>x!=null).length);
+  const html = `
+    <h2 class="section-title">Welcome back — let's get you CSCP-certified.</h2>
+    <p class="lead">Track your progress across all 8 ECM modules, ${totalFlash} flashcards, ${totalQ} practice questions, and a 120-question mock exam.</p>
+    <div class="grid cards-4" style="margin-bottom:22px">
+      <div class="card stat-box"><b>${modulesDone}/8</b><span>Modules reviewed</span></div>
+      <div class="card stat-box"><b>${known}/${totalFlash}</b><span>Flashcards learned</span></div>
+      <div class="card stat-box"><b>${bestScores.filter(x=>x!=null).length>0 ? Math.round(avgBest)+"%" : "—"}</b><span>Avg. best quiz score</span></div>
+      <div class="card stat-box"><b>${state.mockBest!=null ? state.mockBest+"%" : "—"}</b><span>Mock exam best</span></div>
+    </div>
+    <h3 style="margin:24px 0 10px">Modules</h3>
+    <div class="grid cards-3">
+      ${MODULES.map((m,i)=>{
+        const done = !!state.moduleRead[m.id];
+        const score = state.quizScores[m.id]?.best;
+        const pct = done?100:(score?score:0);
+        return `<div class="card" style="cursor:pointer" onclick="goModule('${m.id}')">
+          <span class="pill mod${i+1}">Module ${i+1}</span>
+          <h3 style="margin-top:8px">${m.title}</h3>
+          <p style="margin-top:6px">${m.blurb}</p>
+          <div class="progress"><div style="width:${pct}%"></div></div>
+          <div class="row" style="margin-top:8px;font-size:.85rem;color:var(--mute)">
+            <span>${done?"Reviewed ✓":"Not yet reviewed"}</span>
+            ${score!=null?`· <span>Best quiz: ${score}%</span>`:""}
+          </div>
+        </div>`;
+      }).join("")}
+    </div>
+    <h3 style="margin:24px 0 10px">Study plan — suggested path</h3>
+    <div class="card">
+      <ol>
+        <li><b>Read each module</b> (use the <a href="#" onclick="switchTab('modules');return false;">Modules</a> tab) — open each collapsible section, focus on keyterms and formulas highlighted in color.</li>
+        <li><b>Drill flashcards daily</b> (20–30/day). Use the module filter to focus on the chapter you just read.</li>
+        <li><b>Take the module quiz</b> right after finishing the module. Aim for 80%+ before moving on.</li>
+        <li><b>Study the diagrams</b> — SCOR, Kraljic, Porter 5F, Push/Pull, Bullwhip. Be able to sketch them from memory.</li>
+        <li><b>Take the 120-question Mock Exam</b> once, cold, two weeks before your test. Review every miss.</li>
+        <li><b>Re-run any quiz where you scored &lt; 80%</b> until you own the material.</li>
+      </ol>
+    </div>
+    <h3 style="margin:24px 0 10px">Exam quick facts</h3>
+    <div class="card">
+      <table><tr><th>Format</th><td>150 multiple-choice questions (130 scored + 20 pretest); 3.5 hours</td></tr>
+      <tr><th>Pass mark</th><td>Scaled score of 300 out of a 200–350 range (≈70% raw)</td></tr>
+      <tr><th>Domains</th><td>Supply Chains, Demand & Forecasting · Global Networks · Sourcing · Internal Operations · Logistics · Relationships · Risk · Optimization/Sustainability/Tech</td></tr>
+      <tr><th>Retake</th><td>Allowed; waiting periods apply between attempts</td></tr>
+      <tr><th>Certification</th><td>Issued by ASCM (formerly APICS)</td></tr></table>
+    </div>
+  `;
+  document.getElementById("view-dashboard").innerHTML = html;
+}
+function goModule(id){ state.activeModule = id; save(); switchTab("modules"); }
+function switchTab(name){ document.querySelector(`#mainTabs button[data-view="${name}"]`).click(); }
+
+/* ---------- Modules ---------- */
+function renderModules(){
+  const mod = MODULES.find(m=>m.id===state.activeModule) || MODULES[0];
+  const tabs = MODULES.map(m=>`<button class="${m.id===mod.id?'active':''}" onclick="setModule('${m.id}')">${m.shortTitle}</button>`).join("");
+  const sectionHtml = mod.sections.map(sec=>`
+    <details ${sec.open?"open":""}>
+      <summary>${sec.title}</summary>
+      <div style="padding:8px 2px">${sec.body}</div>
+    </details>`).join("");
+  const done = !!state.moduleRead[mod.id];
+  document.getElementById("view-modules").innerHTML = `
+    <h2 class="section-title">${mod.title}</h2>
+    <p class="lead">${mod.blurb}</p>
+    <div class="module-tabs">${tabs}</div>
+    <div class="row" style="margin-bottom:10px">
+      <button class="btn ${done?'good':''}" onclick="toggleRead('${mod.id}')">${done?"✓ Marked as reviewed":"Mark module as reviewed"}</button>
+      <button class="btn ghost" onclick="state.activeQuizModule='${mod.id}';save();switchTab('quiz')">Take this module's quiz →</button>
+      <button class="btn ghost" onclick="state.activeFlashFilter='${mod.id}';save();switchTab('flashcards')">Flashcards for this module →</button>
+    </div>
+    ${sectionHtml}
+    <div class="row" style="margin-top:18px;justify-content:space-between">
+      ${MODULES.indexOf(mod)>0?`<button class="btn ghost" onclick="setModule('${MODULES[MODULES.indexOf(mod)-1].id}')">← ${MODULES[MODULES.indexOf(mod)-1].shortTitle}</button>`:'<span></span>'}
+      ${MODULES.indexOf(mod)<MODULES.length-1?`<button class="btn" onclick="setModule('${MODULES[MODULES.indexOf(mod)+1].id}')">${MODULES[MODULES.indexOf(mod)+1].shortTitle} →</button>`:''}
+    </div>`;
+}
+function setModule(id){ state.activeModule=id; save(); renderModules(); window.scrollTo({top:0,behavior:"smooth"}); }
+function toggleRead(id){ state.moduleRead[id]=!state.moduleRead[id]; save(); renderModules(); }
+
+/* ---------- Flashcards ---------- */
+let flashIdx = 0;
+let flashDeck = [];
+function renderFlashcards(){
+  const filter = state.activeFlashFilter;
+  flashDeck = (filter==="all")?[...FLASHCARDS]:FLASHCARDS.filter(c=>c.m===filter);
+  if(!flashDeck.length){ flashDeck=[...FLASHCARDS]; state.activeFlashFilter="all"; }
+  if(flashIdx>=flashDeck.length) flashIdx=0;
+  const c = flashDeck[flashIdx];
+  const filterOpts = ['<option value="all">All modules</option>'].concat(
+    MODULES.map(m=>`<option value="${m.id}" ${filter===m.id?'selected':''}>${m.shortTitle}</option>`)
+  ).join("");
+  const known = Object.values(state.flashKnown).filter(Boolean).length;
+  document.getElementById("view-flashcards").innerHTML = `
+    <h2 class="section-title">Flashcards</h2>
+    <p class="lead">${FLASHCARDS.length} cards across all modules · ${known} marked known. Click a card to flip; use the buttons to progress.</p>
+    <div class="flash-toolbar">
+      <select id="flashFilter" onchange="state.activeFlashFilter=this.value;flashIdx=0;save();renderFlashcards()">${filterOpts}</select>
+      <button class="btn ghost" onclick="shuffleFlash()">Shuffle</button>
+      <button class="btn ghost" onclick="prevFlash()">← Prev</button>
+      <button class="btn" onclick="nextFlash()">Next →</button>
+      <button class="btn good" onclick="markKnown(true)">✓ I know this</button>
+      <button class="btn warn" onclick="markKnown(false)">Review again</button>
+      <span style="color:var(--mute)">Card ${flashIdx+1} / ${flashDeck.length}</span>
+    </div>
+    <div class="flashcard ${state.flipped?'flipped':''}" id="flashcardEl" onclick="flipFlash()">
+      <div class="face">
+        <div class="front">
+          <div>${c.q}</div>
+          <small style="color:var(--mute);margin-top:8px;font-weight:400">${moduleLabel(c.m)} · click to flip</small>
+        </div>
+        <div class="back">
+          <div>${c.a}</div>
+          <small style="color:#a5f3fc;margin-top:8px">Press "I know this" to mark learned</small>
+        </div>
+      </div>
+    </div>`;
+}
+function moduleLabel(id){ const m=MODULES.find(x=>x.id===id); return m?m.shortTitle:id; }
+function flipFlash(){ document.getElementById("flashcardEl").classList.toggle("flipped"); }
+function nextFlash(){ flashIdx=(flashIdx+1)%flashDeck.length; renderFlashcards(); }
+function prevFlash(){ flashIdx=(flashIdx-1+flashDeck.length)%flashDeck.length; renderFlashcards(); }
+function shuffleFlash(){ flashDeck.sort(()=>Math.random()-.5); flashIdx=0; renderFlashcards(); }
+function markKnown(v){ const c=flashDeck[flashIdx]; state.flashKnown[c.id]=v; save(); nextFlash(); }
+
+/* ---------- Quiz ---------- */
+let quizState = { mod:"m1", idx:0, answers:{}, submitted:false };
+function renderQuiz(){
+  quizState.mod = state.activeQuizModule || "m1";
+  const tabs = MODULES.map(m=>`<button class="${m.id===quizState.mod?'active':''}" onclick="setQuizMod('${m.id}')">${m.shortTitle} (${(QUIZZES[m.id]||[]).length})</button>`).join("");
+  const qs = QUIZZES[quizState.mod] || [];
+  const lastScore = state.quizScores[quizState.mod];
+  let body;
+  if(!qs.length){
+    body = `<div class="card">No questions loaded for this module.</div>`;
+  } else if(!quizState.submitted){
+    body = qs.map((q,i)=>{
+      const chosen = quizState.answers[i];
+      const opts = q.options.map((o,oi)=>{
+        const id = `q${i}o${oi}`;
+        return `<label class="q-opt"><input type="radio" name="q${i}" value="${oi}" ${chosen===oi?'checked':''} onchange="quizState.answers[${i}]=${oi}"> <span>${String.fromCharCode(65+oi)}. ${o}</span></label>`;
+      }).join("");
+      return `<div class="q-box"><div class="q-text">${i+1}. ${q.q}</div><div class="q-opts">${opts}</div></div>`;
+    }).join("") + `<div class="row" style="margin-top:10px"><button class="btn" onclick="submitQuiz()">Submit quiz</button><button class="btn ghost" onclick="resetQuiz()">Reset</button></div>`;
+  } else {
+    let correct=0;
+    const rendered = qs.map((q,i)=>{
+      const chosen=quizState.answers[i];
+      const opts = q.options.map((o,oi)=>{
+        let cls="q-opt";
+        if(oi===q.answer) cls+=" correct";
+        else if(chosen===oi) cls+=" wrong";
+        return `<div class="${cls}"><span>${String.fromCharCode(65+oi)}. ${o}</span></div>`;
+      }).join("");
+      if(chosen===q.answer) correct++;
+      return `<div class="q-box"><div class="q-text">${i+1}. ${q.q}</div><div class="q-opts">${opts}</div><div class="rationale"><b>Rationale:</b> ${q.rationale||""}</div></div>`;
+    }).join("");
+    const pct = Math.round(100*correct/qs.length);
+    const prev = state.quizScores[quizState.mod] || {best:0,attempts:0};
+    prev.last = pct; prev.best = Math.max(prev.best||0, pct); prev.attempts=(prev.attempts||0)+1;
+    if(!quizState.saved){ state.quizScores[quizState.mod]=prev; save(); quizState.saved=true; }
+    body = `<div class="score-banner"><h3>${correct} / ${qs.length} correct (${pct}%)</h3><p>${pct>=80?"Great work — you've mastered this module.":pct>=65?"Solid. Review the misses and retake.":"Go back to the module notes, then try again."}</p></div>${rendered}<div class="row" style="margin-top:10px"><button class="btn" onclick="resetQuiz()">Retake quiz</button></div>`;
+  }
+  document.getElementById("view-quiz").innerHTML = `
+    <h2 class="section-title">Module quizzes</h2>
+    <p class="lead">Multiple-choice, 4 options, with rationales. Each module quiz targets the high-yield concepts you'll see on the exam.</p>
+    <div class="module-tabs">${tabs}</div>
+    ${lastScore?`<p style="color:var(--mute)">Best: <b>${lastScore.best}%</b> · Last: ${lastScore.last}% · Attempts: ${lastScore.attempts}</p>`:""}
+    ${body}`;
+}
+function setQuizMod(id){ state.activeQuizModule=id; save(); quizState={mod:id,idx:0,answers:{},submitted:false}; renderQuiz(); }
+function submitQuiz(){ quizState.submitted=true; quizState.saved=false; renderQuiz(); window.scrollTo({top:0,behavior:"smooth"}); }
+function resetQuiz(){ quizState={mod:quizState.mod,idx:0,answers:{},submitted:false}; renderQuiz(); }
+
+/* ---------- Mock Exam ---------- */
+let mockState = { started:false, submitted:false, answers:{}, order:[] };
+function renderMock(){
+  if(!mockState.started){
+    const best = state.mockBest;
+    document.getElementById("view-mock").innerHTML = `
+      <h2 class="section-title">120-Question Mock Exam</h2>
+      <p class="lead">Simulates the CSCP test proportionally across all 8 modules. Budget ~2.5 hours; the real exam gives 3.5 hours for 150 questions. Aim for 80%+ before test day.</p>
+      ${best!=null?`<div class="card" style="margin-bottom:12px">Your best score: <b>${best}%</b></div>`:""}
+      <div class="card">
+        <h3>How it works</h3>
+        <ul>
+          <li>120 questions drawn from the full pool (${MOCK_EXAM.length} available), shuffled.</li>
+          <li>No time pressure — the app doesn't stop you.</li>
+          <li>Answer all, then submit. You'll see rationales and which modules need more review.</li>
+        </ul>
+        <button class="btn" onclick="startMock()">Start mock exam</button>
+      </div>`;
+    return;
+  }
+  const qs = mockState.order.map(i=>MOCK_EXAM[i]);
+  if(!mockState.submitted){
+    const list = qs.map((q,i)=>{
+      const chosen = mockState.answers[i];
+      const opts = q.options.map((o,oi)=>`<label class="q-opt"><input type="radio" name="mq${i}" value="${oi}" ${chosen===oi?'checked':''} onchange="mockState.answers[${i}]=${oi}"> <span>${String.fromCharCode(65+oi)}. ${o}</span></label>`).join("");
+      return `<div class="q-box"><div class="q-text">${i+1}. ${q.q}</div><div class="q-opts">${opts}</div></div>`;
+    }).join("");
+    const answered = Object.keys(mockState.answers).length;
+    document.getElementById("view-mock").innerHTML = `
+      <h2 class="section-title">Mock Exam — in progress</h2>
+      <p class="lead">${answered}/${qs.length} answered. Scroll through all and submit when done.</p>
+      ${list}
+      <div class="row" style="margin-top:12px"><button class="btn" onclick="submitMock()">Submit exam</button><button class="btn ghost" onclick="mockState={started:false,submitted:false,answers:{},order:[]};renderMock()">Cancel</button></div>`;
+  } else {
+    let correct=0;
+    const byMod = {};
+    const rendered = qs.map((q,i)=>{
+      const chosen = mockState.answers[i];
+      const right = chosen===q.answer;
+      if(right) correct++;
+      byMod[q.m] = byMod[q.m]||{c:0,t:0}; byMod[q.m].t++; if(right)byMod[q.m].c++;
+      const opts = q.options.map((o,oi)=>{
+        let cls="q-opt";
+        if(oi===q.answer)cls+=" correct";
+        else if(chosen===oi)cls+=" wrong";
+        return `<div class="${cls}"><span>${String.fromCharCode(65+oi)}. ${o}</span></div>`;
+      }).join("");
+      return `<div class="q-box"><div class="q-text">${i+1}. ${q.q} <span class="pill mod${q.m.slice(1)}">${moduleLabel(q.m)}</span></div><div class="q-opts">${opts}</div><div class="rationale"><b>Rationale:</b> ${q.rationale||""}</div></div>`;
+    }).join("");
+    const pct = Math.round(100*correct/qs.length);
+    if(!mockState.saved){ state.mockBest = Math.max(state.mockBest||0, pct); save(); mockState.saved=true; }
+    const modBreak = Object.keys(byMod).sort().map(k=>`<tr><td>${moduleLabel(k)}</td><td>${byMod[k].c}/${byMod[k].t} (${Math.round(100*byMod[k].c/byMod[k].t)}%)</td></tr>`).join("");
+    document.getElementById("view-mock").innerHTML = `
+      <h2 class="section-title">Mock Exam — result</h2>
+      <div class="score-banner"><h3>${correct} / ${qs.length} · ${pct}%</h3><p>${pct>=80?"Excellent. You are exam-ready.":pct>=70?"Solid pass territory — tighten up the weak modules.":pct>=60?"Close, not quite. Focus on your lowest-scoring modules below.":"Go back to module notes and flashcards before retaking."}</p></div>
+      <div class="card"><h3>By module</h3><table><tr><th>Module</th><th>Correct</th></tr>${modBreak}</table></div>
+      ${rendered}
+      <div class="row" style="margin-top:10px"><button class="btn" onclick="mockState={started:false,submitted:false,answers:{},order:[]};renderMock()">Take another mock</button></div>`;
+  }
+}
+function startMock(){
+  const pool = MOCK_EXAM.map((_,i)=>i).sort(()=>Math.random()-.5);
+  mockState = { started:true, submitted:false, answers:{}, order: pool.slice(0, Math.min(120, MOCK_EXAM.length)) };
+  renderMock();
+}
+function submitMock(){ mockState.submitted=true; mockState.saved=false; renderMock(); window.scrollTo({top:0,behavior:"smooth"}); }
+
+/* ---------- Diagrams ---------- */
+let diagIdx = 0;
+function renderDiagrams(){
+  const d = DIAGRAMS[diagIdx];
+  const tabs = DIAGRAMS.map((x,i)=>`<button class="${i===diagIdx?'active':''}" onclick="diagIdx=${i};renderDiagrams()">${x.title}</button>`).join("");
+  document.getElementById("view-diagrams").innerHTML = `
+    <h2 class="section-title">Interactive diagrams</h2>
+    <p class="lead">Click any highlighted element in the diagrams to see its explanation. These are the frameworks you must know cold.</p>
+    <div class="module-tabs">${tabs}</div>
+    <div class="diagram-wrap"><h3 style="margin:0 0 6px">${d.title}</h3><p style="margin:0 0 10px;color:var(--mute)">${d.desc}</p>${d.svg}</div>
+    <div class="card" id="diagInfo"><b>Click a highlighted element above</b> to see its explanation here.</div>`;
+  document.querySelectorAll(".clickable[data-key]").forEach(el=>{
+    el.addEventListener("click", ()=>{
+      const key = el.dataset.key;
+      const info = d.keys[key];
+      document.getElementById("diagInfo").innerHTML = info ? `<h3 style="margin:0 0 6px">${key}</h3><p style="margin:0">${info}</p>` : key;
+    });
+  });
+}
+
+/* ---------- Glossary ---------- */
+function renderGlossary(){
+  const letters = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZ"];
+  const byLet = {};
+  GLOSSARY.forEach(g=>{
+    const l = g.term[0].toUpperCase();
+    byLet[l] = byLet[l] || [];
+    byLet[l].push(g);
+  });
+  const html = letters.filter(l=>byLet[l]).map(l=>{
+    return `<h3 id="g-${l}" style="margin:18px 0 6px;color:var(--accent)">${l}</h3>` +
+      byLet[l].sort((a,b)=>a.term.localeCompare(b.term)).map(g=>`<div class="keyterm"><b>${g.term}</b> — ${g.def}</div>`).join("");
+  }).join("");
+  const nav = letters.filter(l=>byLet[l]).map(l=>`<a href="#g-${l}">${l}</a>`).join(" · ");
+  document.getElementById("view-glossary").innerHTML = `
+    <h2 class="section-title">Glossary</h2>
+    <p class="lead">${GLOSSARY.length} key terms from the ECM. Use Ctrl/Cmd+F to search.</p>
+    <div class="card" style="margin-bottom:12px">${nav}</div>${html}`;
+}
+
+/* ---------- Init ---------- */
+renderDashboard();
+</script>
+</body>
+</html>
