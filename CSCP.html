@@ -167,10 +167,18 @@ MODULES.push({
   title:"Module 1 — Supply Chains, Demand Management & Forecasting",
   blurb:"Foundations of supply chain, demand analysis, demand planning, and all major forecasting techniques.",
   sections:[
-    {open:true,title:"A. Introduction to Supply Chains",body:`
+    {open:true,title:"A. Supply Chain Fundamentals",body:`
       <p>A <b>supply chain</b> is the global network used to deliver products and services from raw materials to end customers through an engineered flow of <b>information, physical distribution, and cash</b>. A basic chain includes <b>supplier → producer → distributor → retailer → customer</b>.</p>
-      <div class="keyterm"><b>Three flows:</b> Information (orders, forecasts, status) · Product/Service (from raw material to consumer) · Funds (generally upstream, opposite of product flow).</div>
+      <div class="keyterm"><b>Three flows:</b> Information (orders, forecasts, status) · Product/Service (from raw material to consumer) · Funds (generally upstream, opposite of product flow). A fourth <b>reverse flow</b> handles returns / recycling / refurbishment.</div>
       <div class="keyterm"><b>Value and balance:</b> Each link must add <b>value</b> greater than its cost. Goals: balance supply and demand while creating a service-profit chain.</div>
+      <h4>Foundational definitions</h4>
+      <ul>
+        <li><b>Echelon</b> — a level of supply chain nodes (factories, DCs, retail stores). Each adds operating expense, holds inventory, adds cycle time, and expects a profit.</li>
+        <li><b>Stakeholder</b> — any individual or group whose interest is affected by the firm: customers, employees, suppliers, governments, communities, investors.</li>
+        <li><b>Service industry</b> — broadly all organizations except farming, mining, and manufacturing.</li>
+      </ul>
+      <h4>Keiretsu (and chaebol)</h4>
+      <div class="keyterm"><b>Keiretsu</b> — Japanese form of cooperative relationship among legally independent companies that work closely together, often centered around a bank and trading company. Used in lean manufacturing for close, long-term relationships with fewer suppliers (Toyota's network is the classic example). Korean equivalent = <b>chaebol</b>.</div>
       <h4>Vertical vs. lateral (horizontal) integration</h4>
       <table><tr><th>Vertical</th><th>Lateral / horizontal</th></tr>
       <tr><td>Single firm owns multiple stages (upstream = backward integration; downstream = forward). Gains control, reduces transaction costs, but needs heavy capital and adds rigidity.</td>
@@ -187,7 +195,7 @@ MODULES.push({
       <h4>Manufacturing vs. service supply chains</h4>
       <p>Service chains often lack inventory buffer (production = consumption) — they emphasize capacity and scheduling flexibility. Specialized chains include reverse (returns), fast-fashion, and perishable / cold-chain.</p>
     `},
-    {title:"B. Demand Analysis & Patterns",body:`
+    {title:"B. Demand Analysis and Patterns",body:`
       <h4>Demand analysis road map</h4>
       <p>Combine <b>SWOT</b>, <b>market research</b>, <b>product assessment</b>, and macro/microeconomic data to understand demand drivers before you forecast.</p>
       <div class="keyterm"><b>SWOT:</b> Strengths/Weaknesses are internal; Opportunities/Threats are external. Used to align capabilities with market conditions.</div>
@@ -225,7 +233,7 @@ MODULES.push({
         <li><b>Random / irregular</b> — noise you can't forecast.</li>
       </ul>
     `},
-    {title:"C. Demand Management",body:`
+    {title:"C. Demand Management & Marketing",body:`
       <h4>Demand plan</h4>
       <p>The <b>demand plan</b> translates forecasts + market/promo intel into a consensus view of future demand that drives S&amp;OP, MPS, and procurement.</p>
       <div class="keyterm"><b>Inputs:</b> statistical forecast, sales input, marketing/promotion calendar, customer commitments, new product intros, econometric data.</div>
@@ -244,8 +252,18 @@ MODULES.push({
       <p><b>Demand shaping</b> = deliberately using the 4 Ps (and pricing tactics like dynamic pricing, discounts) to steer demand toward available supply.</p>
       <h4>Product life cycle management</h4>
       <p>Managing NPI (New Product Introduction) schedules, phase-in/phase-out, and retirement plans. Higher NPI frequency → higher demand uncertainty, more safety stock, shorter forecast horizons.</p>
+      <h4>Order winners, qualifiers, and losers (frequently tested)</h4>
+      <table>
+        <tr><th>Concept</th><th>What it does</th></tr>
+        <tr><td><b>Order qualifier</b></td><td>Competitive characteristic that must be met just to be <em>considered</em>. Failing it loses orders; being better at it doesn't win them.</td></tr>
+        <tr><td><b>Order winner</b></td><td>Characteristic that <em>causes</em> customers to choose your product — typically price, quality, delivery speed/reliability, design, flexibility, or service.</td></tr>
+        <tr><td><b>Order loser</b></td><td>Characteristic that drives customers <em>away</em> (poor quality, late delivery, high price when price is a qualifier).</td></tr>
+      </table>
+      <div class="tip">Price might be a <em>qualifier</em> in a luxury market and a <em>winner</em> in a discount market. The same characteristic can change role across segments and over time.</div>
+      <h4>Branding</h4>
+      <p>Use of a name, term, symbol, or design to identify a product. Strong brand can convert a qualifier into a winner.</p>
     `},
-    {title:"D. Forecasting",body:`
+    {title:"D. Forecasting Methods",body:`
       <h4>Five principles of forecasting</h4>
       <ol>
         <li>Base forecasts on <b>demand</b>, not orders (orders are constrained by supply).</li>
@@ -285,6 +303,50 @@ MODULES.push({
       <div class="formula">Bias / Running Sum of Forecast Errors (RSFE) = Σ(Error)</div>
       <div class="formula">Tracking signal = RSFE / MAD &nbsp;(within ±4 typical; ±6 alert)</div>
       <div class="tip">If tracking signal trends outside ±4 → forecast is biased; investigate and re-parameterize.</div>
+      <h4>Service-level conversions (commonly tested)</h4>
+      <ul>
+        <li><b>1 MAD ≈ 80% service level · 2 MAD ≈ 95% · 3 MAD ≈ 99%</b></li>
+        <li><b>1σ ≈ 84% · 2σ ≈ 98%</b></li>
+        <li><b>Standard deviation ≈ 1.25 × MAD</b></li>
+      </ul>
+      <div class="formula">Safety stock (using MAD) = Safety factor × MAD</div>
+      <div class="formula">MSE = Σ(Actual − Forecast)² / n &nbsp; — penalizes large errors</div>
+      <h4>Other forecast concepts</h4>
+      <ul>
+        <li><b>Life cycle analysis (analog forecasting)</b> — apply demand patterns from a similar prior product to forecast a new launch.</li>
+        <li><b>R²</b> — fit of regression line; 1.0 = perfect, 0 = none. High R² ≠ causation.</li>
+        <li><b>PLM (Product Lifecycle Management)</b> — discipline of managing product information end-to-end through forward & reverse logistics.</li>
+        <li><b>Productivity</b> = output / input (units per labor hour, $ sales per employee).</li>
+      </ul>
+    `},
+    {title:"E. Aligning Supply with Demand — S&OP",body:`
+      <h4>Sales & Operations Planning (S&OP)</h4>
+      <p><b>S&amp;OP</b> is a mid-to-long-term planning process that compares the demand plan with inventory and capacity, integrates business plans (sales, marketing, ops, finance, sourcing), and produces a high-level production plan at the <b>product family</b> level. Performed at least monthly; reviewed by senior management.</p>
+      <p>Five S&amp;OP steps: (1) data gathering, (2) demand planning, (3) supply planning, (4) <b>reconciliation</b>, (5) executive S&amp;OP meeting.</p>
+      <h4>Production strategies</h4>
+      <ul>
+        <li><b>Level production</b> — stable production rate; vary inventory to absorb demand swings (build during low demand, deplete during high).</li>
+        <li><b>Chase</b> — vary production each period to match demand (overtime, hiring/firing, outsourcing).</li>
+        <li><b>Hybrid</b> — combine level + chase to minimize total cost.</li>
+      </ul>
+      <h4>Manufacturing environments / Customer Order Decoupling Point (CODP)</h4>
+      <table>
+        <tr><th>Environment</th><th>What's stocked</th><th>Customer lead time</th><th>Variety</th></tr>
+        <tr><td><b>Make-to-Stock (MTS)</b></td><td>Finished goods</td><td>Shortest</td><td>Lowest (consumer goods)</td></tr>
+        <tr><td><b>Assemble-to-Order (ATO)</b></td><td>Modules / subassemblies</td><td>Short</td><td>Medium (laptops, autos)</td></tr>
+        <tr><td><b>Make-to-Order (MTO)</b></td><td>Raw materials only</td><td>Long</td><td>High</td></tr>
+        <tr><td><b>Engineer-to-Order (ETO)</b></td><td>Nothing — design after order</td><td>Longest</td><td>Highest (custom projects)</td></tr>
+        <tr><td><b>Package-to-Order (PTO)</b></td><td>Finished item; packaging delayed</td><td>Short</td><td>Multi-customer / region</td></tr>
+      </table>
+      <p>The <b>CODP</b> is the point in the chain where production switches from forecast-driven (push) to order-driven (pull). MTS = all push; ETO = all pull.</p>
+      <h4>Other S&amp;OP vocabulary</h4>
+      <ul>
+        <li><b>Product family</b> — group of items with similar processing &amp; equipment, used for aggregate planning.</li>
+        <li><b>Resource planning</b> — long-range capacity at the business plan level (top-management approval needed).</li>
+        <li><b>Master planning</b> — bundles demand management, production/resource planning, and master scheduling.</li>
+        <li><b>Backlog</b> — orders received but not yet shipped.</li>
+        <li><b>Customer service ratio</b> — MTS: % items/$ shipped on schedule. MTO: % jobs shipped on time.</li>
+      </ul>
     `},
   ]
 });
@@ -294,7 +356,7 @@ MODULES.push({
   title:"Module 2 — Global Supply Chain Networks",
   blurb:"Network design, IT systems (ERP/APS/WMS/TMS), visibility, e-business, master data, global considerations.",
   sections:[
-    {open:true,title:"A. Supply Chain Design & Optimization",body:`
+    {open:true,title:"A. Supply Chain Network Design",body:`
       <p><b>Supply chain design</b> translates business strategy into a physical and information network that balances <b>efficiency, responsiveness, and resilience</b>.</p>
       <div class="keyterm"><b>Efficient vs. responsive design (Fisher):</b> Functional products (stable demand) → efficient, low-cost chains. Innovative products (uncertain demand) → responsive, flexible chains.</div>
       <div class="keyterm"><b>Resilience:</b> ability to recover from disruption. Built through redundancy, flexibility, visibility, and strong supplier relationships.</div>
@@ -312,7 +374,7 @@ MODULES.push({
       <h4>Nucleus firm & cross-functional teams</h4>
       <p>The <b>nucleus firm</b> (focal firm) orchestrates partners and makes network-level decisions. Success requires cross-functional teams with shared KPIs.</p>
     `},
-    {title:"B. End-to-End Connectivity & Visibility — ERP, APS, WMS, TMS",body:`
+    {title:"B. End-to-End Connectivity & Visibility Technologies",body:`
       <h4>ERP (Enterprise Resource Planning)</h4>
       <p>Single, integrated database of master data + transactions across finance, HR, sales, manufacturing, procurement. Benefits: real-time integration, single source of truth, process discipline. Risks: cost, long implementation, change resistance.</p>
       <div class="keyterm"><b>Configuration vs. customization:</b> configure = adjust parameters within delivered functionality (preferred, easy to upgrade); customize = modify code (risky, breaks upgrades).</div>
@@ -339,37 +401,153 @@ MODULES.push({
         <li><b>Layers</b>: content, community, commerce, collaboration.</li>
       </ul>
     `},
-    {title:"C. Data, Privacy & Middleware",body:`
-      <h4>Master data</h4>
-      <p>Non-transactional, high-value reference data: <b>customers, suppliers, items/SKUs, BOMs, routings, locations, prices</b>. Critical to maintain <b>data quality</b> — accuracy, completeness, consistency, timeliness.</p>
-      <h4>Data capture methods</h4>
+    {title:"C. Supply Chain Metrics and Reports",body:`
+      <h4>Financial statements & metrics</h4>
       <ul>
-        <li>Barcodes (UPC, EAN)</li><li>RFID (passive/active tags)</li>
-        <li>GPS</li><li>IoT sensors</li><li>EDI &amp; APIs</li>
+        <li><b>Balance Sheet</b> — Assets = Liabilities + Equity at a point in time.</li>
+        <li><b>Income Statement</b> — Revenue − Expenses = Net Income over a period.</li>
+        <li><b>Cash Flow</b> — operating, investing, and financing activities.</li>
+        <li><b>COGS</b> — direct materials + direct labor + allocated overhead for goods sold.</li>
+        <li><b>Gross Margin</b> = (Revenue − COGS)/Revenue.</li>
+        <li><b>ROA</b> = Net Income / Total Assets · <b>ROI</b> = (Gain − Cost)/Cost.</li>
       </ul>
-      <h4>Middleware & APIs</h4>
-      <p><b>Middleware</b> connects front-end (customer-facing) to back-end (ERP) systems. <b>APIs</b> (REST, SOAP) enable real-time data exchange; EDI (X12, EDIFACT) enables batch structured messaging.</p>
-      <h4>Legal, privacy, cybersecurity</h4>
+      <h4>Cash-to-Cash cycle time</h4>
+      <div class="formula">Cash-to-Cash = Inventory Days + AR Days − AP Days</div>
+      <p>Lower is better; <em>negative</em> means you collect from customers before paying suppliers (highly favorable working capital).</p>
+      <h4>Inventory & operational metrics</h4>
+      <div class="formula">Inventory Turnover = Annual COGS / Average Inventory</div>
+      <div class="formula">Days of Supply = Inventory on hand / Avg daily COGS</div>
+      <div class="formula">Fill Rate = Units shipped on time / Units ordered</div>
       <ul>
-        <li><b>GDPR</b> (EU) — consent-based personal data processing; data-subject rights.</li>
-        <li><b>HIPAA</b> (US) — health data.</li>
-        <li><b>Cybersecurity:</b> encryption, access control, intrusion detection, multi-factor auth, SOC monitoring.</li>
+        <li><b>Perfect order</b> — all 7 Rs met (right product, qty, condition, place, time, customer, cost).</li>
+        <li><b>OTIF</b> — On-Time In-Full delivery.</li>
+        <li><b>Order fulfillment cycle time</b> — order receipt to customer acceptance.</li>
+        <li><b>Inventory accuracy</b> — % within tolerance vs. records (target 95–99%).</li>
+        <li><b>Inventory velocity</b> — speed of inventory through the firm (turnover).</li>
+        <li><b>Dwell time</b> — lead time caused by customer requirements (not deducted from order-fulfillment cycle time).</li>
+        <li><b>Backorder</b> — unfilled or past-due demand against insufficient inventory.</li>
+        <li><b>Inventory shrinkage</b> — losses from scrap, theft, deterioration, evaporation.</li>
+      </ul>
+      <h4>SCOR Model & Balanced Scorecard</h4>
+      <ul>
+        <li><b>SCOR</b> processes (DS): Orchestrate · Plan · Source · Order · Transform · Fulfill · Return. Three metric levels for benchmarking.</li>
+        <li><b>SCOR attributes</b> (customer-facing): Reliability · Responsiveness · Agility. (Internal): Cost · Asset Management.</li>
+        <li><b>Balanced Scorecard</b> (Kaplan &amp; Norton): Financial · Customer · Internal Process · Learning &amp; Growth.</li>
+        <li><b>Dashboard</b> — combines BI &amp; data integration to address objectives.</li>
+        <li><b>Suboptimization</b> — optimizing a piece at the expense of the whole (common exam trap).</li>
+      </ul>
+      <h4>Promise types</h4>
+      <ul>
+        <li><b>ATP</b> (Available-to-Promise) — against inventory and MPS.</li>
+        <li><b>CTP</b> (Capable-to-Promise) — also considers <b>capacity</b> via finite scheduling.</li>
+        <li><b>PTP</b> (Profitable-to-Promise) — prioritizes orders that generate the most margin.</li>
+      </ul>
+      <h4>Strategic Profit Model / DuPont</h4>
+      <div class="formula">ROA = Net Profit Margin × Asset Turnover</div>
+      <div class="formula">Net Profit Margin = Net Profit / Net Sales · Asset Turnover = Net Sales / Total Assets</div>
+      <div class="formula">Working Capital = Current Assets − Current Liabilities</div>
+      <div class="keyterm"><b>SC impact on ROA:</b> supply chain affects COGS, inventory (current asset), AR (order-to-cash speed), and fixed-asset utilization — moving both numerator and denominator of ROA.</div>
+      <h4>Financial ratio categories</h4>
+      <table>
+        <tr><th>Type</th><th>Examples</th></tr>
+        <tr><td><b>Liquidity</b></td><td>Current ratio = CA/CL; Quick ratio = (CA − Inv)/CL</td></tr>
+        <tr><td><b>Profitability</b></td><td>Gross margin, net profit margin, ROA, ROI, ROIC</td></tr>
+        <tr><td><b>Activity / Efficiency</b></td><td>Inventory turnover, asset turnover, AR turnover, days of supply</td></tr>
+        <tr><td><b>Leverage</b></td><td>Debt-to-equity, debt-to-assets</td></tr>
+      </table>
+      <h4>Other financial concepts</h4>
+      <ul>
+        <li><b>Altman Z-Score</b> — bankruptcy-prediction formula. >2.99 safe; 1.81–2.99 grey; &lt;1.81 distress. Used in supplier risk assessment.</li>
+        <li><b>Capex vs. Opex</b> — Capex = long-term assets; Opex = ongoing operations. Cloud/SaaS shifts Capex → Opex.</li>
+        <li><b>Letter of Credit (L/C)</b> — bank guarantee of payment in international trade.</li>
+        <li><b>IFRS</b> — International Financial Reporting Standards.</li>
+        <li><b>EVA</b> — Economic Value Added (profit above the cost of capital).</li>
+        <li><b>Variance</b> — difference between budget/standard and actual; cost variance, usage variance.</li>
+        <li><b>DSO</b> — Days Sales Outstanding (collection speed).</li>
+        <li><b>Funds Flow Statement</b> — synonym for Statement of Cash Flows.</li>
       </ul>
     `},
-    {title:"D. International Considerations",body:`
+    {title:"D. Master Data, Legal & Cyber Security",body:`
+      <h4>Master data</h4>
+      <p>Non-transactional, high-value reference data shared across the enterprise: <b>customers, suppliers, items/SKUs, BOMs, routings, locations, prices</b>. Foundation for all processes.</p>
+      <h4>Master-data lifecycle (commonly tested)</h4>
+      <ol>
+        <li><b>Create</b> — establish new records with validation/approval.</li>
+        <li><b>Update</b> — modify as conditions change (price, address, lead time).</li>
+        <li><b>Cleanse</b> — find &amp; fix mistakes (misspellings, missing data, duplicates).</li>
+        <li><b>Retire</b> — remove obsolete records while keeping history.</li>
+      </ol>
+      <h4>Data management vocabulary</h4>
+      <ul>
+        <li><b>Data governance</b> — overall management of data availability, usability, integrity, security.</li>
+        <li><b>Data normalization</b> — minimize duplication when merging databases.</li>
+        <li><b>Data dictionary</b> — catalog of requirements/specs for data.</li>
+        <li><b>Data integrity</b> — accuracy, consistency, completeness, validity over time.</li>
+        <li><b>Data warehouse</b> — repository for querying/analysis.</li>
+        <li><b>Big data</b> — datasets too large for standard tools.</li>
+        <li><b>Data mining</b> — searching for previously unknown relationships.</li>
+        <li><b>DBMS</b> — Database Management System.</li>
+      </ul>
+      <h4>AIDC — data capture technologies</h4>
+      <ul>
+        <li><b>Barcodes / scanners</b> (1D linear, 2D QR) — line-of-sight.</li>
+        <li><b>RFID</b> — Active (self-powered, long range), Passive (powered by reader, cheap), Semipassive (battery-assisted). NO line of sight needed.</li>
+        <li><b>EPC</b> — Electronic Product Code, globally unique RFID identifier.</li>
+        <li><b>POS</b>, <b>smart cards</b>, <b>magnetic stripes</b>, <b>voice recognition</b>, <b>pick-to-light</b>.</li>
+        <li>Other capture: <b>GPS</b>, <b>IoT sensors</b>, <b>EDI</b>, <b>APIs</b>.</li>
+      </ul>
+      <h4>Legal & privacy</h4>
+      <ul>
+        <li><b>GDPR</b> (EU) — consent-based personal data; data-subject rights (access, erasure, portability).</li>
+        <li><b>CCPA</b> (California) — consumer privacy.</li>
+        <li><b>HIPAA</b> (US) — health data.</li>
+        <li><b>Data residency</b> rules — which nation data must reside in (critical for cloud).</li>
+        <li><b>IP protection</b> — clear partner agreements; trade-secret safeguards.</li>
+      </ul>
+      <h4>Cybersecurity</h4>
+      <p>Encryption, access control, multi-factor auth, intrusion detection, SOC monitoring. Controls protect against unauthorized access, ransomware, and breaches. <b>Cyber insurance</b> covers attack/breach losses; <b>trade-disruption insurance</b> covers political/non-physical disruption.</p>
+      <h4>Common standards adoption</h4>
+      <p>Adopting common data standards across partners (EDI, GS1) reduces risk and improves interoperability.</p>
+    `},
+    {title:"E. International Trade & Additional Key Terms",body:`
+      <h4>Sunk costs and decision making</h4>
+      <div class="danger"><b>Sunk cost</b> — a past cost already incurred and unrecoverable. <b>Irrelevant</b> to future decisions; only future incremental costs and benefits matter. Common exam distractor.</div>
       <h4>Currency &amp; financial risk</h4>
-      <p>Exchange-rate volatility affects landed cost and margins. Mitigations: <b>natural hedge</b> (match revenues/costs in currency), forward contracts, currency clauses in supply agreements.</p>
+      <p>Exchange-rate volatility affects landed cost and margins. Mitigations: <b>natural hedge</b> (match revenues/costs in the same currency), forward contracts, currency clauses in supply agreements.</p>
       <h4>Incoterms 2020</h4>
-      <p>Rules from ICC defining buyer/seller obligations for delivery, risk transfer, and cost of international shipments. Any mode vs. sea/inland waterway only:</p>
-      <table><tr><th>Any mode</th><th>Sea/inland waterway only</th></tr>
+      <p>Rules from ICC defining buyer/seller obligations for delivery, risk transfer, and cost of international shipments.</p>
+      <table><tr><th>Any mode</th><th>Sea / inland waterway only</th></tr>
         <tr><td>EXW, FCA, CPT, CIP, DAP, DPU, DDP</td><td>FAS, FOB, CFR, CIF</td></tr></table>
-      <div class="keyterm"><b>EXW</b> (Ex Works) = seller minimum; buyer takes risk at seller's door.<br><b>DDP</b> (Delivered Duty Paid) = seller maximum; seller delivers, cleared, to buyer's location.</div>
+      <div class="keyterm"><b>EXW</b> = seller minimum; <b>DDP</b> = seller maximum (delivered, duty paid).</div>
       <h4>Trade regulations</h4>
       <ul>
-        <li><b>Harmonized System (HS) codes</b> classify goods for customs &amp; tariffs.</li>
-        <li><b>FTZ / free trade zone</b> — defer/avoid duties until release to home market.</li>
-        <li><b>Country of origin</b> rules impact duty rates and FTAs.</li>
+        <li><b>Harmonized System (HS)</b> codes — international product classification for customs.</li>
+        <li><b>HTS</b> — US Harmonized Tariff Schedule.</li>
+        <li><b>Tariff</b> — official import/export tax schedule.</li>
+        <li><b>Trade bloc</b> — agreement between countries to reduce barriers (EU, USMCA).</li>
+        <li><b>FTZ / Free Trade Zone</b> — defer/avoid duties until release to home market.</li>
+        <li><b>Country of origin</b> rules impact duty rates &amp; FTAs.</li>
         <li><b>C-TPAT / AEO</b> — trusted-trader programs accelerating customs.</li>
+        <li><b>CISG (Vienna Convention)</b> — uniform rules for international goods sales.</li>
+      </ul>
+      <h4>Network architecture vocabulary</h4>
+      <ul>
+        <li><b>LAN</b> (Local Area Network), <b>WAN</b> (Wide Area Network).</li>
+        <li><b>Intranet</b> (internal), <b>Extranet</b> (with partners), <b>VAN</b> (value-added network for EDI).</li>
+        <li><b>Middleware</b> — software enabling communication between systems not designed to interact.</li>
+        <li><b>Legacy system</b> — old, hard-to-replace business app with poor interfaces.</li>
+        <li><b>DSS</b> (Decision Support System) — assists managers in evaluating alternatives.</li>
+        <li><b>Microservices</b> — applications built as small independent services for flexibility and scale.</li>
+        <li><b>Web services / APIs</b> — open frameworks for cross-app data movement (REST, SOAP).</li>
+      </ul>
+      <h4>Other Module-2 terms</h4>
+      <ul>
+        <li><b>Aggregation / risk pooling</b> — relative variance of total demand is less than that of individual items; basis for centralized inventory.</li>
+        <li><b>Multicountry / multidomestic strategy</b> — each country market self-contained vs. a global standardized product.</li>
+        <li><b>Batch processing</b> — accumulate transactions for periodic processing.</li>
+        <li><b>BPM</b> — Business Process Management.</li>
+        <li><b>Consignment</b> — supplier places goods at customer location; payment only when used/sold.</li>
+        <li><b>Modular system</b> — related tasks grouped in independent packages.</li>
       </ul>
     `},
   ]
@@ -380,7 +558,7 @@ MODULES.push({
   title:"Module 3 — Sourcing Products & Services",
   blurb:"Make-vs-buy, TCO, category strategy, Kraljic, supplier relationships, contracts, product design influence.",
   sections:[
-    {open:true,title:"A. Aligning Sourcing to Demand",body:`
+    {open:true,title:"A. Aligning Sourcing Activities to Demand",body:`
       <h4>Sourcing vs. procurement</h4>
       <div class="keyterm"><b>Sourcing</b> = strategic process: identify need, select supplier, negotiate contract, manage relationship.<br><b>Procurement</b> = tactical transaction: release PO, receive, pay.</div>
       <h4>Make-versus-buy</h4>
@@ -404,7 +582,7 @@ MODULES.push({
       <div class="tip"><b>Landed cost</b> specifically covers the cost to land goods at destination (price + freight + duties + insurance + handling). TCO is broader.</div>
       <p><b>Should-cost analysis</b> — buyer models what the product <em>should</em> cost (material + labor + overhead + margin) to benchmark supplier quotes.</p>
     `},
-    {title:"B. Category Strategy — Kraljic Matrix",body:`
+    {title:"B. Category Strategy for Sourcing",body:`
       <p>The <b>Kraljic portfolio matrix</b> segments spend by two axes:</p>
       <ul>
         <li><b>Profit impact</b> / strategic importance (low → high)</li>
@@ -424,7 +602,7 @@ MODULES.push({
       <h4>Supply base analysis & right-sizing</h4>
       <p><b>Spend analysis</b> categorizes and ranks spend (Pareto / 80-20). <b>Right-sizing</b> balances risk reduction (multiple suppliers) vs. leverage (fewer suppliers). Approaches: single, dual, multiple sourcing; supplier rationalization.</p>
     `},
-    {title:"C. Product Design Influence & Specifications",body:`
+    {title:"C. Product Design Influence",body:`
       <h4>Traditional vs. concurrent design</h4>
       <p><b>Traditional</b> = sequential (design → procure → produce), slow, late supplier input. <b>Concurrent engineering</b> = cross-functional team including suppliers from the start; reduces cost, time, and quality problems.</p>
       <div class="keyterm"><b>Design for X (DFX):</b> design for manufacturing, assembly, serviceability, environment, cost, logistics, supply chain.</div>
@@ -438,7 +616,7 @@ MODULES.push({
       <h4>Value engineering / value analysis</h4>
       <p>Cross-functional review of a product's function vs. cost to eliminate unnecessary cost without losing function or quality.</p>
     `},
-    {title:"D. Procurement & Negotiation",body:`
+    {title:"D. Supplier Selection, Contracting & Purchase Orders",body:`
       <h4>Procurement cycle</h4>
       <p>Requisition → RFx (RFI / RFP / RFQ) → bid evaluation → negotiation → contract → PO → receipt → invoice match (3-way) → payment (P2P).</p>
       <h4>Contract types</h4>
@@ -453,6 +631,85 @@ MODULES.push({
       <h4>Supplier evaluation & metrics</h4>
       <p>Common KPIs: <b>on-time delivery, quality PPM, price variance, fill rate, lead time, responsiveness</b>. Use weighted scorecards to compare.</p>
     `},
+    {title:"E. Sourcing Methods, Auctions & Trade — Reference",body:`
+      <h4>Sourcing methods (single vs. sole — must know!)</h4>
+      <table>
+        <tr><th>Type</th><th>Definition</th><th>Driver</th></tr>
+        <tr><td><b>Insourcing</b></td><td>Use the firm's internal resources.</td><td>Reverse of outsourcing.</td></tr>
+        <tr><td><b>Outsourcing</b></td><td>Have suppliers provide goods/services previously done internally.</td><td>Substitution of capacity.</td></tr>
+        <tr><td><b>Subcontracting</b></td><td>Send production work outside to another manufacturer.</td><td>Capacity shortfall, specialty work.</td></tr>
+        <tr><td><b>Single sourcing</b></td><td>Use ONE supplier <em>by choice</em> (alternatives exist).</td><td>Lean, deeper relationship.</td></tr>
+        <tr><td><b>Sole sourcing</b></td><td>Only ONE supplier is <em>available</em> (patents, tooling).</td><td>Forced, not preferred.</td></tr>
+        <tr><td><b>Multi-sourcing</b></td><td>Multiple suppliers for the same item.</td><td>Continuity, foster competition.</td></tr>
+      </table>
+      <div class="danger"><b>Single ≠ Sole.</b> Single = chosen; Sole = no alternatives. The exam tests this distinction frequently.</div>
+      <h4>Auction types</h4>
+      <table>
+        <tr><th>Auction</th><th>Direction</th><th>Use</th></tr>
+        <tr><td><b>Forward / classic</b></td><td>One seller, many buyers bid UP.</td><td>Unique / scarce goods.</td></tr>
+        <tr><td><b>Reverse</b></td><td>One buyer, many sellers bid DOWN.</td><td>Commodities; price-driven sourcing.</td></tr>
+        <tr><td><b>Dutch</b></td><td>Price starts HIGH and drops; bid = contract.</td><td>Treasury securities.</td></tr>
+        <tr><td><b>Demand-management</b></td><td>Liquidate excess capacity (airlines, hotels).</td><td>Yield management.</td></tr>
+        <tr><td><b>Stock-market style</b></td><td>Many buyers AND sellers; dynamic pricing.</td><td>Commodities, exchanges.</td></tr>
+      </table>
+      <h4>Procurement process & three-way match</h4>
+      <p>Tactical purchase-to-pay cycle: <b>Requisition → PO → Receive → Inspect → 3-way match → Pay</b>.</p>
+      <div class="keyterm"><b>Three-way match</b> — payment authorized only when PO + Receiving Report + Invoice all agree (what was ordered, received, billed). Anti-fraud control.</div>
+      <h4>TCO components — <em>net</em> vs. <em>ongoing</em> costs</h4>
+      <ul>
+        <li><b>Net cost</b> = Gross cost − discounts − rebates − allowances.</li>
+        <li><b>Ongoing costs</b> — quality management, relationship management, audits, performance monitoring, continuous improvement.</li>
+      </ul>
+      <h4>Product design influence — DFX & strategy</h4>
+      <ul>
+        <li><b>DFX</b> = Design for Excellence (umbrella).</li>
+        <li><b>DFM / DFA / DFMA</b> — Manufacturability / Assembly / both. Simplify parts/processes.</li>
+        <li><b>DFQ</b> — Design for Quality. <b>DFSS</b> — Design for Six Sigma.</li>
+        <li><b>DFE</b> — Design for Environment.</li>
+        <li><b>Design for Service</b> — simplify parts/processes for after-sale service.</li>
+        <li><b>Design for Supply Chain / Logistics</b> — optimize for transportation, warehousing, handling.</li>
+      </ul>
+      <h4>Postponement, mass customization, glocalization</h4>
+      <div class="keyterm"><b>Postponement</b> — deliberately delay final differentiation until the latest possible point. Reduces risk of forecast error and excess finished goods. Synonyms: delayed differentiation.</div>
+      <ul>
+        <li><b>Mass customization</b> — mass-production efficiency with broad variety, primarily through postponement &amp; modular design.</li>
+        <li><b>Modular design</b> — common interfaces enable many configurations.</li>
+        <li><b>Standardization</b> — fewer parts and procedures.</li>
+        <li><b>Simplification</b> — remove complexity from product/service.</li>
+        <li><b>Universality</b> — design for one market that can sell in others.</li>
+        <li><b>Glocalization</b> — global product modified for local laws, customs, tastes (a form of postponement).</li>
+      </ul>
+      <h4>QFD (Quality Function Deployment)</h4>
+      <p><b>QFD</b> translates the Voice of the Customer into design specs using the <b>House of Quality</b> matrix (customer requirements vs. engineering attributes; relationship/correlation grids; targets).</p>
+      <h4>Contract types — extended</h4>
+      <ul>
+        <li><b>Fixed-price (FFP)</b> — supplier bears risk.</li>
+        <li><b>Cost-plus-fixed-fee (CPFF)</b> — buyer pays costs + fixed fee.</li>
+        <li><b>Cost-plus-incentive-fee (CPIF)</b> — costs + bonus if targets met.</li>
+        <li><b>Cost-plus-award-fee (CPAF)</b> — costs + subjective award.</li>
+        <li><b>Fixed-Price Incentive (FPIF)</b> — set price + bonus.</li>
+        <li><b>Time &amp; Materials</b> — used when scope uncertain.</li>
+        <li><b>Blanket PO</b> — long-term commitment with short-term releases.</li>
+        <li><b>Annualized contract</b> — yearly agreement on pricing &amp; supply continuity.</li>
+        <li><b>Incentive contract</b> — share cost savings beyond target / overage up to a cap.</li>
+        <li><b>Cost-based</b> — price tied to input cost or economic factors.</li>
+      </ul>
+      <h4>Location strategies & trade</h4>
+      <ul>
+        <li><b>Offshoring</b> — distant country (lowest labor cost, longest lead times).</li>
+        <li><b>Nearshoring</b> — nearby country (e.g., US→Mexico). Shorter lead times, similar time zone.</li>
+        <li><b>Reshoring</b> — bringing work back home.</li>
+        <li><b>CISG (Vienna Convention)</b> — UN Convention on Contracts for International Sale of Goods. Provides uniform default rules.</li>
+        <li><b>Multicountry / multidomestic strategy</b> — each country tailored vs. global standardized.</li>
+      </ul>
+      <h4>E-marketplace types</h4>
+      <ul>
+        <li><b>Consortia Trade Exchange (CTX)</b> — owned by an industry group (e.g., automotive Covisint).</li>
+        <li><b>Independent Trading Exchange</b> — third-party owned.</li>
+        <li><b>Private Trading Exchange</b> — hosted by a single company for its partners.</li>
+        <li><b>Vertical / Horizontal marketplace</b> — within one industry vs. across industries.</li>
+      </ul>
+    `},
   ]
 });
 
@@ -461,7 +718,7 @@ MODULES.push({
   title:"Module 4 — Internal Operations & Inventory",
   blurb:"S&OP, MPS, MRP, DRP, capacity planning, lean, TOC, inventory models (EOQ, ROP, ABC), Six Sigma.",
   sections:[
-    {open:true,title:"A. Planning Operations — S&OP, MPS, MRP, DRP",body:`
+    {open:true,title:"A. Planning Operations",body:`
       <h4>Manufacturing planning & control hierarchy</h4>
       <p>Strategic → Tactical → Operational:</p>
       <ol>
@@ -483,7 +740,7 @@ MODULES.push({
       <h4>DRP (Distribution Requirements Planning)</h4>
       <p>Extends MRP logic into the distribution network. Pulls net requirements from DCs back to the plant. <b>Push</b> = central pushes stock to DCs; <b>pull</b> = DC requests based on local demand (preferred for responsiveness).</p>
     `},
-    {title:"B. Capacity & Production Activity Control",body:`
+    {title:"B. Capacity Management",body:`
       <h4>Capacity planning hierarchy</h4>
       <ol>
         <li><b>Resource planning</b> (long-term, aligned with S&amp;OP)</li>
@@ -506,28 +763,7 @@ MODULES.push({
       <p>Goldratt: throughput = sales − variable cost; constraint (bottleneck) determines throughput. <b>Five focusing steps:</b> Identify → Exploit → Subordinate → Elevate → Repeat.</p>
       <p><b>Drum-Buffer-Rope (DBR)</b>: constraint paces the plant (drum); buffers protect it; rope syncs release.</p>
     `},
-    {title:"C. Lean, JIT & Six Sigma",body:`
-      <h4>Lean principles</h4>
-      <p>Specify value (customer view) → map the value stream → create flow → pull at customer rate (takt) → pursue perfection.</p>
-      <div class="keyterm"><b>Seven wastes (TIMWOOD / DOWNTIME):</b> Defects, Overproduction, Waiting, Non-utilized talent, Transportation, Inventory, Motion, Extra processing.</div>
-      <h4>Lean tools</h4>
-      <ul>
-        <li><b>5S</b> — Sort, Set-in-order, Shine, Standardize, Sustain</li>
-        <li><b>Kanban</b> — visual pull signals</li>
-        <li><b>SMED</b> — single-minute exchange of dies (setup reduction)</li>
-        <li><b>Poka-yoke</b> — mistake-proofing</li>
-        <li><b>Jidoka</b> — autonomation; stop the line on defect</li>
-        <li><b>Heijunka</b> — level loading/mix</li>
-        <li><b>Value stream map (VSM)</b></li>
-        <li><b>Gemba walk</b> — go see</li>
-      </ul>
-      <h4>Just-in-Time (JIT)</h4>
-      <p>Produce and deliver only what is needed, when needed, in the quantity needed. Requires level demand, short setups, reliable suppliers, high quality.</p>
-      <h4>Six Sigma / DMAIC</h4>
-      <p>Data-driven defect reduction to ≤3.4 DPMO. <b>Define → Measure → Analyze → Improve → Control.</b> Tools: Ishikawa, Pareto, SPC/control charts, Cp/Cpk, DOE, hypothesis testing.</p>
-      <p><b>Lean Six Sigma</b> combines waste (lean) and variation (Six Sigma) reduction.</p>
-    `},
-    {title:"D. Inventory Management",body:`
+    {title:"C. Inventory Management",body:`
       <h4>Functions & types</h4>
       <p>Buffers <b>demand/supply uncertainty</b>, <b>lead time</b>, <b>cycle</b> (batching), <b>pipeline</b> (in-transit), <b>hedge</b>, <b>anticipation</b> (seasonal, promo).</p>
       <div class="keyterm"><b>MRO</b> — maintenance, repair, operating supplies (not in finished product).</div>
@@ -543,13 +779,159 @@ MODULES.push({
       <div class="formula">Safety stock = z · σ<sub>LT</sub> &nbsp;where z is the service-level factor (95% → 1.65; 98% → 2.05; 99% → 2.33)</div>
       <h4>Periodic review (P-model)</h4>
       <p>Review at fixed interval T, order-up-to level M. <b>Order quantity = M − Inventory on hand at review</b>. More safety stock than Q-model because cover T+LT.</p>
-      <h4>Key metrics</h4>
+      <h4>Inventory key metrics</h4>
       <div class="formula">Inventory turns = COGS / Average inventory</div>
       <div class="formula">Days of supply = Avg inventory / Avg daily usage</div>
       <div class="formula">Fill rate = Units shipped on time / Units ordered</div>
-      <div class="formula">Perfect order = % orders on time, complete, damage-free, correctly documented</div>
+      <h4>Inventory accuracy & control</h4>
+      <ul>
+        <li><b>Cycle counting</b> — continuous counts on a cycle (A items most often).</li>
+        <li><b>Physical inventory</b> — periodic or annual full count.</li>
+        <li><b>Inventory accuracy target</b>: 95–99% within tolerance.</li>
+        <li><b>Inventory adjustment</b> — correcting record to match physical count.</li>
+        <li><b>Configuration management</b> — control product data through lifecycle.</li>
+        <li><b>End-of-life management</b> — phase-out, lifetime buys, customer notification.</li>
+      </ul>
+    `},
+    {title:"D. Performance & Continuous Improvement",body:`
+      <h4>Lean principles</h4>
+      <p>Specify value (customer view) → map the value stream → create flow → pull at customer rate (takt) → pursue perfection.</p>
+      <div class="keyterm"><b>Eight wastes (DOWNTIME):</b> Defects · Overproduction · Waiting · Non-utilized talent · Transportation · Inventory · Motion · Extra-processing.</div>
+      <h4>Lean tools</h4>
+      <ul>
+        <li><b>5S</b> — Sort, Set-in-order, Shine, Standardize, Sustain</li>
+        <li><b>Kanban</b> — visual pull signals</li>
+        <li><b>SMED</b> — single-minute exchange of dies (setup reduction)</li>
+        <li><b>Poka-yoke</b> — mistake-proofing</li>
+        <li><b>Jidoka</b> — autonomation; stop the line on defect</li>
+        <li><b>Heijunka</b> — level loading/mix</li>
+        <li><b>Value stream map (VSM)</b></li>
+        <li><b>Gemba walk</b> — go see</li>
+        <li><b>Kaizen event / blitz</b> — focused 1-week cross-functional improvement.</li>
+      </ul>
+      <h4>Just-in-Time (JIT)</h4>
+      <p>Produce and deliver only what is needed, when needed, in the quantity needed. Requires level demand, short setups, reliable suppliers, high quality.</p>
+      <h4>Six Sigma / DMAIC</h4>
+      <p>Data-driven defect reduction to ≤3.4 DPMO. <b>Define → Measure → Analyze → Improve → Control.</b> Tools: Ishikawa, Pareto, SPC/control charts, Cp/Cpk, DOE, hypothesis testing.</p>
+      <p><b>Lean Six Sigma</b> combines waste (lean) and variation (Six Sigma) reduction.</p>
+      <h4>TQM, TPM, SPC</h4>
+      <ul>
+        <li><b>TQM</b> — Total Quality Management; customer-driven, all-employee continuous improvement.</li>
+        <li><b>TPM</b> — Total Productive Maintenance; preventive + improvement led by operators.</li>
+        <li><b>SPC</b> — Statistical Process Control; control charts detect assignable vs. random variation.</li>
+      </ul>
       <h4>Quality & cost of quality</h4>
       <p>Four categories: <b>Prevention · Appraisal · Internal failure · External failure</b>. Investment in prevention/appraisal typically reduces failure costs more than 1:1.</p>
+      <h4>Performance measurement</h4>
+      <ul>
+        <li><b>Perfect order</b> = % orders on time, complete, damage-free, correctly documented.</li>
+        <li><b>Line-item fill rate</b> · <b>unit fill rate</b>.</li>
+        <li><b>Benchmarking</b> — internal · competitive · functional · process.</li>
+        <li><b>Order losers</b> — characteristics that cause customers NOT to buy.</li>
+      </ul>
+      <h4>Theory of Constraints</h4>
+      <p>Five focusing steps: <b>Identify → Exploit → Subordinate → Elevate → Repeat</b>. <b>DBR</b> — Drum (constraint) sets pace; Buffer protects it; Rope ties release rate.</p>
+    `},
+    {title:"E. MRP Mechanics, BOMs, TOC & Quality — Reference",body:`
+      <h4>MRP mechanics — exploding, netting, offsetting</h4>
+      <ol>
+        <li><b>Explosion</b> — use the BOM to translate parent demand to gross requirements for components (100 cars × 4 wheels = 400 wheels).</li>
+        <li><b>Netting</b> — Gross req. − On-hand − Scheduled receipts + Safety stock = Net req.</li>
+        <li><b>Lot-sizing</b> — apply the lot rule (L4L, FOQ, EOQ, POQ).</li>
+        <li><b>Offsetting</b> — back the planned-order release date by the lead time so material arrives when needed.</li>
+        <li><b>Pegging</b> — trace gross requirements upstream to the parent that caused them ('active where-used').</li>
+      </ol>
+      <h4>Dependent vs. independent demand</h4>
+      <div class="keyterm"><b>Dependent</b> demand is calculated from BOM (components). <b>Independent</b> demand must be forecasted (finished goods, service parts).</div>
+      <h4>Time fence zones</h4>
+      <table>
+        <tr><th>Zone</th><th>Boundary</th><th>Rule</th></tr>
+        <tr><td><b>Frozen</b></td><td>Inside Demand Time Fence (DTF)</td><td>Only emergency changes; senior approval. Customer orders drive schedule.</td></tr>
+        <tr><td><b>Slushy</b></td><td>Between DTF &amp; Planning Time Fence (PTF)</td><td>Planner-controlled changes; trade-off analysis.</td></tr>
+        <tr><td><b>Liquid</b></td><td>Beyond PTF</td><td>System auto-generates and adjusts planned orders.</td></tr>
+      </table>
+      <h4>MRP system nervousness</h4>
+      <p><b>Nervousness</b> = excessive replanning from small MPS changes rippling through the BOM. Remedies: <b>Firm Planned Orders (FPO)</b> freeze specific orders; <b>time fences</b> restrict near-term changes; <b>larger lot sizes</b> dampen rescheduling.</p>
+      <h4>Closed-loop MRP &amp; MRP II</h4>
+      <ul>
+        <li><b>Closed-loop MRP</b> — adds capacity planning, shop-floor control, purchasing, and feedback to basic MRP.</li>
+        <li><b>MRP II</b> — Manufacturing Resource Planning. Adds business &amp; financial planning + simulation. Direct predecessor to ERP.</li>
+        <li><b>DDMRP</b> — Demand-Driven MRP. Uses strategic decoupling buffers to plan closer to actual demand and reduce nervousness.</li>
+      </ul>
+      <h4>BOM types</h4>
+      <ul>
+        <li><b>Single-level BOM</b> — only immediate components.</li>
+        <li><b>Multilevel (indented)</b> — all components down to raw materials.</li>
+        <li><b>Planning BOM</b> — artificial; uses option percentages for product family forecasting (not buildable).</li>
+        <li><b>Phantom BOM</b> — non-stocked subassembly; MRP passes through it.</li>
+        <li><b>Modular BOM</b> — organized by major options for ATO environments.</li>
+      </ul>
+      <h4>Capacity strategies (recap with addition)</h4>
+      <ul>
+        <li><b>Lead</b> — add capacity ahead of demand.</li>
+        <li><b>Lag</b> — add only after demand.</li>
+        <li><b>Straddle / overlap (match)</b> — small frequent additions tracking demand.</li>
+        <li><b>Load leveling (capacity smoothing)</b> — spread orders so work is even and feasible.</li>
+      </ul>
+      <h4>Inventory types</h4>
+      <ul>
+        <li><b>Cycle stock</b> — to fulfill demand during an order cycle (lot-sizing).</li>
+        <li><b>Safety stock</b> — buffer against <em>variability</em>.</li>
+        <li><b>Anticipation</b> — covers <em>known</em> events (promo, shutdown, season).</li>
+        <li><b>In-transit / pipeline</b> — moving between locations.</li>
+        <li><b>Buffer</b> (TOC) — protects throughput before the constraint.</li>
+        <li><b>Decoupling</b> — independence between operations.</li>
+        <li><b>Hedge</b> — protect against price/FX moves.</li>
+        <li><b>MRO</b> — supports operations; not in product.</li>
+      </ul>
+      <h4>Lot sizing rules</h4>
+      <ul>
+        <li><b>Lot-for-Lot (L4L)</b> — order exactly net requirement; min inventory, max ordering cost.</li>
+        <li><b>Fixed Order Quantity (FOQ)</b> — always a fixed multiple.</li>
+        <li><b>EOQ</b> — minimizes total ordering + holding cost (assumes constant, known demand).</li>
+        <li><b>POQ</b> — period order quantity covers fixed number of periods.</li>
+        <li><b>TPOP</b> (Time-Phased Order Point) — time-phased for independent demand items with lumpy patterns.</li>
+        <li><b>Safety lead time</b> — extra LT buffer added (vs. extra <em>quantity</em> via safety stock).</li>
+      </ul>
+      <h4>EOQ assumptions (limit its accuracy)</h4>
+      <ul>
+        <li>Constant, known demand &amp; lead time</li>
+        <li>Items arrive all at once</li>
+        <li>No quantity discounts</li>
+        <li>Only variable costs are ordering &amp; carrying</li>
+        <li>No stockouts</li>
+      </ul>
+      <p>EOQ is <b>robust</b> — total cost varies little across a range of order quantities near the optimum.</p>
+      <h4>Lean & quality detail</h4>
+      <ul>
+        <li><b>Jidoka</b> — automation with a human touch; machine stops on defect; pillar of TPS along with JIT.</li>
+        <li><b>Heijunka</b> — level production by mix and volume.</li>
+        <li><b>Kaizen event / Kaizen blitz</b> — focused 1-week cross-functional improvement of a process area.</li>
+        <li><b>Value stream map</b> — visual flow showing value-added and non-value-added time.</li>
+        <li><b>Eight wastes (DOWNTIME):</b> Defects · Overproduction · Waiting · Non-utilized talent · Transportation · Inventory · Motion · Extra-processing.</li>
+        <li><b>TPM</b> (Total Productive Maintenance) — preventive + continuous improvement of equipment by operators.</li>
+        <li><b>TQM</b> (Total Quality Management) — customer-driven, all-employee, continuous-improvement culture.</li>
+        <li><b>SPC</b> (Statistical Process Control) — control charts detect assignable causes vs. random variation.</li>
+        <li><b>Seven basic quality tools</b>: cause-effect (Ishikawa) · check sheet · control chart · histogram · Pareto chart · scatter diagram · stratification (or flow chart).</li>
+        <li><b>Five approaches to quality</b>: Transcendent · Product-based · User-based · Manufacturing-based · Value-based.</li>
+        <li><b>Quality of design</b> (does it satisfy customer needs?) vs. <b>quality of conformance</b> (does it meet specs?).</li>
+      </ul>
+      <h4>Drum-Buffer-Rope (TOC scheduling)</h4>
+      <ul>
+        <li><b>Drum</b> — the constraint; sets the pace.</li>
+        <li><b>Buffer</b> — TIME buffer placed BEFORE the constraint to prevent starvation.</li>
+        <li><b>Rope</b> — release rate of material tied to the constraint's consumption rate; prevents over-WIP.</li>
+      </ul>
+      <h4>Performance & inventory accuracy</h4>
+      <ul>
+        <li><b>Cycle counting</b> &gt; periodic counts; A items most often.</li>
+        <li><b>Inventory accuracy target</b>: 95–99%.</li>
+        <li><b>Configuration management</b> — control product data through lifecycle.</li>
+        <li><b>End-of-life management</b> — phase-out planning, lifetime buys.</li>
+        <li><b>Allocation</b> — quantities reserved for orders but not yet shipped.</li>
+        <li><b>Line-item fill rate</b> — % of order LINES filled completely. <b>Unit fill rate</b> — % of UNITS filled.</li>
+        <li><b>SKU</b> — unique stock-keeping unit code for tracking.</li>
+      </ul>
     `},
   ]
 });
@@ -559,7 +941,7 @@ MODULES.push({
   title:"Module 5 — Forward & Reverse Logistics",
   blurb:"Warehousing, materials handling, transportation modes & pricing, 3PL/4PL, reverse logistics, Incoterms.",
   sections:[
-    {open:true,title:"A. Logistics Value & 3PL / 4PL",body:`
+    {open:true,title:"A. Distribution Network",body:`
       <p><b>Logistics</b> manages the physical, informational and financial flows between supply chain entities — time, place, and form utility.</p>
       <div class="keyterm"><b>Seven Rs:</b> right product, right quantity, right condition, right place, right time, right customer, right cost.</div>
       <h4>Logistics service providers</h4>
@@ -579,55 +961,90 @@ MODULES.push({
         <li><b>Risk pooling</b> — centralizing inventory reduces total safety stock (variance adds in quadrature)</li>
       </ul>
     `},
-    {title:"B. Warehousing & Materials Handling",body:`
-      <h4>Warehouse strategy</h4>
+    {title:"B. Distribution Services & Transportation",body:`
+      <h4>Distribution services flow</h4>
+      <p><b>Receive → Put-away → Store → Pick → Pack → Ship</b>. <b>Cross-docking</b> bypasses storage by transferring inbound directly to outbound.</p>
       <ul>
-        <li><b>Owned</b> (private) — fixed cost, control; <b>leased</b> (public/contract) — variable, flexible.</li>
-        <li>Number of DCs: trade off transportation + inventory + facility costs. Adding DCs increases inventory (√n law) but decreases outbound transport.</li>
-        <li>Location: minimize landed cost, proximity to customers, labor, tax incentives.</li>
-      </ul>
-      <h4>Warehouse functions</h4>
-      <p>Receive → putaway → storage → picking → packing → shipping. <b>Cross-docking</b> = bypass storage, directly transfer inbound to outbound. <b>Pick-to-light</b>, voice-pick, and goods-to-person improve pick rates.</p>
-      <h4>Stock location methods</h4>
-      <ul>
-        <li><b>Fixed</b> location — each SKU has a home.</li>
-        <li><b>Random</b>/dynamic — any empty slot.</li>
-        <li><b>Zone</b> / <b>ABC velocity</b> — fast movers near ship area.</li>
+        <li><b>Receiving</b> — physical receipt, inspection, identification, receiving reports.</li>
+        <li><b>Put-away</b> — transport to storage, place, record location.</li>
+        <li><b>Order picking</b> — discrete, batch, zone, wave.</li>
+        <li><b>Shipping</b> — packaging, marking, weighing, loading.</li>
+        <li><b>Break-bulk</b> — divide truckloads into smaller quantities.</li>
       </ul>
       <h4>Materials handling</h4>
-      <p>Manual · mechanized (forklifts, conveyors, tow lines, cranes, carousels) · automated (AGV, AS/RS, sortation, robotics, live racks).</p>
-    `},
-    {title:"C. Transportation — Modes & Pricing",body:`
-      <h4>Five modes</h4>
+      <p>Manual · mechanized (forklifts, conveyors, tow lines, cranes, carousels) · automated (AGV, AS/RS, sortation, robotics, live racks). <b>Pick-to-light</b>, voice-pick, and goods-to-person improve pick rates.</p>
+      <h4>Stock location methods</h4>
+      <ul>
+        <li><b>Fixed</b> — each SKU has a home (familiar, more space).</li>
+        <li><b>Random/dynamic</b> — any empty slot (better utilization, needs WMS).</li>
+        <li><b>Zone / ABC velocity</b> — fast movers near ship area.</li>
+      </ul>
+      <h4>Transportation modes</h4>
       <table><tr><th>Mode</th><th>Best for</th><th>Cost / Speed</th></tr>
         <tr><td><b>Rail</b></td><td>Heavy, bulk, long land moves</td><td>Low cost / slow</td></tr>
-        <tr><td><b>Road / truck</b></td><td>Door-to-door, mid-distance</td><td>Medium cost / medium</td></tr>
+        <tr><td><b>Road / truck</b></td><td>Door-to-door, mid-distance — most flexible</td><td>Medium cost / medium</td></tr>
         <tr><td><b>Water</b></td><td>International bulk, low value/weight</td><td>Lowest / slowest</td></tr>
         <tr><td><b>Air</b></td><td>High value, perishable, urgent</td><td>Highest / fastest</td></tr>
-        <tr><td><b>Pipeline</b></td><td>Liquids, gases</td><td>Very low / slow</td></tr>
-        <tr><td><b>Intermodal</b></td><td>Container; two+ modes w/o rehandling</td><td>Balanced</td></tr></table>
+        <tr><td><b>Pipeline</b></td><td>Liquids, gases (continuous flow)</td><td>Very low / slow</td></tr>
+        <tr><td><b>Intermodal</b></td><td>Containers; two+ modes w/o rehandling</td><td>Balanced</td></tr></table>
       <h4>Truckload options</h4>
       <ul>
-        <li><b>FTL</b> (full truckload)</li>
-        <li><b>LTL</b> (less-than-truckload) — freight from multiple shippers, based on class &amp; distance</li>
-        <li><b>Parcel</b> — small packages, express carriers</li>
+        <li><b>FTL</b> — Full truckload (one shipper).</li>
+        <li><b>LTL</b> — Less-than-truckload; freight from multiple shippers, priced by class + distance.</li>
+        <li><b>Parcel</b> — small packages by express carriers.</li>
       </ul>
-      <h4>Freight rate & charges</h4>
+      <h4>Freight rates & charges</h4>
       <ul>
-        <li><b>Line-haul</b> — distance-based</li>
-        <li><b>Accessorial</b> — detention, fuel, lift-gate, inside delivery</li>
-        <li><b>Demurrage/detention</b> — equipment tie-up charges</li>
-        <li><b>FAK</b> (freight-all-kinds) — flat rate for mixed loads</li>
-        <li><b>Tariff</b> — published rate schedule</li>
+        <li><b>Line-haul</b> — distance-based.</li>
+        <li><b>Accessorial</b> — detention, fuel, lift-gate, inside delivery.</li>
+        <li><b>Demurrage / detention</b> — equipment tie-up charges beyond free time.</li>
+        <li><b>FAK</b> (Freight-All-Kinds) — flat rate for mixed loads.</li>
+        <li><b>Tariff</b> — published rate schedule.</li>
       </ul>
-      <h4>Roles & documentation</h4>
-      <ul>
-        <li><b>Shipper (consignor)</b>, <b>consignee</b>, <b>carrier</b>, <b>freight forwarder</b>, <b>customs broker</b>, <b>NVOCC</b>.</li>
-        <li><b>Bill of Lading (BOL)</b> — contract of carriage &amp; receipt of goods.</li>
-        <li><b>Commercial invoice</b>, <b>packing list</b>, <b>certificate of origin</b>, <b>letter of credit</b>.</li>
-      </ul>
+      <h4>Total-cost concept</h4>
+      <p>At equal service levels, minimize the SUM of logistics costs (transport + inventory + warehousing + handling) — not any single line item.</p>
+      <h4>Distribution intensity</h4>
+      <p><b>Intensive</b> (everywhere — convenience), <b>Selective</b> (limited — specialty), <b>Exclusive</b> (very few — luxury).</p>
     `},
-    {title:"D. Reverse Logistics & Sustainability in Logistics",body:`
+    {title:"C. Trade Considerations",body:`
+      <h4>Incoterms 2020</h4>
+      <p>ICC rules defining buyer/seller obligations for delivery, risk transfer, and cost in international shipments.</p>
+      <table><tr><th>Any mode</th><th>Sea / inland waterway only</th></tr>
+        <tr><td>EXW, FCA, CPT, CIP, DAP, DPU, DDP</td><td>FAS, FOB, CFR, CIF</td></tr></table>
+      <div class="keyterm"><b>EXW</b> = seller minimum (buyer collects at seller's premises).<br><b>DDP</b> = seller maximum (delivered, duty paid at buyer's named place).</div>
+      <h4>Trade classification & duties</h4>
+      <ul>
+        <li><b>HS code</b> — international Harmonized System product classification.</li>
+        <li><b>HTS</b> — US Harmonized Tariff Schedule.</li>
+        <li><b>Tariff</b> — official tax schedule on imports/exports.</li>
+        <li><b>Country of origin</b> — drives duty rate &amp; FTA eligibility.</li>
+        <li><b>Inverted duties</b> — when finished-good tariff is LOWER than component tariffs (discourages local manufacturing). FTZs help mitigate.</li>
+        <li><b>De minimis</b> — value threshold below which goods clear with simplified procedures.</li>
+      </ul>
+      <h4>Free Trade Zones (FTZ) & blocs</h4>
+      <ul>
+        <li><b>FTZ</b> — duty deferral, exemption on re-exports, inspection before paying, manufacture without inverted duties.</li>
+        <li><b>Trade bloc</b> — agreement reducing barriers (EU, USMCA, Mercosur).</li>
+        <li><b>CISG (Vienna Convention)</b> — uniform default rules for international goods sales.</li>
+      </ul>
+      <h4>Trade & customs roles</h4>
+      <ul>
+        <li><b>Shipper (consignor)</b>, <b>consignee</b>, <b>carrier</b>.</li>
+        <li><b>Freight forwarder</b> — arranges shipment between shipper and carrier; consolidates freight.</li>
+        <li><b>Customs broker</b> — clears goods through customs.</li>
+        <li><b>NVOCC</b> — non-vessel-operating common carrier; consolidates LCL freight without owning vessels.</li>
+      </ul>
+      <h4>Trusted-trader & security programs</h4>
+      <ul>
+        <li><b>C-TPAT</b> (US) · <b>AEO</b> (EU) — accelerated customs for security-certified firms.</li>
+        <li><b>ISO 28000</b> — supply chain security management.</li>
+      </ul>
+      <h4>Currency & financial risk</h4>
+      <p>Mitigations: <b>natural hedge</b> (match currency of revenues &amp; costs), forward contracts, currency clauses in supply agreements.</p>
+      <h4>Global trade management</h4>
+      <p>Optimizing international shipments for efficiency &amp; cash flow while ensuring regulatory compliance.</p>
+    `},
+    {title:"D. Reverse Flow",body:`
       <p><b>Reverse logistics</b> = flow of products/materials from the customer back toward origin for return, repair, remanufacture, recycle, or disposal.</p>
       <div class="keyterm"><b>5 Rs of reverse logistics:</b> Returns, Reselling, Repairs, Repackaging, Recycling.</div>
       <h4>Product recovery hierarchy (preferred → least)</h4>
@@ -643,6 +1060,79 @@ MODULES.push({
       <h4>Green / sustainable logistics</h4>
       <p>Route optimization, load consolidation, modal shift to rail/water, alt fuels, returnable packaging, carbon reporting (GHG Protocol).</p>
     `},
+    {title:"E. Warehousing Details & Trade Documentation",body:`
+      <h4>Warehouse types</h4>
+      <table><tr><th>Type</th><th>Pros</th><th>Cons</th></tr>
+        <tr><td><b>Private</b> (owned)</td><td>Customization, no markup, proximity</td><td>Capital tied up, fixed cost in downturns</td></tr>
+        <tr><td><b>Public</b> (shared)</td><td>No capital; pay-as-you-go; flexibility for new markets</td><td>Less control; service variability</td></tr>
+        <tr><td><b>Contract</b></td><td>Tailored services via long-term contract; cheaper than public</td><td>Less flexible than public; ties you to a partner</td></tr>
+        <tr><td><b>Distribution Center</b></td><td>Demand-driven rapid distribution; cross-dock or fulfillment</td><td>—</td></tr>
+      </table>
+      <h4>Standard distribution flow</h4>
+      <p><b>Receive → Put-away → Store → Pick → Pack → Ship</b>.</p>
+      <h4>Picking strategies</h4>
+      <ul>
+        <li><b>Discrete</b> — one order at a time.</li>
+        <li><b>Batch</b> — pick multiple orders together; reduce travel.</li>
+        <li><b>Zone</b> — pickers stay in zones; orders pass through.</li>
+        <li><b>Wave</b> — release groups of orders to align with shipping cutoffs.</li>
+      </ul>
+      <h4>Value-added warehouse services</h4>
+      <p>Installation · repacking · postponement · stocking (price/labels) · final assembly · kitting · labeling · returns processing.</p>
+      <h4>Distribution intensity</h4>
+      <ul>
+        <li><b>Intensive</b> — sell everywhere (convenience goods).</li>
+        <li><b>Selective</b> — limited outlets (specialty).</li>
+        <li><b>Exclusive</b> — very few outlets (luxury / B2B premium).</li>
+      </ul>
+      <h4>Logistics tradeoffs (total-cost concept)</h4>
+      <ul>
+        <li>Inventory ↔ transportation</li>
+        <li>Lot size ↔ inventory</li>
+        <li>Lead time ↔ transportation cost</li>
+        <li>Variety ↔ inventory</li>
+        <li>Service level ↔ cost</li>
+      </ul>
+      <p><b>Total-cost concept</b>: at equal service levels, minimize the SUM of logistics costs — not any single line item.</p>
+      <h4>Trade & customs detail</h4>
+      <ul>
+        <li><b>HS code</b> classifies goods globally; <b>HTS</b> = US version for tariffs.</li>
+        <li><b>Tariff</b> — official import/export tax schedule.</li>
+        <li><b>Trade bloc</b> — agreement reducing barriers (EU, USMCA).</li>
+        <li><b>Inverted duties</b> — tariffs on finished goods are LOWER than on components → manufacturing in country becomes uneconomic. <b>FTZs help</b>.</li>
+        <li><b>De minimis</b> — value threshold below which goods clear with simplified procedures.</li>
+        <li><b>Free Trade Zone benefits</b>: defer duties, exempt re-exports, inspection before paying, manufacture without inverted duties, simplified customs, indefinite storage.</li>
+        <li><b>Freight forwarder</b> — arranges shipment between shipper and carrier; consolidates freight.</li>
+        <li><b>Customs broker</b> — clears goods through customs.</li>
+        <li><b>NVOCC</b> — non-vessel-operating common carrier.</li>
+        <li><b>Common carrier</b> — public, regulated; must obtain certificate of public convenience.</li>
+      </ul>
+      <h4>Trade documents</h4>
+      <ul>
+        <li><b>Bill of Lading (B/L)</b> — receipt + contract of carriage + (negotiable) document of title.</li>
+        <li><b>Commercial invoice</b> — seller's bill describing goods, quantity, price.</li>
+        <li><b>Certificate of Origin</b> — country of manufacture; needed for tariff treatment.</li>
+        <li><b>ATR Certificate</b> — EU-Turkey free-circulation certificate.</li>
+        <li><b>Packing list</b> — items, weights, dimensions.</li>
+        <li><b>Customs declaration</b> — value &amp; nature of goods declared to customs.</li>
+        <li><b>Letter of Credit</b> — bank guarantee of payment if conditions met.</li>
+      </ul>
+      <h4>Reverse-logistics extras</h4>
+      <ul>
+        <li><b>Waste hierarchy</b>: Reduce &gt; Reuse &gt; Recycle &gt; Recovery &gt; Disposal.</li>
+        <li><b>GHS</b> — Globally Harmonized System for chemical hazard classification &amp; labelling.</li>
+        <li><b>Hazardous waste</b>, <b>clean technology</b>, <b>responsible landfill</b>, <b>total waste management</b>, <b>waste exchange</b>.</li>
+      </ul>
+      <h4>Other logistics terms</h4>
+      <ul>
+        <li><b>Sortation</b>, <b>staging area</b>, <b>stowability</b>, <b>density</b> (price by weight or cube), <b>perishability</b>, <b>hazmat</b>.</li>
+        <li><b>Spot-stocking</b> — temporary inventory near a market for promo/seasonal demand.</li>
+        <li><b>Accumulation</b> — combining small inbound shipments into one outbound.</li>
+        <li><b>Assortment assembly</b> — building mixed-product orders from single-product lots.</li>
+        <li><b>Aisle space</b> — typically 40–60% of warehouse floor.</li>
+        <li><b>Drop-ship</b> — direct from supplier to customer (bypassing seller's DC).</li>
+      </ul>
+    `},
   ]
 });
 
@@ -651,7 +1141,7 @@ MODULES.push({
   title:"Module 6 — Supply Chain Relationships",
   blurb:"CRM & SRM, segmentation, customer service metrics, relationship types, collaboration, performance management.",
   sections:[
-    {open:true,title:"A. Customer Relationship Management (CRM)",body:`
+    {open:true,title:"A. Customer Relationships",body:`
       <h4>Customer segmentation</h4>
       <p>Group customers so you can differentiate service. Common bases:</p>
       <ul>
@@ -678,7 +1168,7 @@ MODULES.push({
         <li><b>NPS</b>, CSAT, CES (effort)</li>
       </ul>
     `},
-    {title:"B. Supplier Relationship Management (SRM)",body:`
+    {title:"B. Supplier Relationships",body:`
       <p><b>SRM</b> = integrated approach to managing supplier interactions: selection, development, performance management, innovation, risk.</p>
       <h4>Relationship spectrum</h4>
       <p>Arm's-length → preferred → strategic → alliance → joint venture / integrated.</p>
@@ -694,7 +1184,7 @@ MODULES.push({
       <h4>SRM technology</h4>
       <p>Supplier portals, e-sourcing/e-auctions, contract lifecycle management (CLM), spend analytics, supplier info management (SIM).</p>
     `},
-    {title:"C. Collaboration & Integration",body:`
+    {title:"C. Relationship Management in Practice — Collaboration & Performance",body:`
       <h4>Collaboration continuum</h4>
       <ol>
         <li>Information sharing</li>
@@ -708,7 +1198,7 @@ MODULES.push({
       <h4>Trust & governance</h4>
       <p>Formal contracts + relational norms (trust, commitment, communication). Use joint steering committees, balanced scorecards, open-book costing.</p>
     `},
-    {title:"D. Performance Management & Metrics",body:`
+    {title:"D. Performance Management & SCOR Metrics",body:`
       <h4>SCOR-based metrics</h4>
       <p>The <b>SCOR</b> (Supply Chain Operations Reference) model defines 5 process areas (<b>Plan, Source, Make, Deliver, Return</b>) and three performance groups:</p>
       <ul>
@@ -720,6 +1210,56 @@ MODULES.push({
       <h4>Benchmarking</h4>
       <p>Compare KPIs vs. internal, competitive, functional, or generic best-in-class. Follow PDCA to close gaps.</p>
     `},
+    {title:"E. CRM Maturity, Stakeholders & Strategic Alliance Steps",body:`
+      <h4>CRM technology maturity</h4>
+      <ol>
+        <li><b>Disconnected</b> — multiple non-interfacing databases.</li>
+        <li><b>Interfacing</b> — systems feed into each other; some integration.</li>
+        <li><b>Internally integrated</b> — one main system across departments.</li>
+        <li><b>Multi-enterprise integrated</b> — partners share data; full SC collaboration.</li>
+      </ol>
+      <h4>Customer revenue strategies</h4>
+      <ul>
+        <li><b>Cross-selling</b> — sell related products (phone case after phone).</li>
+        <li><b>Up-selling</b> — sell premium versions / add-ons.</li>
+        <li><b>Lifetime customer value (LCV)</b> — total profit a customer generates over the relationship; key metric for segmentation &amp; retention investment.</li>
+      </ul>
+      <h4>Campaign management types</h4>
+      <ul>
+        <li><b>Prospecting</b> — acquire new customers.</li>
+        <li><b>Loyalty</b> — retain, cross-/up-sell.</li>
+        <li><b>Win-back</b> — recover lost customers.</li>
+        <li><b>Vulnerable</b> — prevent at-risk defection.</li>
+      </ul>
+      <h4>Customer service vocabulary</h4>
+      <ul>
+        <li><b>Customer service ratio</b> — MTS: % shipped on schedule. MTO: % jobs on time.</li>
+        <li><b>Churn</b> — customers leaving for better/cheaper alternatives.</li>
+        <li><b>VoC</b> — actual customer descriptions of desired functions/features.</li>
+        <li><b>Business intelligence</b> — gather, store, analyze data for better decisions.</li>
+        <li><b>Customer-driven</b> — culture in which all personnel work to meet/exceed customer expectations.</li>
+        <li><b>Portal</b> — secured web entry that aggregates data for partners or customers.</li>
+      </ul>
+      <h4>SRM relationship & supplier types</h4>
+      <ul>
+        <li><b>Strategic alliance</b> — share proprietary info, joint investments, linked processes.</li>
+        <li><b>Joint venture</b> — separate entity, shared ownership/risk.</li>
+        <li><b>Virtual organization</b> — short-term alliance to design/produce/distribute.</li>
+        <li><b>Tactical buying</b> — transactional, nonstrategic, standard items.</li>
+        <li><b>Supplier certification</b> — verifies supplier's ability to meet cost/quality/delivery/safety standards (often ISO).</li>
+        <li><b>Supplier development</b> — collaborate, share data, real-time design collaboration, remediation plan when underperforming.</li>
+      </ul>
+      <h4>Strategic alliance — 10-step process</h4>
+      <ol>
+        <li>Align internally</li><li>Select proper partner</li><li>Negotiate win-win</li>
+        <li>Establish ground rules / governance</li><li>Appoint dedicated alliance manager</li>
+        <li>Encourage collaboration</li><li>Build collaborative mindset</li><li>Manage multi-faceted relationships</li>
+        <li>Conduct pulse checks</li><li>Plan for change</li>
+      </ol>
+      <h4>Stakeholder & communication management</h4>
+      <p><b>Stakeholder Relationship Management</b> proactively addresses competing internal/external priorities to lower cost and increase buy-in. <b>Communication management plan</b> documents communication needs (format, dates, owners).</p>
+      <div class="tip"><b>Exam emphasis:</b> The expected benefit of collaborative SCM is <b>synchronizing supply and demand across the entire chain</b> — not maximizing any single firm's performance.</div>
+    `},
   ]
 });
 
@@ -728,7 +1268,7 @@ MODULES.push({
   title:"Module 7 — Supply Chain Risk",
   blurb:"Risk identification, analysis (qualitative & quantitative), response strategies, business continuity, security & compliance.",
   sections:[
-    {open:true,title:"A. Risk Management Framework",body:`
+    {open:true,title:"A. Risk Management Framework & Risk Identification",body:`
       <p>Risk = effect of uncertainty on objectives (ISO 31000). Can be positive (opportunity) or negative (threat).</p>
       <h4>Risk management process</h4>
       <ol>
@@ -748,7 +1288,7 @@ MODULES.push({
       <h4>Attitudes toward risk</h4>
       <p>Risk-averse, risk-neutral, risk-seeking. The <b>risk appetite</b> sets the level of risk the organization is willing to accept.</p>
     `},
-    {title:"B. Risk Identification & Types",body:`
+    {title:"B. Supply Chain Risks & Categories",body:`
       <h4>Risk register</h4>
       <p>Catalog of: risk ID, description, category, cause, probability, impact, owner, response plan, triggers, status.</p>
       <h4>Categories of supply chain risk</h4>
@@ -766,7 +1306,7 @@ MODULES.push({
       <h4>Loss of tangible vs. intangible assets</h4>
       <p>Tangible: inventory, facilities, equipment. Intangible: brand, customer trust, IP.</p>
     `},
-    {title:"C. Risk Analysis & Response",body:`
+    {title:"C. Risk Analysis and Response",body:`
       <h4>Qualitative analysis — P×I matrix</h4>
       <p>Score probability (Low/Med/High or 1–5) and impact (same scale). Multiply for risk score; plot on heat map. Use <b>urgency</b> and <b>data quality</b> modifiers.</p>
       <h4>Quantitative analysis</h4>
@@ -788,7 +1328,7 @@ MODULES.push({
       <h4>Action plans & triggers</h4>
       <p>Document triggers (early warning signals) and pre-defined responses. Use <b>contingency reserves</b> (budget/time) for known risks and <b>management reserves</b> for unknowns.</p>
     `},
-    {title:"D. Business Continuity, Security & Compliance",body:`
+    {title:"D. Business Continuity, Security & Insurance",body:`
       <h4>Business continuity planning (BCP)</h4>
       <p>Ensure critical processes continue through disruption.</p>
       <ul>
@@ -814,6 +1354,55 @@ MODULES.push({
         <li><b>Modern Slavery Act</b></li>
       </ul>
     `},
+    {title:"E. Quantitative Risk Methods & ISO Standards",body:`
+      <h4>Risk appetite vs. risk tolerance (commonly confused)</h4>
+      <table>
+        <tr><th>Term</th><th>Definition</th></tr>
+        <tr><td><b>Risk appetite</b></td><td>Amount/type of risk the organization is willing to <em>pursue</em> or retain in pursuit of objectives.</td></tr>
+        <tr><td><b>Risk tolerance</b></td><td>Readiness to <em>accept</em> a threat or potential negative outcome to achieve objectives.</td></tr>
+        <tr><td><b>Risk threshold</b></td><td>Specific quantitative limit at which a risk is escalated or treated.</td></tr>
+      </table>
+      <h4>Risk identification tools</h4>
+      <ul>
+        <li><b>Risk diagramming</b> — Ishikawa (cause-effect / fishbone), influence diagrams, fault trees, risk breakdown structures.</li>
+        <li><b>Due diligence</b> — investigation of partners' financial, legal, operational, reputational status before commitment.</li>
+        <li><b>FMEA</b> — Failure Mode &amp; Effects Analysis. Risk Priority Number = Severity × Occurrence × Detection.</li>
+        <li><b>Bow-tie analysis</b> — threats → event → consequences with preventive &amp; mitigating controls.</li>
+      </ul>
+      <h4>Insurance for supply chain risk</h4>
+      <table><tr><th>Policy</th><th>Covers</th></tr>
+        <tr><td><b>Property</b></td><td>Buildings, equipment, inventory at your or partners' sites.</td></tr>
+        <tr><td><b>Business interruption</b></td><td>Lost income from operational disruption (fire, disaster). <b>Contingent BI</b> covers losses caused at a supplier or customer.</td></tr>
+        <tr><td><b>Cargo</b></td><td>Damage or theft of goods in transit.</td></tr>
+        <tr><td><b>Trade disruption</b></td><td>Non-physical disruption — political risk, government appropriations, project cancellation.</td></tr>
+        <tr><td><b>Global logistics</b></td><td>Fills gaps for complex multi-country scenarios.</td></tr>
+        <tr><td><b>Cyber</b></td><td>Cyber attacks, breaches, ransomware, system outages.</td></tr></table>
+      <h4>Quantitative risk methods (more)</h4>
+      <ul>
+        <li><b>Risk rating</b> = Probability × Impact.</li>
+        <li><b>EMV</b> with response = (Reduced probability × Impact) + Cost of response. Choose option with lowest total expected cost.</li>
+        <li><b>Three-point estimate</b> = (Optimistic + Most Likely + Pessimistic) / 3.</li>
+        <li><b>PERT estimate</b> = (O + 4M + P) / 6 — weights most-likely 4×.</li>
+        <li><b>Value at Risk (VaR)</b> — sum of EMVs across all identified risks.</li>
+        <li><b>Sensitivity</b>, <b>simulation</b> (Monte Carlo).</li>
+      </ul>
+      <h4>ISO standards for risk &amp; continuity</h4>
+      <ul>
+        <li><b>ISO 31000:2018</b> — risk management principles &amp; guidelines.</li>
+        <li><b>ISO Guide 73:2009</b> — risk vocabulary.</li>
+        <li><b>ISO 31010</b> — risk assessment techniques.</li>
+        <li><b>ISO 22301:2019</b> — Business Continuity Management System (BCMS).</li>
+        <li><b>ISO 28000:2022</b> — supply chain security management.</li>
+      </ul>
+      <h4>SCRM, resilience, continuity</h4>
+      <ul>
+        <li><b>SCRM</b> — Supply Chain Risk Management.</li>
+        <li><b>Resilience</b> — anticipate, plan, recover.</li>
+        <li><b>Continuity</b> — strategic + tactical capability to keep operating at acceptable levels.</li>
+      </ul>
+      <h4>Common SC risk categories</h4>
+      <p>Supply disruption · Supplier compliance · Financial · Intellectual property · Cyber · Demand · Environmental/regulatory · Operational.</p>
+    `},
   ]
 });
 
@@ -822,10 +1411,17 @@ MODULES.push({
   title:"Module 8 — Optimization, Sustainability & Technology",
   blurb:"Strategy & SCOR, sustainability (TBL), emerging tech (IoT, AI, blockchain), continuous improvement, implementation.",
   sections:[
-    {open:true,title:"A. Strategy & Supply Chain Alignment",body:`
+    {open:true,title:"A. Supply Chain Strategy & Optimization",body:`
       <h4>Strategy hierarchy</h4>
       <p>Organizational strategy → Business strategy → Functional (supply chain, marketing, HR, IT).</p>
       <div class="keyterm"><b>Porter's generic strategies:</b> Cost leadership · Differentiation · Focus (cost-focus or differentiation-focus).</div>
+      <h4>Four generic strategies (extended)</h4>
+      <ol>
+        <li><b>Least cost</b> — compete on price.</li>
+        <li><b>Differentiation</b> — unique features, brand, quality.</li>
+        <li><b>Focus / Niche</b> — target a specific segment.</li>
+        <li><b>Best cost</b> — combine low cost with differentiation.</li>
+      </ol>
       <h4>Porter's Five Forces</h4>
       <ol>
         <li>Threat of new entrants</li>
@@ -834,88 +1430,184 @@ MODULES.push({
         <li>Threat of substitutes</li>
         <li>Competitive rivalry</li>
       </ol>
-      <h4>Business model components</h4>
-      <p>Value proposition · Target customer · Channels · Customer relationships · Revenue model · Key resources · Key activities · Key partners · Cost structure.</p>
-      <h4>Supply chain strategy archetypes</h4>
+      <h4>Business plan & business model components</h4>
       <ul>
-        <li><b>Efficient</b> (Fisher) — functional products, low cost.</li>
-        <li><b>Responsive</b> — innovative products, high variety.</li>
-        <li><b>Risk-hedging</b> — shared resources to pool risk.</li>
+        <li><b>Business plan</b> — long-range strategy with revenue/cost/profit objectives + budgets, projected balance sheet, cash flow.</li>
+        <li>Components: Value proposition · Target customer · Channels · Customer relationships · Revenue model · Key resources · Key activities · Key partners · Cost structure.</li>
+        <li><b>Competitive analysis</b> — competitor strategies, capabilities, prices, costs.</li>
+      </ul>
+      <h4>Supply chain strategy archetypes (Fisher / Lee)</h4>
+      <ul>
+        <li><b>Efficient</b> — functional products (predictable demand, low margin) → low cost.</li>
+        <li><b>Responsive</b> — innovative products (unpredictable, high margin) → flexibility.</li>
+        <li><b>Risk-hedging</b> — pool resources to share risk.</li>
         <li><b>Agile</b> — responsive + risk-hedging.</li>
       </ul>
-    `},
-    {title:"B. SCOR Model & Continuous Improvement",body:`
-      <h4>SCOR processes</h4>
-      <p><b>Plan · Source · Make · Deliver · Return · Enable.</b> Each has Level 1 (process type), Level 2 (category), Level 3 (element) detail.</p>
-      <h4>SCOR performance attributes</h4>
+      <h4>SCOR Model & continuous improvement</h4>
+      <p>SCOR (DS): <b>Orchestrate · Plan · Source · Order · Transform · Fulfill · Return</b>. Three metric levels (Level 1 = KPIs).</p>
       <table><tr><th>Attribute</th><th>Example Metric</th></tr>
         <tr><td>Reliability</td><td>Perfect order</td></tr>
         <tr><td>Responsiveness</td><td>Order fulfillment cycle time</td></tr>
         <tr><td>Agility</td><td>Upside supply chain flexibility</td></tr>
         <tr><td>Cost</td><td>Total supply chain cost, COGS</td></tr>
         <tr><td>Asset mgmt.</td><td>Cash-to-cash, inventory days</td></tr></table>
-      <h4>Continuous improvement</h4>
       <ul>
-        <li><b>Kaizen</b> — small incremental improvements, bottom-up.</li>
-        <li><b>Kaikaku</b> — radical transformation.</li>
-        <li><b>Benchmarking</b> — internal, competitive, functional, generic.</li>
-        <li><b>PDCA</b> &amp; <b>DMAIC</b> loops.</li>
-        <li><b>Lean Six Sigma</b> combines waste &amp; variation reduction.</li>
+        <li><b>Upside SC adaptability</b> · <b>Downside SC adaptability</b> · <b>Upside SC flexibility</b> — quantify how fast/much the chain can scale.</li>
+        <li><b>Kaizen</b> (incremental) vs. <b>Kaikaku</b> (radical) · <b>Benchmarking</b> (internal, competitive, functional, generic) · <b>PDCA</b> & <b>DMAIC</b> · <b>Lean Six Sigma</b>.</li>
       </ul>
       <h4>Change management</h4>
       <p><b>Kotter's 8 steps</b> (urgency, coalition, vision, communicate, empower, wins, consolidate, anchor) · <b>ADKAR</b> (Awareness, Desire, Knowledge, Ability, Reinforcement).</p>
-    `},
-    {title:"C. Sustainability — Triple Bottom Line",body:`
-      <div class="keyterm"><b>Triple Bottom Line (Elkington):</b> People · Planet · Profit — measure success across social, environmental, and economic dimensions.</div>
-      <h4>Standards & frameworks</h4>
+      <h4>Strategic & financial concepts</h4>
       <ul>
-        <li><b>GRI</b> — Global Reporting Initiative</li>
-        <li><b>ISO 14001</b> — environmental management systems</li>
-        <li><b>ISO 26000</b> — social responsibility</li>
-        <li><b>ISO 50001</b> — energy management</li>
-        <li><b>SA8000</b> — social accountability / labor</li>
-        <li><b>UN SDGs</b> — 17 sustainable development goals</li>
-        <li><b>CDP</b> — carbon disclosure</li>
-        <li><b>Science Based Targets (SBTi)</b> — decarbonization</li>
+        <li><b>Value chain</b> (Porter — internal value-adding) vs. <b>Value stream</b> (across firms).</li>
+        <li><b>Target costing</b> = market price − required profit − marketing/distribution cost.</li>
+        <li><b>EVA</b> (Economic Value Added) — profit above the cost of capital.</li>
+        <li><b>Bullwhip effect</b> — amplification of demand variability upstream; remedies via CPFR / VMI / shared POS.</li>
+        <li><b>Postponement</b> — delay differentiation to reduce risk.</li>
+        <li><b>DDMRP</b> — Demand-Driven MRP with strategic decoupling buffers.</li>
+      </ul>
+    `},
+    {title:"B. Sustainability",body:`
+      <div class="keyterm"><b>Triple Bottom Line (Elkington):</b> People · Planet · Profit — measure success across social, environmental, and economic dimensions.</div>
+      <h4>Sustainability standards & frameworks</h4>
+      <ul>
+        <li><b>UN Global Compact</b> — 10 principles (human rights, labor, environment, anti-corruption); the largest corporate sustainability initiative.</li>
+        <li><b>GRI Standards</b> — most-used sustainability reporting framework. GRI 101 = 10 reporting principles.</li>
+        <li><b>UN SDGs</b> — 17 Sustainable Development Goals (2015–2030). SDG 12 = Responsible Consumption & Production.</li>
+        <li><b>ISO 14000 / 14001</b> — environmental management.</li>
+        <li><b>ISO 26000</b> — social responsibility guidance.</li>
+        <li><b>ISO 50001</b> — energy management.</li>
+        <li><b>ISO 9000</b> — quality management.</li>
+        <li><b>SA8000</b> — auditable workplace human rights covering 8 areas: child labor, forced labor, H&S, freedom of association, discrimination, disciplinary practices, working hours, remuneration.</li>
+        <li><b>OECD Guidelines</b> — responsible business conduct for multinationals.</li>
+        <li><b>CDP</b> — carbon disclosure.</li>
+        <li><b>Science-Based Targets (SBTi)</b> — corporate emissions targets aligned with climate science.</li>
+        <li><b>GHG Protocol</b> — scopes 1, 2, 3 emissions accounting.</li>
+      </ul>
+      <h4>Compliance topics</h4>
+      <ul>
+        <li><b>Conflict minerals (3TG)</b> — tin, tantalum, tungsten, gold; Dodd-Frank §1502 disclosure.</li>
+        <li><b>Modern Slavery Act</b>.</li>
+        <li><b>Biodiversity</b> — increasingly part of sustainability disclosure.</li>
       </ul>
       <h4>Circular economy</h4>
-      <p>Design out waste, keep products/materials in use, regenerate natural systems. Principles of <b>reduce, reuse, recycle, recover, redesign</b>. Moves beyond linear "take-make-dispose."</p>
+      <p>Design out waste, keep products/materials in use, regenerate natural systems. Principles: <b>reduce, reuse, recycle, recover, redesign</b>. Replaces linear "take-make-dispose."</p>
       <h4>Green supply chain practices</h4>
       <ul>
         <li>Supplier code of conduct + audits</li>
         <li>Packaging reduction / returnable</li>
         <li>Network / mode optimization for CO₂</li>
         <li>Renewable energy in facilities</li>
-        <li>Product stewardship &amp; EPR</li>
-        <li>Life-cycle assessment (LCA, cradle-to-grave/gate)</li>
+        <li>Product stewardship & EPR</li>
+        <li>Life-Cycle Assessment (LCA, cradle-to-grave/gate)</li>
+        <li>Environmentally responsible manufacturing & environmentally sensitive engineering</li>
       </ul>
     `},
-    {title:"D. Emerging Technology",body:`
+    {title:"C. Emerging Technology Trends",body:`
       <h4>Core supply chain tech stack</h4>
       <ul>
         <li><b>ERP</b> — transactional system of record</li>
         <li><b>APS</b> — constraint-based planning</li>
-        <li><b>SCM control tower</b> — end-to-end visibility, exception management</li>
+        <li><b>SCM control tower</b> — centralized end-to-end visibility, exception management, decision support</li>
         <li><b>WMS / TMS / YMS</b></li>
         <li><b>PLM</b> — product lifecycle management</li>
         <li><b>MES</b> — manufacturing execution</li>
       </ul>
-      <h4>Advanced & emerging</h4>
+      <h4>Advanced & emerging technologies</h4>
       <ul>
-        <li><b>IoT</b> — sensors, RFID, connected assets.</li>
-        <li><b>Big data / cloud</b> — scalable compute &amp; storage.</li>
-        <li><b>AI / ML</b> — demand sensing, anomaly detection, dynamic pricing, computer vision QC.</li>
-        <li><b>Robotics &amp; automation</b> — AS/RS, AMR, cobots, automated sortation.</li>
-        <li><b>3D printing / additive</b> — spare parts, customization, postponement.</li>
-        <li><b>Blockchain / DLT</b> — provenance, smart contracts, reduced counterfeit.</li>
-        <li><b>Digital twin</b> — virtual replica for simulation &amp; optimization.</li>
-        <li><b>Autonomous vehicles / drones</b>.</li>
+        <li><b>IoT</b> — sensors, RFID, connected assets; remote sensing/control.</li>
+        <li><b>Big data / cloud computing</b> — scalable compute & storage; shifts Capex → Opex.</li>
+        <li><b>AI / Machine Learning</b> — demand sensing, anomaly detection, dynamic pricing, computer-vision QC, predictive maintenance.</li>
+        <li><b>Robotics & automation</b> — AS/RS, AMR/AGVS, sortation.</li>
+        <li><b>Cobots</b> — collaborative robots designed to work alongside humans.</li>
+        <li><b>3D printing / additive manufacturing</b> — spare parts, customization, postponement.</li>
+        <li><b>Blockchain / DLT</b> — distributed immutable ledger; provenance, smart contracts.</li>
+        <li><b>Digital twin</b> — virtual replica for simulation & optimization.</li>
+        <li><b>Autonomous vehicles</b> — self-driving long-haul.</li>
+        <li><b>Drones (UAVs)</b> — last-mile delivery, inventory counting, inspection.</li>
+        <li><b>Wearable</b> — hands-free voice/gesture for warehousing.</li>
+        <li><b>Sensors & telematics</b> — real-time condition monitoring + GPS + diagnostics.</li>
+        <li><b>RPA</b> — Robotic Process Automation; rules-based repetitive tasks.</li>
+        <li><b>Quantum computing</b> — emerging tech for combinatorial / optimization problems.</li>
         <li><b>AR/VR</b> — training, pick-by-vision.</li>
+        <li><b>Analytics</b> — review of large data sets to identify patterns for decisions.</li>
       </ul>
       <h4>Implementation & adoption</h4>
-      <p>Build business case (ROI / NPV) · pilot · scale · sustain. Consider data readiness, integration, governance, people/skills, cyber security. Beware of <b>shiny-object syndrome</b> — tech must serve the strategy.</p>
+      <p>Build business case (ROI / NPV) → pilot → scale → sustain. Consider data readiness, integration, governance, people/skills, cybersecurity. Beware of <b>shiny-object syndrome</b> — tech must serve the strategy.</p>
       <h4>Omni-channel & digital customer experience</h4>
-      <p>Integrate physical, digital, and mobile channels around the customer. Supply chain enabling: ship-from-store, BOPIS (buy online pick up in-store), curbside, ship-to-home, returns-anywhere. Unified inventory visibility and fulfillment orchestration.</p>
+      <p>Integrate physical, digital, and mobile channels. SC enabling: ship-from-store, BOPIS (buy online pick up in-store), curbside, ship-to-home, returns-anywhere. Unified inventory visibility & fulfillment orchestration.</p>
+    `},
+    {title:"D. Standards, Accreditations & Certifications",body:`
+      <h4>Accreditation vs. certification</h4>
+      <ul>
+        <li><b>Accreditation</b> — certification BY a recognized body of an organization's facilities, capability, and integrity to provide specific services. (Certifying the certifier.)</li>
+        <li><b>Certification</b> — documentation of competency by a supplier or organization (ASCM, ISO).</li>
+        <li><b>Registration</b> — process of having an accredited third-party auditor verify conformance to ISO standards. Sometimes used interchangeably with certification.</li>
+      </ul>
+      <h4>Key standards (cross-domain)</h4>
+      <ul>
+        <li><b>ISO 9000 / 9001</b> — quality management.</li>
+        <li><b>ISO 14000 / 14001</b> — environmental management.</li>
+        <li><b>ISO 26000</b> — social responsibility guidance.</li>
+        <li><b>ISO 27001</b> — information security management.</li>
+        <li><b>ISO 28000</b> — supply chain security management.</li>
+        <li><b>ISO 31000</b> — risk management principles.</li>
+        <li><b>ISO 22301</b> — business continuity management.</li>
+        <li><b>ISO 50001</b> — energy management.</li>
+        <li><b>ISO 45001</b> — occupational H&S management.</li>
+        <li><b>SA8000</b> — social accountability (labor & human rights).</li>
+        <li><b>ANSI Z.10</b> — voluntary occupational H&S standard, compatible with ISO 9000/14000.</li>
+      </ul>
+      <h4>Trade & customs programs</h4>
+      <ul>
+        <li><b>C-TPAT</b> (US Customs-Trade Partnership Against Terrorism)</li>
+        <li><b>AEO</b> (EU Authorized Economic Operator)</li>
+        <li><b>TAPA</b> — Transported Asset Protection Association</li>
+        <li><b>CISG</b> — Vienna Convention (international goods sales)</li>
+      </ul>
+      <h4>Manufacturing & engineering practices</h4>
+      <ul>
+        <li><b>Environmentally responsible manufacturing</b> — design, facilities, processes, logistics, suppliers chosen to reduce/eliminate waste.</li>
+        <li><b>Environmentally sensitive engineering</b> — design with end-of-life disposal in mind.</li>
+        <li><b>Feasibility study</b> — viability check (technical, economic, operational) before committing.</li>
+      </ul>
+    `},
+    {title:"E. Frameworks, Maturity Stages & Additional Key Terms",body:`
+      <h4>Five stages of supply chain maturity</h4>
+      <ol>
+        <li><b>Multiple dysfunction</b> — silos, no shared data, reactive firefighting.</li>
+        <li><b>Semifunctional enterprise</b> — defined functions, sequential not collaborative; basic MRP.</li>
+        <li><b>Integrated enterprise</b> — process focus; ERP &amp; S&amp;OP enable internal integration.</li>
+        <li><b>Extended enterprise</b> — at least one business process extends BEYOND the company; CPFR/VMI.</li>
+        <li><b>Orchestrated supply chain</b> — full digital transformation (Industrie 4.0); competitive advantage relative to competing chains.</li>
+      </ol>
+      <h4>Master-data lifecycle</h4>
+      <p><b>Create → Update → Cleanse → Retire</b> — manage records throughout their useful life with proper governance.</p>
+      <h4>Strategic Alliance — 10 steps (recap)</h4>
+      <ol><li>Align internally</li><li>Select proper partner</li><li>Negotiate win-win</li><li>Establish ground rules</li><li>Appoint dedicated alliance manager</li><li>Encourage collaboration</li><li>Build collaborative mindset</li><li>Manage multi-faceted relationship</li><li>Conduct pulse checks</li><li>Plan for change</li></ol>
+      <h4>Additional ECM key terms</h4>
+      <ul>
+        <li><b>Agility</b> — quickly adapt strategy to unexpected demand/supply changes.</li>
+        <li><b>Resilience</b> — recover from or adjust to disruption.</li>
+        <li><b>Concurrent engineering / ESI</b> — early supplier involvement in product design reduces cost &amp; time.</li>
+        <li><b>Drop ship / Direct shipment</b> — direct supplier-to-customer delivery, bypassing seller's warehouse.</li>
+        <li><b>Hedge inventory</b> — buffer or financial instrument against price/FX fluctuations.</li>
+        <li><b>Horizontal marketplace</b> — across industries; <b>Vertical marketplace</b> — within one industry; <b>Private trading exchange</b> — single-firm hosted.</li>
+        <li><b>Spend management</b> — total outflow management across procurement, outsourcing, and SCM.</li>
+        <li><b>Gap analysis</b> — actual product/service performance vs. customer expectations.</li>
+        <li><b>Learning curve</b> — task time decreases with repetition.</li>
+        <li><b>Heuristic</b> — rule-of-thumb solution; common in scheduling, lot sizing, forecasting.</li>
+        <li><b>Work breakdown structure (WBS)</b> — hierarchical decomposition of project deliverables.</li>
+        <li><b>Product traceability</b> — ability to trace a product's history, application, or location for recall, regulatory, quality.</li>
+        <li><b>Chain of custody</b> — documented unbroken trail of possession from origin to destination (pharma, food, conflict minerals).</li>
+      </ul>
+      <h4>Master-data lifecycle</h4>
+      <p><b>Create → Update → Cleanse → Retire</b> — manage records throughout their useful life with proper governance.</p>
+      <h4>Product traceability & chain of custody</h4>
+      <ul>
+        <li><b>Traceability</b> — ability to trace a product's history, application, or location (recall, regulatory, quality).</li>
+        <li><b>Chain of custody</b> — documented unbroken trail of possession (pharma, food, conflict minerals).</li>
+      </ul>
     `},
   ]
 });
@@ -1139,6 +1831,210 @@ fc("m8","Omni-channel","Unified customer experience across physical, digital, mo
 fc("m8","BOPIS","Buy Online, Pick up In-Store — omni-channel fulfillment using store inventory.");
 fc("m8","Control tower","Centralized end-to-end visibility, exception management, and decision support across the chain.");
 
+/* ===== Additional flashcards for newly added concepts ===== */
+/* Module 1 additions */
+fc("m1","Keiretsu","Japanese form of cooperative relationship among legally independent companies that work closely together, often centered on a bank/trading company. Underpins long-term lean supplier relationships.");
+fc("m1","Order qualifier","Competitive characteristic that must be met just to be considered. Failing it loses orders; being better at it doesn't win them.");
+fc("m1","Order winner","Competitive characteristic that causes customers to choose your product over competitors (e.g., delivery speed, quality, design).");
+fc("m1","Order loser","Characteristic that drives customers AWAY (poor quality, late delivery, high price when price is a qualifier).");
+fc("m1","Make-to-Stock (MTS)","Finished goods built before order; shortest customer lead time; lowest variety. Decoupling point at finished goods.");
+fc("m1","Assemble-to-Order (ATO)","Modules/subassemblies stocked; final assembly on order. Balances variety and lead time.");
+fc("m1","Make-to-Order (MTO)","Production begins after customer order; raw materials only stocked; long lead time.");
+fc("m1","Engineer-to-Order (ETO)","Custom design after order; longest lead time; highest variety.");
+fc("m1","Package-to-Order (PTO)","Common physical product; packaging delayed until order — supports postponement and many regional/customer SKUs.");
+fc("m1","Customer Order Decoupling Point (CODP)","Point in chain where production switches from forecast-driven (push) to order-driven (pull). MTS = all push; ETO = all pull.");
+fc("m1","Level production strategy","Stable production rate; vary inventory to absorb demand swings.");
+fc("m1","Chase production strategy","Vary production each period to match demand using overtime, hiring, outsourcing.");
+fc("m1","Hybrid production strategy","Combine level + chase to minimize total cost.");
+fc("m1","Echelon","Level of supply chain nodes (factory, DC, retail). Each adds cost, inventory, cycle time, and expects profit.");
+fc("m1","Service industry definition","All organizations except farming, mining, and manufacturing.");
+fc("m1","MSE","Mean Squared Error — Σ(Actual−Forecast)²/n. Penalizes large errors more than MAD.");
+fc("m1","R-squared","Goodness-of-fit of regression; 1 = perfect fit, 0 = no relationship. High R² ≠ causation.");
+fc("m1","Life-cycle analysis (analog forecasting)","Apply demand patterns from a similar prior product to forecast a new launch.");
+fc("m1","1 MAD ≈ ?% service","≈80% service. 2 MAD ≈ 95%, 3 MAD ≈ 99%.");
+fc("m1","σ vs MAD","1σ ≈ 84% service · σ ≈ 1.25 × MAD.");
+fc("m1","Product family","Group of items with similar processes/equipment used for aggregate planning in S&OP.");
+fc("m1","Backlog","Customer orders received but not yet shipped.");
+fc("m1","Customer service ratio","MTS: % items/$ shipped on schedule. MTO: % jobs shipped on time.");
+fc("m1","S&OP reconciliation","Step where supply and demand plans are compared and imbalances resolved before executive approval.");
+
+/* Module 2 additions */
+fc("m2","Sunk cost","Past cost already paid; irrelevant to future decisions — only future incremental costs matter.");
+fc("m2","ATP vs CTP vs PTP","ATP = available against inventory/MPS · CTP = capable also against capacity · PTP = profitable-to-promise (orders prioritized by margin).");
+fc("m2","DuPont / Strategic Profit Model","ROA = Net Profit Margin × Asset Turnover. Shows how supply chain affects both numerator (cost) and denominator (assets).");
+fc("m2","Net Profit Margin","Net Profit / Net Sales.");
+fc("m2","Asset Turnover","Net Sales / Total Assets.");
+fc("m2","Working Capital","Current Assets − Current Liabilities.");
+fc("m2","Altman Z-Score","Bankruptcy-prediction formula. >2.99 safe; 1.81–2.99 grey; <1.81 distress. Used in supplier risk assessment.");
+fc("m2","Capex vs Opex","Capex = long-term assets (equipment, owned software). Opex = ongoing operations (SaaS, supplies). Cloud shifts Capex → Opex.");
+fc("m2","Letter of Credit","Bank guarantee of payment to seller upon proof of compliance with shipment terms — reduces international payment risk.");
+fc("m2","Liquidity ratios","Measure short-term solvency (current = CA/CL, quick = (CA−Inv)/CL).");
+fc("m2","Activity ratios","Measure asset utilization — inventory turnover, asset turnover, AR turnover, days of supply.");
+fc("m2","Leverage ratios","Measure use of debt — debt-to-equity, debt-to-assets.");
+fc("m2","Suboptimization","Optimizing one part of a system at the expense of overall results.");
+fc("m2","AIDC","Automatic Identification & Data Capture — barcodes, RFID, EPC, smart cards, voice, pick-to-light.");
+fc("m2","EPC","Electronic Product Code — globally unique identifier carried by RFID for an item, case, or pallet.");
+fc("m2","Active vs passive RFID","Active = self-powered (long range); Passive = powered by reader (cheap, short range); Semipassive = battery-assisted.");
+fc("m2","Middleware","Software enabling communication between systems not designed to interact (EDI translators, ESB).");
+fc("m2","Legacy system","Old, hard-to-replace business application with poor interfaces.");
+fc("m2","DSS","Decision Support System — helps managers evaluate alternatives via quantitative analysis.");
+fc("m2","Microservices","Software built as small, independent services for flexibility, easier updates, and scale (vs. monolithic).");
+fc("m2","Aggregation / risk pooling","Pooling demand reduces relative variance — basis for centralized inventory and risk pooling.");
+fc("m2","Master data lifecycle","Create → Update → Cleanse → Retire.");
+fc("m2","Order fulfillment dwell time","Lead time caused by CUSTOMER requirements during fulfillment; should NOT be deducted from order-fulfillment cycle time.");
+fc("m2","Backorder","Unfilled or past-due demand against insufficient inventory.");
+fc("m2","Inventory shrinkage","Losses from scrap, theft, deterioration, evaporation.");
+fc("m2","SCOR DS Level-1 processes","Orchestrate · Plan · Source · Order · Transform · Fulfill · Return.");
+
+/* Module 3 additions */
+fc("m3","Single sourcing","ONE supplier used by CHOICE — alternatives exist (lean strategy).");
+fc("m3","Sole sourcing","Only ONE supplier is AVAILABLE (patents, tooling). Forced, not chosen.");
+fc("m3","Multi-sourcing","Procuring from multiple suppliers for the same item to ensure continuity or foster competition.");
+fc("m3","Forward auction","One seller, many buyers bidding UP. Used for unique/scarce goods.");
+fc("m3","Reverse auction","One buyer, many sellers bidding DOWN. Used for commodities; price-driven sourcing.");
+fc("m3","Dutch auction","Price starts HIGH and lowers; first bid = contract. Used for Treasury securities.");
+fc("m3","Three-way match","Payment authorized only when PO + Receiving Report + Invoice all agree. Anti-fraud control.");
+fc("m3","Net cost","Gross cost − discounts − rebates − allowances.");
+fc("m3","Ongoing costs","Costs continuing throughout supplier relationship: quality mgmt, performance monitoring, audits, admin.");
+fc("m3","Postponement","Deliberately delaying final differentiation until the latest possible time. Reduces risk and excess finished goods.");
+fc("m3","Mass customization","High variety + mass-production efficiency, primarily through postponement and modular design.");
+fc("m3","Modular design","Components/subassemblies that can be combined into multiple end products.");
+fc("m3","Glocalization","Global product modified for local laws/customs/tastes — a form of postponement.");
+fc("m3","QFD","Quality Function Deployment — translates Voice of the Customer into design specs using the House of Quality matrix.");
+fc("m3","DFX family","DFM (manufacturability), DFA (assembly), DFMA (both), DFQ (quality), DFSS (six sigma), DFE (environment), DFS (service), Design for SC/Logistics.");
+fc("m3","Standardization","Establishing standard parts/processes; reduces variety and cost.");
+fc("m3","Simplification","Removing complexity from a product/service to improve quality and cut cost.");
+fc("m3","Universality","Designing for one market so it can also sell in others.");
+fc("m3","Insourcing","Using the firm's internal resources (opposite of outsourcing).");
+fc("m3","Subcontracting","Sending production work outside to another manufacturer (typically capacity overflow / specialty).");
+fc("m3","Nearshoring","Moving operations to a NEARBY country (US→Mexico). Shorter lead times, similar time zones, lower transport.");
+fc("m3","Reshoring","Bringing operations BACK to home country after offshoring.");
+fc("m3","CISG","UN Convention on Contracts for International Sale of Goods (Vienna Convention) — uniform default rules for international trade.");
+fc("m3","Multidomestic / multicountry strategy","Each country market is self-contained with unique products and local production.");
+fc("m3","CTX","Consortia Trade Exchange — owned by an industry group (e.g., Covisint).");
+fc("m3","Blanket PO","Long-term commitment with short-term releases against it.");
+
+/* Module 4 additions */
+fc("m4","Dependent vs independent demand","Dependent = derived from BOM (calculated). Independent = unrelated to other items (forecasted).");
+fc("m4","Pegging","Tracing gross requirements upstream to find the parent that caused them ('active where-used').");
+fc("m4","CTP (Capable-to-Promise)","ATP that also considers finite capacity and resources.");
+fc("m4","Firm Planned Order","MRP order frozen in quantity and time; not auto-changed by MRP.");
+fc("m4","Demand Time Fence (DTF)","Inside this boundary, only customer orders drive the schedule (forecasts ignored).");
+fc("m4","Planning Time Fence (PTF)","Inside this boundary, the planner controls changes (system can't auto-adjust planned orders).");
+fc("m4","Frozen / Slushy / Liquid zones","Frozen = inside DTF (no changes); Slushy = between DTF and PTF (planner control); Liquid = beyond PTF (system free).");
+fc("m4","MRP system nervousness","Excessive replanning from small MPS changes. Remedies: FPOs, time fences, larger lots.");
+fc("m4","MRP II","Manufacturing Resource Planning — closed-loop MRP + business/financial planning + simulation. Predecessor to ERP.");
+fc("m4","Closed-loop MRP","MRP with feedback from execution back to planning + capacity planning + shop floor + purchasing.");
+fc("m4","DDMRP","Demand-Driven MRP — uses strategic decoupling buffers; reduces nervousness; aligns to actual demand.");
+fc("m4","Lot-for-Lot","Order exactly the net requirement each period; min inventory, max ordering cost.");
+fc("m4","FOQ","Fixed Order Quantity — always a fixed multiple.");
+fc("m4","POQ","Period Order Quantity — order covers fixed number of periods.");
+fc("m4","TPOP","Time-Phased Order Point — MRP-like logic for independent demand items with lumpy patterns.");
+fc("m4","Safety lead time","Extra LT buffer added (vs. extra QUANTITY via safety stock).");
+fc("m4","EOQ assumptions","Constant known demand & LT, items arrive together, no qty discounts, only ordering+holding costs, no stockouts.");
+fc("m4","Single-level BOM","Shows only immediate components of a parent.");
+fc("m4","Multilevel (indented) BOM","All components at all levels down to raw material.");
+fc("m4","Planning BOM","Artificial BOM with option percentages for product family forecasting (not buildable).");
+fc("m4","Phantom BOM","Non-stocked subassembly; MRP passes through it.");
+fc("m4","Modular BOM","Organized by major options/subassemblies for ATO environments.");
+fc("m4","Jidoka","Automation with a human touch — machine stops on defect. Pillar of TPS along with JIT.");
+fc("m4","Kaizen event / blitz","Focused 1-week cross-functional improvement of a process area.");
+fc("m4","TPM","Total Productive Maintenance — preventive maintenance + continuous improvement, operator-led.");
+fc("m4","TQM","Total Quality Management — customer-driven, all-employee, continuous-improvement culture.");
+fc("m4","SPC","Statistical Process Control — control charts detect assignable causes vs. random variation.");
+fc("m4","Seven basic quality tools","Cause-effect (Ishikawa), check sheet, control chart, histogram, Pareto chart, scatter, stratification (or flow chart).");
+fc("m4","Five approaches to quality","Transcendent · Product-based · User-based · Manufacturing-based · Value-based.");
+fc("m4","Quality of design vs conformance","Design = customer satisfaction with features. Conformance = absence of defects vs spec.");
+fc("m4","Drum-Buffer-Rope","Drum = constraint pace; Buffer = TIME buffer before constraint; Rope = ties material release to constraint consumption.");
+fc("m4","Cycle counting","Counting inventory continuously on a cyclic schedule (A items most often). Better than annual physical counts.");
+fc("m4","Inventory accuracy target","95–99% of items within tolerance.");
+fc("m4","Allocation","Quantities reserved for orders or production but not yet shipped/released.");
+fc("m4","Line-item fill rate","% of order LINES filled completely from stock.");
+fc("m4","SKU","Stock Keeping Unit — unique code identifying inventory at a particular location.");
+
+/* Module 5 additions */
+fc("m5","Private vs public vs contract warehouse","Private = owned (control, fixed cost). Public = pay-per-use (flexibility, less control). Contract = long-term tailored (between).");
+fc("m5","Picking strategies","Discrete · Batch · Zone · Wave.");
+fc("m5","Distribution intensity","Intensive (everywhere) · Selective (limited) · Exclusive (very few).");
+fc("m5","Inverted duties","Tariffs on finished goods are LOWER than on components — discourages local manufacturing. FTZs help avoid this.");
+fc("m5","De minimis","Value threshold below which imported goods clear customs with simplified procedures.");
+fc("m5","FTZ benefits","Defer duties, exempt re-exports, inspect before paying, manufacture without inverted duties, simplified customs.");
+fc("m5","HS vs HTS","HS = international product classification; HTS = US Harmonized Tariff Schedule.");
+fc("m5","Trade bloc","Agreement between countries to reduce trade barriers (EU, USMCA).");
+fc("m5","Total-cost concept","All logistics decisions at equal service levels should minimize TOTAL logistics cost — not any single category.");
+fc("m5","Spot-stocking","Temporarily placing inventory near a market for promotion or seasonal peak.");
+fc("m5","Accumulation","Combining smaller inbound shipments into one efficient outbound.");
+fc("m5","Assortment assembly","Building mixed-product orders from single-product lots.");
+fc("m5","Aisle space","Typically 40–60% of warehouse floor space; must be planned in capacity.");
+fc("m5","Density (transport)","Weight per unit volume; carriers price by whichever yields more revenue.");
+fc("m5","Stowability","How easily goods can be packed and stored in a vehicle/warehouse.");
+fc("m5","Hazmat","Hazardous materials — special handling, packaging, labeling, documentation required.");
+fc("m5","GHS","Globally Harmonized System for chemical hazard classification & labeling.");
+fc("m5","Waste hierarchy","Reduce > Reuse > Recycle > Recovery > Disposal.");
+fc("m5","Common carrier","Public, regulated transport available to anyone; must obtain certificate of public convenience.");
+fc("m5","Drop-ship","Direct shipment from supplier to end customer, bypassing the seller's warehouse.");
+fc("m5","ATR Certificate","EU-Turkey free-circulation document giving zero-duty treatment.");
+
+/* Module 6 additions */
+fc("m6","CRM technology maturity","Disconnected → Interfacing → Internally Integrated → Multi-Enterprise Integrated.");
+fc("m6","Cross-selling","Selling related products (phone case after phone).");
+fc("m6","Up-selling","Encouraging premium versions or add-ons.");
+fc("m6","Lifetime customer value","Total profit a customer generates over the entire relationship; key metric for CRM investment.");
+fc("m6","Campaign types","Prospecting (acquire), Loyalty (retain/cross-sell), Win-back (recover), Vulnerable (prevent defection).");
+fc("m6","Churn","Customers leaving for better/cheaper alternatives.");
+fc("m6","Joint venture","Separate entity created by two+ organizations sharing ownership, risk, returns for a specific objective.");
+fc("m6","Virtual organization","Short-term alliance between independent organizations to design/produce/distribute a product.");
+fc("m6","Tactical buying","Transactional, nonstrategic purchasing of standard items with stable specs and reliable quality.");
+fc("m6","Supplier certification","Verifying supplier operates effective procedures (cost, quality, delivery, ISO).");
+fc("m6","Strategic alliance 10 steps","Align internally → select partner → win-win → ground rules → alliance manager → encourage collaboration → corporate mindset → manage multi-faceted → pulse checks → plan for change.");
+fc("m6","Expected benefit of collaborative SCM","Synchronizing supply and demand across the ENTIRE chain (not maximizing one firm).");
+
+/* Module 7 additions */
+fc("m7","Risk appetite vs tolerance","Appetite = willingness to PURSUE risk. Tolerance = readiness to ACCEPT negative outcomes.");
+fc("m7","Risk threshold","Specific quantitative limit at which a risk is escalated or treated.");
+fc("m7","FMEA","Failure Mode & Effects Analysis. RPN = Severity × Occurrence × Detection.");
+fc("m7","Three-point estimate","(Optimistic + Most Likely + Pessimistic) / 3.");
+fc("m7","PERT estimate","(O + 4M + P) / 6 — weights most-likely 4×.");
+fc("m7","Value at Risk (VaR)","Sum of EMVs across all identified risks; total expected loss.");
+fc("m7","BCMS","Business Continuity Management System (per ISO 22301).");
+fc("m7","Contingent BI insurance","Business Interruption insurance covering losses caused at a SUPPLIER or CUSTOMER (not your own facility).");
+fc("m7","Trade disruption insurance","Covers non-physical disruption — political risk, government appropriation, project cancellation.");
+fc("m7","Cargo insurance","Covers damage or theft of goods in transit.");
+fc("m7","Risk diagramming","Cause-effect (Ishikawa), influence diagrams, fault trees, risk breakdown structures.");
+fc("m7","Due diligence","Comprehensive investigation of partners' financial, legal, operational, reputational status before commitment.");
+fc("m7","ISO 22301","Business Continuity Management System standard.");
+
+/* Module 8 additions */
+fc("m8","Four generic strategies","Least cost, Differentiation, Focus/Niche, Best cost.");
+fc("m8","Functional vs innovative product","Functional → efficient (lean) chain. Innovative → responsive (agile) chain.");
+fc("m8","Upside SC adaptability","Max % increase in product quantities deliverable in a given timeframe.");
+fc("m8","Downside SC adaptability","% reduction in order quantities sustainable 30 days before delivery without penalty.");
+fc("m8","Upside SC flexibility","Days to achieve an unplanned 20% increase in quantities delivered.");
+fc("m8","Target costing","Target manufacturing cost = market price − desired profit − marketing/distribution cost.");
+fc("m8","DDMRP","Demand-Driven MRP — strategic decoupling buffers; closer to actual demand.");
+fc("m8","UN Global Compact","Ten principles in human rights, labor, environment, anti-corruption — world's largest corporate sustainability initiative.");
+fc("m8","SA8000 areas","Child labor · Forced labor · H&S · Freedom of association · Discrimination · Disciplinary practices · Working hours · Remuneration.");
+fc("m8","Accreditation vs certification","Accreditation = certifying the certifier. Certification = third-party verification of compliance.");
+fc("m8","Registration (ISO)","Process of having an accredited third-party auditor verify conformance to ISO standards.");
+fc("m8","Feasibility study","Analysis of project viability (technical, economic, operational) before committing.");
+fc("m8","Concurrent engineering / ESI","Cross-functional product design w/ early supplier involvement; reduces time and cost.");
+fc("m8","Drop ship / direct shipment","Shipment direct from supplier to end customer; bypasses the seller's warehouse.");
+fc("m8","Hedge inventory","Stock or financial instrument held to offset risk from price/FX volatility.");
+fc("m8","Quantum computing","Emerging tech leveraging quantum mechanics; potential to solve combinatorial / optimization problems much faster.");
+fc("m8","Spend management","Total outflow management across procurement, outsourcing, and supply chain.");
+fc("m8","EVA (Economic Value Added)","Net operating profit earned above the cost of capital.");
+fc("m8","Gap analysis","Comparison of actual product/service performance vs. customer expectations.");
+fc("m8","Learning curve","Task time decreases with repetitions; depicted as a curve of repetitions vs. time.");
+fc("m8","Heuristic","Rule-of-thumb solution used when full optimization is impractical.");
+fc("m8","Work breakdown structure (WBS)","Hierarchical decomposition of project deliverables into smaller manageable pieces.");
+fc("m8","Bullwhip causes","Demand signal processing, order batching, price fluctuations, rationing/shortage gaming, long lead times.");
+fc("m8","Bullwhip remedies","Share POS, smaller batches, EDLP pricing, allocate by past sales, shorter lead times, VMI/CPFR.");
+fc("m8","Stage 5 SC maturity","Orchestrated supply chain — full digital transformation (Industrie 4.0) creating relative competitive advantage.");
+fc("m8","Master data lifecycle","Create → Update → Cleanse → Retire.");
+fc("m8","Product traceability","Ability to trace a product's history, application, or location for recall, regulatory, quality.");
+fc("m8","Chain of custody","Documented unbroken trail of possession from origin to destination (pharma, food, conflict minerals).");
+fc("m8","SCOR DS attributes","Reliability · Responsiveness · Agility · Cost · Asset Management.");
+
 /* ================= QUIZZES ================= */
 QUIZZES.m1 = [
   {q:"Which of the following is NOT one of the three primary flows in a supply chain?",options:["Information","Product/Service","Funds","Authority"],answer:3,rationale:"The three flows are information, product/service, and funds. Authority is an organizational concept, not a supply chain flow."},
@@ -1283,6 +2179,83 @@ QUIZZES.m8 = [
   {q:"A control tower primarily provides:",options:["Flight tracking","End-to-end supply chain visibility, exception management, and decision support","Master data creation","Six Sigma control charts"],answer:1,rationale:"SCM control tower centralizes visibility, alerts, and collaboration across the chain."},
   {q:"Circular economy emphasizes all EXCEPT:",options:["Design out waste","Keep materials in use","Regenerate natural systems","Maximize linear take-make-dispose flows"],answer:3,rationale:"Circular economy explicitly replaces linear flows with closed loops."},
 ];
+
+/* ===== Additional quiz questions covering new concepts ===== */
+QUIZZES.m1.push(
+  {q:"A keiretsu is best described as:",options:["A US merger of two competing manufacturers","A Japanese cooperative network of legally independent companies often centered around a bank/trading company","A Korean family-owned conglomerate","A type of contract"],answer:1,rationale:"Keiretsu = Japanese cooperative network supporting long-term close supplier relationships. Korean equivalent is the chaebol."},
+  {q:"In a luxury market, a price below a certain threshold may signal poor quality. Price here is acting as a(n):",options:["Order winner","Order qualifier","Order loser","Demand shaper"],answer:2,rationale:"In a luxury context, an unexpectedly low price triggers loss of consideration — a classic order-loser scenario."},
+  {q:"A laptop maker stocks CPUs, GPUs, screens, and cases, then assembles each unit only after the customer orders the configuration. This is:",options:["MTS","ATO","MTO","ETO"],answer:1,rationale:"Components stocked, final assembly on order = Assemble-to-Order. Decoupling point is at the module level."},
+  {q:"A custom-aircraft manufacturer designs each aircraft after contract signing. This is:",options:["MTS","ATO","MTO","ETO"],answer:3,rationale:"Engineer-to-Order — design occurs after order; longest lead time."},
+  {q:"A manufacturer keeps production steady year-round and lets inventory build up before the holiday season. This is a:",options:["Chase strategy","Level strategy","Hybrid strategy","Lag capacity strategy"],answer:1,rationale:"Level production maintains a stable rate and absorbs demand variation through inventory."},
+  {q:"Order qualifiers vs. order winners — which is TRUE?",options:["Being best at qualifiers always wins orders","Failing a qualifier loses the chance to compete","Order winners are minimum thresholds","Qualifiers and winners never change roles"],answer:1,rationale:"Failing a qualifier disqualifies you. Winners differentiate. Roles can shift between markets and over time."}
+);
+
+QUIZZES.m2.push(
+  {q:"A firm has $90M COGS, $15M average inventory, and an inventory turn target of 8. Its current turn is:",options:["6","7.5","8","12"],answer:0,rationale:"Turns = COGS/avg inv = 90/15 = 6. Below target of 8."},
+  {q:"Sunk costs should be:",options:["Recovered before deciding","Included in net present value","Ignored in future decisions","Capitalized over 5 years"],answer:2,rationale:"Sunk costs are unrecoverable past costs and irrelevant to decisions. Only future incremental cash flows matter."},
+  {q:"DuPont's Strategic Profit Model expresses ROA as:",options:["Net Profit / Equity","Net Profit Margin × Asset Turnover","Sales / Total Assets only","Cash-to-Cash × Asset Turnover"],answer:1,rationale:"ROA = NPM × Asset Turnover; the model decomposes ROA so SC managers can see how cost AND asset decisions both move ROA."},
+  {q:"Which RFID tag type is self-powered and has the longest read range?",options:["Passive","Semipassive","Active","Backscatter"],answer:2,rationale:"Active tags have a battery, broadcast their signal, and have longer range than passive (powered by reader) or semipassive (battery-assisted)."},
+  {q:"Cloud/SaaS adoption typically shifts IT spending:",options:["From Opex to Capex","From Capex to Opex","Eliminates both","Has no effect"],answer:1,rationale:"SaaS replaces upfront Capex purchases of hardware/perpetual licenses with ongoing subscription Opex."},
+  {q:"Profitable-to-Promise (PTP) extends ATP by also considering:",options:["Capacity only","Profitability of the order","Geographic location","Inventory only"],answer:1,rationale:"PTP factors order margin so the firm prioritizes orders that generate the most profit."}
+);
+
+QUIZZES.m3.push(
+  {q:"A supplier is the only one that can provide a patented component. This is:",options:["Single sourcing","Sole sourcing","Multi-sourcing","Dual sourcing"],answer:1,rationale:"Sole = only ONE supplier AVAILABLE. Single = chosen one supplier even though alternatives exist."},
+  {q:"A buyer wishes to use price competition among many qualified suppliers for a commodity item. The best auction format is:",options:["Forward auction","Reverse auction","Dutch auction","Demand-management auction"],answer:1,rationale:"Reverse auction — one buyer, many sellers bidding the price DOWN. Common for commodity sourcing."},
+  {q:"Three-way match reconciles:",options:["PO, Receiving Report, and Invoice","PO, Contract, and Payment","Quote, PO, and Contract","Forecast, Order, and Shipment"],answer:0,rationale:"The 3-way match validates the PO (what was ordered), Receiving Report (what arrived), and Invoice (what's billed) all agree before payment."},
+  {q:"A printer manufacturer uses common chassis for all regions but adds country-specific power adapters and labels at the regional DC. This is:",options:["Mass production","Postponement","Sole sourcing","Vertical integration"],answer:1,rationale:"Postponement (delayed differentiation) — final product configuration deferred until customer/region known."},
+  {q:"QFD (Quality Function Deployment) translates:",options:["Voice of the Customer into engineering specifications","Engineering specs into bills of material","Forecasts into MPS","Master schedule into MRP"],answer:0,rationale:"QFD uses the House of Quality matrix to map customer needs to engineering attributes and target values."},
+  {q:"Glocalization is best described as:",options:["Pure global standardization","Pure local design","Global product modified for local needs (a form of postponement)","Reshoring all production"],answer:2,rationale:"Glocalization combines global scale with local market modifications — a postponement strategy."}
+);
+
+QUIZZES.m4.push(
+  {q:"Inside the Demand Time Fence (frozen zone), the schedule is driven by:",options:["Forecast","Customer orders","System auto-replan","Random sampling"],answer:1,rationale:"Inside the DTF, only customer orders drive the schedule; forecasts are ignored to provide stability."},
+  {q:"MRP nervousness is BEST mitigated by:",options:["More frequent MRP runs","Firm Planned Orders, time fences, and larger lot sizes","Smaller lot sizes and shorter fences","Eliminating MRP entirely"],answer:1,rationale:"FPOs freeze specific orders; time fences restrict near-term changes; larger lots dampen ripple effects from small MPS changes."},
+  {q:"Pegging in MRP is used to:",options:["Compute EOQ","Trace gross requirements upstream to the parent order causing them","Identify safety stock","Schedule capacity"],answer:1,rationale:"Pegging is 'active where-used' — shows which parent demand caused a component requirement."},
+  {q:"A non-stocked subassembly that MRP simply passes through to the next level is a:",options:["Planning BOM","Phantom BOM","Modular BOM","Single-level BOM"],answer:1,rationale:"Phantom BOM — represents an in-process subassembly that's never independently stocked."},
+  {q:"Drum-Buffer-Rope: the 'rope' represents:",options:["The physical bottleneck","A time buffer in front of the constraint","Communication tying material release to constraint consumption","Continuous improvement"],answer:2,rationale:"The rope synchronizes material RELEASE rate to the constraint's CONSUMPTION rate — preventing over-WIP."},
+  {q:"Jidoka means:",options:["Just-in-time delivery","Automation with a human touch — stop on defect","Level production","Single-Minute Exchange of Dies"],answer:1,rationale:"Jidoka = autonomation; equipment automatically detects abnormality and stops, empowering workers to fix root cause. Pillar of TPS alongside JIT."}
+);
+
+QUIZZES.m5.push(
+  {q:"Which warehouse type combines tailored services with pay-per-use flexibility via long-term contract?",options:["Private","Public","Contract","Distribution Center"],answer:2,rationale:"Contract warehouse blends private (tailored) and public (no capital) traits via a multi-year agreement."},
+  {q:"Inverted duties exist when:",options:["Tariffs on finished goods are HIGHER than on components","Tariffs on finished goods are LOWER than on components, discouraging local manufacturing","All tariffs are zero","Goods enter through a Free Trade Zone"],answer:1,rationale:"Inverted duties make local manufacturing uneconomic vs. importing finished goods. FTZs are a common workaround."},
+  {q:"A free trade zone primarily provides:",options:["Permanent duty waiver","Duty deferral or avoidance until goods leave the zone for the home market","Free shipping","Free customs broker services"],answer:1,rationale:"FTZ allows duty deferral, exemption on re-exports, manufacture without inverted duties, and simplified customs."},
+  {q:"The standard order of the waste hierarchy is:",options:["Recycle > Reuse > Reduce > Recovery > Disposal","Reduce > Reuse > Recycle > Recovery > Disposal","Disposal > Reduce > Reuse > Recycle > Recovery","Reduce > Recycle > Reuse > Disposal > Recovery"],answer:1,rationale:"Reduce comes first (don't create waste), then Reuse, then Recycle, then Recovery (energy/material), with Disposal as the last resort."}
+);
+
+QUIZZES.m6.push(
+  {q:"Cross-selling means:",options:["Selling related products to existing customers","Selling at a premium price","Selling internationally","Selling to competitors"],answer:0,rationale:"Cross-selling adds related products (phone case after phone). Up-selling = premium versions/add-ons."},
+  {q:"The HIGHEST level of CRM technology maturity is:",options:["Disconnected","Interfacing","Internally integrated","Multi-enterprise integrated"],answer:3,rationale:"Multi-enterprise integrated allows partners across the chain to share data — top maturity."},
+  {q:"The expected benefit of collaborative SCM is:",options:["Maximizing the focal firm's profit","Eliminating competitors","Synchronizing supply and demand across the entire chain","Lowest possible inventory at any cost"],answer:2,rationale:"Collaboration synchronizes the WHOLE chain, not any single firm — a common APICS exam theme."},
+  {q:"A short-term alliance of independent firms to design, produce, and distribute a product is called:",options:["Joint venture","Virtual organization","Strategic alliance","Sole-source partnership"],answer:1,rationale:"Virtual organization — temporary cooperative entity assembled for a specific opportunity."}
+);
+
+QUIZZES.m7.push(
+  {q:"Risk APPETITE refers to:",options:["The amount of risk an organization is willing to PURSUE","The readiness to ACCEPT a negative outcome","The maximum loss in any year","The cost of insurance"],answer:0,rationale:"Appetite = willingness to PURSUE risk. Tolerance = readiness to ACCEPT a negative outcome. Threshold = quantitative trigger."},
+  {q:"A PERT three-point estimate weights values as:",options:["(O + M + P)/3","(O + 4M + P)/6","(O + 2M + P)/4","(2O + M + 2P)/5"],answer:1,rationale:"PERT weights the most-likely value 4× and divides by 6: (O + 4M + P)/6."},
+  {q:"Contingent business interruption insurance covers losses caused by:",options:["Your own facility fires only","A SUPPLIER or CUSTOMER disruption","Cyber attacks only","Currency exchange swings"],answer:1,rationale:"Contingent BI extends standard BI to disruptions at supplier or customer sites — critical for supply chain risk transfer."},
+  {q:"Value at Risk (VaR) for a portfolio of risks is:",options:["The single biggest impact","The sum of EMVs across all identified risks","Probability of any one risk","The cost of avoidance"],answer:1,rationale:"VaR aggregates expected monetary value across all identified risks to estimate overall expected loss."}
+);
+
+QUIZZES.m8.push(
+  {q:"A Stage 5 'Orchestrated' supply chain is characterized by:",options:["Multiple internal silos","Internal ERP integration only","First external collaboration","Full digital transformation creating relative competitive advantage"],answer:3,rationale:"Stage 5 = full digital transformation (Industrie 4.0). The competitive advantage is relative to competing supply chains."},
+  {q:"Target costing starts from:",options:["Standard cost rolled up","Market price minus desired profit minus marketing/distribution cost","COGS plus markup","Supplier quote"],answer:1,rationale:"Target manufacturing cost = market-acceptable price − required profit − marketing/distribution. Drives design-to-cost."},
+  {q:"DDMRP differs from classical MRP by:",options:["Removing lead times","Using strategic decoupling buffers to plan closer to actual demand","Eliminating BOMs","Forecasting only at SKU level"],answer:1,rationale:"DDMRP positions strategic decoupling buffers and dampens MRP nervousness by planning to actual consumption."},
+  {q:"Which is NOT one of the 8 SA8000 areas?",options:["Child labor","Forced labor","Working hours & remuneration","Carbon disclosure"],answer:3,rationale:"SA8000 covers labor / human rights areas (child & forced labor, H&S, freedom of association, discrimination, disciplinary, hours, remuneration). Carbon disclosure is GRI/CDP territory."}
+);
+
+/* Mock exam: include all the new module quiz questions */
+[ "m1","m2","m3","m4","m5","m6","m7","m8" ].forEach(mid => {
+  // already pushed earlier, only ADD the newly appended ones
+});
+// Append the additional questions we just added to MOCK_EXAM as well so the mock pool grows
+const _addedCounts = {m1:6,m2:6,m3:6,m4:6,m5:4,m6:4,m7:4,m8:4};
+Object.keys(_addedCounts).forEach(mid => {
+  const arr = QUIZZES[mid];
+  const n = _addedCounts[mid];
+  arr.slice(arr.length - n).forEach(q => MOCK_EXAM.push({...q, m: mid}));
+});
 
 /* ================= MOCK EXAM ================= */
 /* Start with all module quiz questions (tagged by module), then add 30 extra cross-domain items */
@@ -1791,6 +2764,181 @@ g("Statistical Process Control (SPC)","Control-chart-based monitoring of process
 g("Cp / Cpk","Process capability indexes — process spread vs. spec limits; Cpk accounts for centering.");
 g("Hoshin Kanri","Policy deployment aligning strategy to daily work.");
 g("Heuristic","Rule-of-thumb solution used when exact optimization is impractical.");
+
+/* ===== Additional glossary terms ===== */
+g("Keiretsu","Japanese cooperative network of legally independent firms (often around a bank/trading company) supporting long-term lean supplier relationships.");
+g("Chaebol","Korean equivalent — large family-controlled industrial conglomerate spanning many sectors.");
+g("Order winner","Competitive characteristic that causes customers to choose your product over competitors (price, quality, delivery, design).");
+g("Order qualifier","Minimum competitive characteristic required to be considered. Failing it loses orders; exceeding it does not win them.");
+g("Order loser","Characteristic that drives customers AWAY (e.g., poor quality, late delivery).");
+g("MTS / ATO / MTO / ETO / PTO","Manufacturing environments by customer order decoupling point — finished goods stocked / modules stocked / nothing stocked but raw / engineer after order / packaging after order.");
+g("CODP","Customer Order Decoupling Point — where the chain switches from forecast (push) to order (pull).");
+g("Level production","Stable production rate; vary inventory to absorb demand swings.");
+g("Chase production","Vary production each period to match demand (overtime, hiring, outsourcing).");
+g("Hybrid production","Combine level + chase to minimize total cost.");
+g("Echelon","Level of supply chain nodes (factory, DC, retail). Each adds operating expense, holds inventory, expects profit.");
+g("Stakeholder","Individual or group whose interest is affected by the firm's activities.");
+g("Service industry","All organizations except farming, mining, and manufacturing.");
+g("Mean Squared Error (MSE)","Σ(Actual−Forecast)²/n; penalizes large errors more than MAD.");
+g("R-squared (R²)","Goodness of regression fit; 0 to 1. High R² ≠ causation.");
+g("Life-cycle / analog forecasting","Apply demand patterns from a similar prior product to forecast a new one.");
+g("Product family","Group of items with similar processes/equipment used for aggregate planning in S&OP.");
+g("Backlog","Customer orders received but not yet shipped.");
+g("Resource planning","Long-range capacity planning at the business plan level.");
+g("Master planning","Bundles demand management, production/resource planning, and master scheduling.");
+g("Reconciliation (S&OP)","Step where supply and demand plans are compared and imbalances resolved.");
+g("Sunk cost","Past cost already paid; irrelevant to future decisions.");
+g("ATP / CTP / PTP","Available-to-Promise / Capable-to-Promise (also considers capacity) / Profitable-to-Promise (prioritizes by margin).");
+g("DuPont / Strategic Profit Model","ROA = Net Profit Margin × Asset Turnover.");
+g("Net Profit Margin","Net Profit / Net Sales.");
+g("Asset Turnover","Net Sales / Total Assets.");
+g("Working Capital","Current Assets − Current Liabilities.");
+g("Altman Z-Score","Bankruptcy-prediction formula. >2.99 safe, 1.81–2.99 grey, <1.81 distress.");
+g("Capex / Opex","Capex = long-term assets; Opex = ongoing operations. SaaS/cloud shifts Capex → Opex.");
+g("Letter of Credit (L/C)","Bank guarantee of payment to seller upon proof of compliance with shipment conditions.");
+g("Liquidity ratios","Current ratio = CA/CL; Quick ratio = (CA−Inv)/CL.");
+g("Activity ratios","Inventory turnover, asset turnover, AR turnover, days of supply.");
+g("Leverage ratios","Debt-to-equity, debt-to-assets — measure use of debt.");
+g("Suboptimization","Optimizing one part of a system at the expense of overall results.");
+g("AIDC","Automatic Identification and Data Capture — barcodes, RFID, EPC, smart cards, voice, pick-to-light.");
+g("EPC","Electronic Product Code — globally unique RFID identifier.");
+g("Active vs. passive RFID","Active = self-powered (long range); Passive = powered by reader (short range, cheap); Semipassive = battery-assisted.");
+g("LAN / WAN / Intranet / Extranet / VAN","Network topologies — Local / Wide / Internal / Partner / Value-Added (EDI).");
+g("Middleware","Software enabling communication between systems not designed to interact.");
+g("Legacy system","Old, hard-to-replace business application with poor interfaces.");
+g("DSS","Decision Support System.");
+g("Microservices","Architecture using small, independent services for flexibility and scale.");
+g("Aggregation","Pooling demand reduces relative variance — basis for risk pooling and centralized inventory.");
+g("Master data lifecycle","Create → Update → Cleanse → Retire.");
+g("Order fulfillment dwell time","Lead time caused by customer requirements; not deducted from order-fulfillment cycle time.");
+g("Backorder","Unfilled or past-due demand against insufficient inventory.");
+g("Inventory shrinkage","Inventory losses from scrap, theft, deterioration, evaporation.");
+g("Single sourcing","ONE supplier used by CHOICE — alternatives exist (lean strategy).");
+g("Sole sourcing","Only ONE supplier is AVAILABLE — patents/tooling. Forced, not preferred.");
+g("Multi-sourcing","Use of multiple suppliers for the same item to ensure continuity / foster competition.");
+g("Insourcing","Use of internal resources; opposite of outsourcing.");
+g("Subcontracting","Sending production work outside to another manufacturer.");
+g("Forward auction","One seller, many buyers bid up. Used for unique/scarce goods.");
+g("Reverse auction","One buyer, many sellers bid down. Used for commodities; price-driven.");
+g("Dutch auction","Price starts high and lowers; first bid = contract.");
+g("Three-way match","Payment authorized only when PO + Receiving Report + Invoice agree.");
+g("Net cost","Gross cost − discounts − rebates − allowances.");
+g("Ongoing costs","Costs continuing throughout the supplier relationship — quality mgmt, monitoring, audits, admin.");
+g("Postponement","Deliberate delay of final differentiation until the latest possible time.");
+g("Mass customization","High-variety production at mass-production efficiency through postponement and modular design.");
+g("Modular design","Components/subassemblies that can be combined into multiple end products.");
+g("Glocalization","Global product modified for local needs — a form of postponement.");
+g("QFD","Quality Function Deployment — translates Voice of the Customer into design specs (House of Quality).");
+g("DFX family","DFM, DFA, DFMA, DFQ, DFSS, DFE, Design for Service, Design for Supply Chain, Design for Logistics.");
+g("Standardization","Establishing standard parts/processes; reduces variety.");
+g("Simplification","Removing complexity from a product/service.");
+g("Universality","Designing a product for one market that can also sell in others.");
+g("Nearshoring","Moving operations to a nearby country.");
+g("Reshoring","Bringing operations back home.");
+g("Multidomestic strategy","Each country is self-contained with unique products and local production.");
+g("CISG / Vienna Convention","UN treaty providing uniform rules for international goods sales.");
+g("Consortia Trade Exchange (CTX)","Online marketplace owned by a consortium of companies in the same industry.");
+g("Independent Trading Exchange","Third-party-owned marketplace open to any buyer/seller.");
+g("Private Trading Exchange","Marketplace hosted by a single company for its trading partners.");
+g("Horizontal / Vertical marketplace","Across industries / within a single industry.");
+g("Blanket PO","Long-term commitment with short-term releases against it.");
+g("Annualized contract","One-year agreement on pricing, supply continuity, estimated requirements.");
+g("Incentive contract","Buyer and seller share cost savings beyond target; share extra costs up to a cap.");
+g("Cost-Plus-Fixed-Fee (CPFF)","Allowable costs + stipulated fixed fee.");
+g("Cost-Plus-Incentive-Fee (CPIF)","Allowable costs + bonus if targets met.");
+g("Fixed-Price Incentive (FPIF)","Set price + bonus for hitting stipulations.");
+g("Dependent demand","Demand calculated from BOM (components).");
+g("Independent demand","Demand unrelated to other items; must be forecasted (finished goods, service parts).");
+g("Pegging","Tracing gross requirements upstream to find the parent that caused them.");
+g("Firm Planned Order (FPO)","MRP order frozen in quantity and time; not auto-changed by MRP.");
+g("Demand Time Fence (DTF)","Boundary inside which forecast is replaced by actual customer orders.");
+g("Planning Time Fence (PTF)","Boundary inside which the planner controls changes.");
+g("MRP nervousness","Excessive replanning from small changes; remedies: FPOs, time fences, larger lot sizes.");
+g("Closed-loop MRP","MRP with execution feedback + capacity, shop floor, purchasing.");
+g("MRP II","Manufacturing Resource Planning — closed-loop MRP + business/financial planning + simulation.");
+g("DDMRP","Demand-Driven MRP — strategic decoupling buffers; closer to actual demand.");
+g("Lot-for-Lot (L4L)","Order exactly the net requirement each period.");
+g("FOQ / POQ / TPOP","Fixed Order Quantity / Period Order Quantity / Time-Phased Order Point.");
+g("Single-Level / Multilevel BOM","Immediate components only / all components down to raw materials.");
+g("Planning BOM","Artificial BOM with option percentages for product family forecasting.");
+g("Phantom BOM","Non-stocked subassembly; MRP passes through it.");
+g("Modular BOM","Organized by major options for ATO environments.");
+g("Jidoka","Automation with a human touch — machine stops on defect. Pillar of TPS.");
+g("Kaizen event / blitz","Focused 1-week cross-functional improvement of a process area.");
+g("TPM","Total Productive Maintenance — operator-led preventive + improvement.");
+g("TQM","Total Quality Management — customer-driven, all-employee, continuous improvement.");
+g("SPC","Statistical Process Control — control charts vs. limits.");
+g("Seven basic quality tools","Cause-effect, check sheet, control chart, histogram, Pareto, scatter, stratification (or flow chart).");
+g("Five approaches to quality","Transcendent, Product-based, User-based, Manufacturing-based, Value-based.");
+g("Quality of design vs. conformance","Customer satisfaction with features vs. absence of defects.");
+g("Drum-Buffer-Rope","TOC scheduling — constraint paces; time buffer protects it; rope ties release to its consumption.");
+g("Cycle counting","Continuous inventory counting on a cyclic schedule (A items most often).");
+g("Inventory accuracy","% items within tolerance vs. system records; target 95–99%.");
+g("Allocation","Quantities reserved for orders or production but not yet shipped/released.");
+g("Line-item / unit fill rate","% of order LINES filled completely / % of UNITS shipped from stock.");
+g("SKU","Stock Keeping Unit — unique tracking code at a particular location.");
+g("Public / Private / Contract warehouse","Pay-per-use shared / company-owned / long-term tailored.");
+g("Distribution intensity","Intensive (everywhere), Selective (limited), Exclusive (very few).");
+g("Inverted duties","Tariffs on finished goods are LOWER than on components; FTZs help mitigate.");
+g("De minimis","Value threshold below which goods clear customs simply.");
+g("Free Trade Zone benefits","Duty deferral, re-export exemption, inspection before paying, manufacture without inverted duties.");
+g("HTS","US Harmonized Tariff Schedule.");
+g("Trade bloc","Country agreement to reduce trade barriers (EU, USMCA).");
+g("Total-cost concept","Minimize SUM of logistics costs at equal service levels — not any single category.");
+g("Spot-stocking","Temporarily placing inventory near a market for promotion or seasonal peak.");
+g("Accumulation / Assortment assembly","Combining inbound shipments / building mixed-product orders.");
+g("Density / Stowability / Hazmat","Weight per cube / ease of packing / hazardous materials handling.");
+g("GHS","Globally Harmonized System for chemical hazard classification & labelling.");
+g("Waste hierarchy","Reduce > Reuse > Recycle > Recovery > Disposal.");
+g("Common carrier","Public, regulated transport available to anyone (certificate of public convenience).");
+g("Drop-ship","Direct supplier-to-customer shipment, bypassing seller warehouse.");
+g("ATR Certificate","EU-Turkey free-circulation customs document.");
+g("CRM technology maturity","Disconnected → Interfacing → Internally Integrated → Multi-Enterprise Integrated.");
+g("Cross-selling / Up-selling","Sell related products / sell premium versions or add-ons.");
+g("Lifetime customer value (LCV)","Total profit a customer generates over the entire relationship.");
+g("Campaign types","Prospecting · Loyalty · Win-back · Vulnerable.");
+g("Churn","Customers leaving for better/cheaper alternatives.");
+g("Joint venture","Separate entity created by two+ orgs sharing ownership, risk, returns.");
+g("Virtual organization","Short-term alliance of independent orgs to design/produce/distribute.");
+g("Tactical buying","Transactional, nonstrategic purchasing of standard items.");
+g("Supplier certification","Verifying supplier's ability to meet cost/quality/delivery standards (often ISO).");
+g("Strategic alliance 10 steps","Align internally → select partner → win-win → ground rules → alliance manager → encourage collaboration → corporate mindset → manage multi-faceted → pulse checks → plan for change.");
+g("Risk appetite vs. tolerance","Willingness to PURSUE vs. readiness to ACCEPT negative outcomes.");
+g("Risk threshold","Specific quantitative limit at which a risk is escalated or treated.");
+g("Three-point estimate","(O + M + P) / 3 — average of optimistic, most likely, pessimistic.");
+g("PERT estimate","(O + 4M + P) / 6 — weights most-likely 4×.");
+g("Value at Risk (VaR)","Sum of EMVs across all identified risks; total expected loss.");
+g("BCMS","Business Continuity Management System (per ISO 22301).");
+g("Contingent BI insurance","Business Interruption insurance covering losses caused at a SUPPLIER or CUSTOMER.");
+g("Cargo / Trade Disruption / Cyber insurance","Goods in transit / non-physical political risk / cyber attacks & breaches.");
+g("ISO 22301","Business Continuity Management System standard.");
+g("Four generic strategies","Least cost, Differentiation, Focus/Niche, Best cost.");
+g("Functional vs. innovative product","Predictable, low margin → efficient. Unpredictable, high margin → responsive.");
+g("Upside / Downside SC adaptability","Max % increase in deliverable quantities / % reduction sustainable 30 days out.");
+g("Upside SC flexibility","Days needed to achieve unplanned 20% increase.");
+g("Target costing","Target manufacturing cost = market price − desired profit − marketing/distribution.");
+g("UN Global Compact","Largest corporate sustainability initiative — 10 principles in human rights, labor, env, anti-corruption.");
+g("SA8000 areas","Child labor · Forced labor · H&S · Freedom of association · Discrimination · Disciplinary · Working hours · Remuneration.");
+g("ANSI Z.10","Voluntary occupational H&S management standard.");
+g("Accreditation vs. certification","Certifying the certifier vs. third-party verification of compliance.");
+g("Registration (ISO)","Process of having an accredited third-party auditor verify ISO conformance.");
+g("Feasibility study","Project viability check (technical, economic, operational) before committing.");
+g("ESI","Early Supplier Involvement — supplier joins design process early to reduce time and cost.");
+g("Quantum computing","Emerging quantum-mechanics-based technology for combinatorial / optimization problems.");
+g("Spend management","Total outflow management across procurement, outsourcing, and SCM.");
+g("EVA","Economic Value Added = profit above the cost of capital.");
+g("Gap analysis","Difference between actual performance and customer expectations.");
+g("Learning curve","Task time decreases with repetition.");
+g("Heuristic","Rule-of-thumb solution; common in scheduling/lot sizing/forecasting.");
+g("WBS","Work Breakdown Structure — hierarchical project decomposition.");
+g("Stage 5 SC maturity","Orchestrated supply chain — full digital transformation creating relative competitive advantage.");
+g("Product traceability","Ability to trace a product's history, application, or location.");
+g("Chain of custody","Documented unbroken trail of possession from origin to destination.");
+g("Bullwhip causes","Demand-signal processing, order batching, price fluctuations, rationing/shortage gaming, long lead times.");
+g("Bullwhip remedies","Share POS, smaller batches, EDLP pricing, allocate by past sales, shorter lead times, VMI/CPFR.");
+g("DDMRP","Demand-Driven MRP — strategic decoupling buffers reduce nervousness.");
+g("SCOR DS","Newer SCOR with 7 process areas: Orchestrate, Plan, Source, Order, Transform, Fulfill, Return.");
+g("Business plan","Long-range strategy with revenue, cost, profit objectives + budgets, balance sheet, cash flow.");
 
 </script>
 <script id="app-script">
