@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meeting Copilot — Live AI Agenda Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg0:#08080a; --ink:#0e0e12; --glass:rgba(255,255,255,.035); --glass2:rgba(255,255,255,.06);
+    --line:rgba(212,178,98,.14); --line2:rgba(212,178,98,.26);
+    --txt:#f2f0ea; --mut:#a09a8c; --dim:#6e6a60;
+    --gold:#d8b65c; --gold2:#f0d488; --goldDim:#8a7942;
+    --grad:linear-gradient(120deg,#caa64a,#f3da8c);
+    /* traffic light */
+    --red:#e5484d; --orange:#f7821b; --yellow:#f2c318; --green:#46c93a; --none:#5b5750;
+    --shadow:0 14px 44px rgba(0,0,0,.55);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;font-family:'Inter',system-ui,sans-serif;color:var(--txt);
+    background:
+      radial-gradient(1100px 720px at 6% -8%,rgba(216,182,92,.10),transparent 55%),
+      radial-gradient(900px 680px at 104% 6%,rgba(216,182,92,.05),transparent 55%),
+      var(--bg0);
+    display:flex;flex-direction:column;height:100vh;overflow:hidden;-webkit-font-smoothing:antialiased}
+  ::-webkit-scrollbar{width:9px;height:9px}
+  ::-webkit-scrollbar-thumb{background:rgba(216,182,92,.18);border-radius:8px}
+  ::selection{background:rgba(216,182,92,.35)}
+
+  header{display:flex;align-items:center;gap:14px;padding:12px 20px;flex-wrap:wrap;
+    background:rgba(8,8,10,.6);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:11px}
+  .logo{width:32px;height:32px;border-radius:10px;background:var(--grad);display:grid;place-items:center;
+    font-size:17px;box-shadow:0 6px 18px rgba(216,182,92,.4)}
+  .brand h1{font-family:'Sora',sans-serif;font-size:16px;margin:0;font-weight:700;letter-spacing:.2px;color:#f6efdd}
+  .brand small{display:block;color:var(--mut);font-size:11px;font-weight:500;margin-top:-1px}
+  .grow{flex:1}
+  .statusChip{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--mut);
+    background:var(--glass);border:1px solid var(--line);padding:6px 12px;border-radius:30px}
+  .dot{width:8px;height:8px;border-radius:50%;background:#555;flex:none}
+  .dot.live{background:var(--red);box-shadow:0 0 0 0 rgba(229,72,77,.6);animation:pulse 1.4s infinite}
+  .dot.think{background:var(--gold);animation:pulse .9s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(229,72,77,.5)}70%{box-shadow:0 0 0 8px rgba(229,72,77,0)}100%{box-shadow:0 0 0 0 rgba(229,72,77,0)}}
+
+  button{font-family:inherit;background:var(--grad);color:#211c0c;border:0;border-radius:11px;
+    padding:9px 15px;font-size:13px;font-weight:700;cursor:pointer;transition:transform .12s,filter .12s;
+    box-shadow:0 4px 14px rgba(216,182,92,.28)}
+  button:hover{transform:translateY(-1px);filter:brightness(1.06)}
+  button:active{transform:translateY(0)}
+  button:disabled{opacity:.4;cursor:not-allowed;box-shadow:none;transform:none}
+  button.ghost{background:var(--glass2);color:var(--txt);border:1px solid var(--line2);box-shadow:none;font-weight:600}
+  button.ghost:hover{background:rgba(255,255,255,.1)}
+  button.rec{background:linear-gradient(120deg,#e5484d,#ff7a3d);color:#fff;box-shadow:0 4px 16px rgba(229,72,77,.4)}
+  .iconbtn{padding:9px 12px;border-radius:10px}
+  select,input[type=text],input[type=password],textarea{font-family:inherit;color:var(--txt);
+    background:rgba(0,0,0,.35);border:1px solid var(--line2);border-radius:10px;padding:9px 11px;font-size:13px;outline:none;transition:border-color .15s,box-shadow .15s}
+  select:focus,input:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(216,182,92,.18)}
+  select{cursor:pointer}
+  .pill{font-size:11px;color:var(--mut);background:var(--glass);border:1px solid var(--line);border-radius:30px;padding:4px 11px;font-weight:600}
+
+  main{flex:1;display:grid;grid-template-columns:1.05fr 1.05fr .95fr;gap:16px;padding:16px 20px;overflow:hidden;transition:grid-template-columns .32s cubic-bezier(.4,0,.2,1)}
+  .panel{display:flex;flex-direction:column;overflow:hidden;background:var(--glass);
+    border:1px solid var(--line);border-radius:18px;backdrop-filter:blur(10px);box-shadow:var(--shadow);min-width:0}
+  .mini{background:var(--glass2);border:1px solid var(--line2);color:var(--mut);border-radius:8px;
+    padding:2px 9px;font-size:15px;font-weight:700;line-height:1.2;cursor:pointer;box-shadow:none}
+  .mini:hover{background:rgba(255,255,255,.12);color:var(--txt)}
+  .panel.collapsed{cursor:pointer}
+  .panel.collapsed .scroll,.panel.collapsed .chat,.panel.collapsed .legend,.panel.collapsed .next,
+  .panel.collapsed .pill,.panel.collapsed .ring{display:none}
+  .panel.collapsed .phead{flex-direction:column;height:100%;gap:16px;padding:16px 6px;justify-content:flex-start;align-items:center}
+  .panel.collapsed .phead .grow{display:none}
+  .panel.collapsed .phead .t{writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:.14em;color:var(--gold)}
+  .panel.collapsed .mini{transform:rotate(180deg)}
+  .phead{display:flex;align-items:center;gap:10px;padding:14px 16px 12px}
+  .phead .t{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);font-weight:700}
+  .scroll{overflow-y:auto;padding:0 14px 16px;flex:1}
+
+  .ring{--p:0;width:40px;height:40px;border-radius:50%;flex:none;
+    background:conic-gradient(var(--gold) calc(var(--p)*1%),rgba(255,255,255,.08) 0);
+    display:grid;place-items:center;transition:background .5s}
+  .ring i{width:30px;height:30px;border-radius:50%;background:var(--ink);display:grid;place-items:center;
+    font-size:10px;font-weight:800;font-style:normal;color:var(--txt)}
+
+  .next{margin:0 14px 12px;padding:14px 15px;border-radius:14px;position:relative;overflow:hidden;
+    background:linear-gradient(135deg,rgba(216,182,92,.16),rgba(216,182,92,.04));border:1px solid rgba(216,182,92,.4)}
+  .next .lbl{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold2);font-weight:800;margin-bottom:5px}
+  .next .q{font-size:15.5px;font-weight:600;line-height:1.4}
+  .next .lvl{font-size:11px;color:var(--mut);margin-top:6px}
+
+  .item{position:relative;background:var(--glass2);border:1px solid var(--line);border-left:4px solid var(--none);
+    border-radius:14px;padding:12px 13px 12px 14px;margin-bottom:9px;display:flex;gap:11px;align-items:flex-start;transition:.25s;animation:rise .3s ease}
+  @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .item.active{box-shadow:0 0 0 1px rgba(216,182,92,.4) inset}
+  .item.flash{animation:flash 1.7s ease}
+  @keyframes flash{0%{box-shadow:0 0 0 2px var(--gold) inset}100%{box-shadow:none}}
+  .light{width:22px;height:22px;border-radius:50%;flex:none;cursor:pointer;margin-top:1px;
+    border:2px solid rgba(255,255,255,.18);transition:.2s;position:relative}
+  .light:after{content:"";position:absolute;inset:3px;border-radius:50%;background:currentColor;opacity:.95}
+  .item .q{font-size:13.5px;line-height:1.4;font-weight:500}
+  .item.green .q{color:var(--mut)}
+  .item .ans{font-size:12.5px;color:#e7decb;margin-top:8px;white-space:pre-wrap;line-height:1.5;
+    border-left:2px solid var(--line2);padding-left:10px}
+  .item .ans:empty{display:none}
+  .gap{font-size:11.5px;color:var(--gold2);margin-top:7px;display:flex;gap:6px;align-items:flex-start;line-height:1.45}
+  .gap:before{content:"→";color:var(--gold);font-weight:800}
+  .gap:empty{display:none}
+  .next .gap{margin-top:8px;color:var(--gold2)}
+  .probes{margin-top:8px}
+  .probes .ph{font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--dim);font-weight:700;margin-bottom:4px}
+  .probe{font-size:11.5px;color:var(--mut);line-height:1.45;padding-left:14px;position:relative;margin-bottom:2px}
+  .probe:before{content:"↳";position:absolute;left:0;color:var(--goldDim)}
+  .next .probes{margin-top:10px}
+  .next .probe{color:#efe6cf}
+  .lvltag{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+    padding:2px 8px;border-radius:20px;margin-left:8px;vertical-align:middle;border:1px solid currentColor}
+  .badge{display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+    padding:2px 7px;border-radius:20px;margin-left:7px;vertical-align:middle;
+    background:rgba(216,182,92,.16);color:var(--gold2);border:1px solid rgba(216,182,92,.4)}
+  .meta{font-size:10px;color:var(--dim);margin-top:6px}
+
+  .seg{font-size:13px;line-height:1.55;margin-bottom:10px;animation:rise .25s ease}
+  .seg .spk{display:inline-block;font-weight:800;font-size:10px;text-transform:uppercase;letter-spacing:.05em;
+    padding:1px 7px;border-radius:20px;margin-right:7px;background:rgba(255,255,255,.06)}
+  .seg .interim{color:var(--mut);font-style:italic}
+  .empty{color:var(--dim);font-size:13px;padding:14px 4px;line-height:1.6}
+
+  .chat{display:flex;flex-direction:column;height:100%}
+  .chatlog{flex:1;overflow-y:auto;padding:6px 14px 12px;display:flex;flex-direction:column;gap:10px}
+  .msg{max-width:90%;padding:10px 13px;border-radius:15px;font-size:13px;line-height:1.5;white-space:pre-wrap;animation:rise .25s ease}
+  .msg.u{align-self:flex-end;background:var(--grad);color:#211c0c;font-weight:500;border-bottom-right-radius:4px}
+  .msg.a{align-self:flex-start;background:var(--glass2);border:1px solid var(--line);border-bottom-left-radius:4px}
+  .chatbar{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line)}
+  .chatbar input{flex:1}
+  .memchip{font-size:10.5px;color:var(--dim);padding:0 14px 8px}
+
+  .legend{display:flex;gap:12px;flex-wrap:wrap;padding:0 16px 10px;font-size:10.5px;color:var(--mut)}
+  .legend span{display:flex;align-items:center;gap:5px}
+  .legend i{width:9px;height:9px;border-radius:50%;display:inline-block}
+
+  .setup{flex:1;overflow-y:auto;padding:34px 22px 60px}
+  .setup-inner{max-width:760px;margin:0 auto}
+  .hero{text-align:center;margin-bottom:26px}
+  .hero .logo{width:54px;height:54px;border-radius:16px;font-size:27px;margin:0 auto 14px}
+  .hero h2{font-family:'Sora',sans-serif;font-size:27px;margin:0 0 8px;font-weight:800;
+    background:linear-gradient(120deg,#fff,#e6cf94);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p{color:var(--mut);font-size:14px;margin:0;line-height:1.6}
+  .card{background:var(--glass);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:16px;
+    backdrop-filter:blur(10px);box-shadow:var(--shadow)}
+  .card h3{font-family:'Sora',sans-serif;font-size:15px;margin:0 0 4px;display:flex;align-items:center;gap:9px}
+  .step{width:24px;height:24px;border-radius:8px;background:var(--grad);color:#211c0c;display:grid;place-items:center;font-size:12px;font-weight:800}
+  .hint{font-size:12.5px;color:var(--mut);margin:8px 0 12px;line-height:1.6}
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+  .field{display:flex;flex-direction:column;gap:5px}
+  .field label{font-size:10.5px;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+  textarea{width:100%;min-height:140px;resize:vertical;line-height:1.55}
+  a{color:var(--gold2);text-decoration:none}a:hover{text-decoration:underline}
+  .err{color:var(--red);font-size:12px}
+  .ok{color:var(--green);font-size:12px}
+  .spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:var(--gold);border-radius:50%;animation:rot .7s linear infinite;vertical-align:middle}
+  @keyframes rot{to{transform:rotate(360deg)}}
+  .hidden{display:none!important}
+  @media(max-width:1100px){main{grid-template-columns:1fr;overflow-y:auto}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand"><div class="logo">🧭</div>
+    <div><h1>Meeting Copilot</h1><small>live agenda intelligence</small></div></div>
+  <span class="grow"></span>
+  <div class="statusChip"><span id="dot" class="dot"></span><span id="statusTxt">Setup</span></div>
+  <span id="progress" class="pill hidden">0 / 0</span>
+  <select id="recLang" class="hidden" title="Language">
+    <option value="multi">🌐 ES + EN</option><option value="en">🇬🇧 EN</option><option value="es">🇪🇸 ES</option></select>
+  <select id="audioSrc" class="hidden" title="What to listen to">
+    <option value="both">🎤+🔊 Mic + call audio</option><option value="mic">🎤 My mic only</option></select>
+  <select id="audioDevice" class="hidden" title="Input device"><option value="">🎧 Default (auto)</option></select>
+  <button id="analyzeBtn" class="ghost hidden">Analyze</button>
+  <button id="startBtn" class="rec hidden">● Start</button>
+  <button id="resetBtn" class="ghost hidden iconbtn" title="Reset meeting">⟳</button>
+</header>
+
+<!-- ===================== SETUP ===================== -->
+<div id="setupView" class="setup">
+ <div class="setup-inner">
+  <div class="hero"><div class="logo">🧭</div>
+    <h2>Your live meeting brain</h2>
+    <p>Drop in your agenda. Copilot listens, scores how well each item is answered on a traffic light,<br>keeps enriching the notes, and remembers past meetings so you can ask it anything.</p></div>
+
+  <div class="card"><h3><span class="step">1</span> Connect the brains</h3>
+    <div class="row" style="margin-top:12px">
+      <div class="field"><label>Provider</label>
+        <select id="provider">
+          <option value="gemini">Google Gemini — FREE 🆓</option>
+          <option value="groq">Groq (Llama) — FREE 🆓</option>
+          <option value="anthropic">Anthropic Claude — paid</option></select></div>
+      <div class="field"><label>Model</label><select id="model"></select></div></div>
+    <p class="hint" id="providerHint"></p>
+    <div class="field" style="max-width:480px"><label id="keyLabel">API key</label>
+      <input type="password" id="apiKey" placeholder="paste key"></div>
+    <button id="testKey" class="ghost" style="margin-top:12px">Test connection</button>
+    <span id="keyMsg" class="hint" style="margin-left:10px"></span></div>
+
+  <div class="card"><h3><span class="step">2</span> Connect the ears <span style="font-weight:400;color:var(--dim);font-size:12px">— optional</span></h3>
+    <p class="hint">Deepgram = accurate transcription with <b>speaker labels</b> (free $200 credit at <a href="https://console.deepgram.com/signup" target="_blank">deepgram.com</a>). Blank = free browser engine.<br>
+    <b>To hear the other people on the call</b> (even with earphones), keep the audio source on <b>“Mic + call audio”</b> when you press Start — Chrome will ask you to share a screen/tab; pick the call's browser tab and tick <b>“Share tab audio.”</b> Your mic alone can't capture remote participants.</p>
+    <details style="margin-top:6px">
+      <summary style="cursor:pointer;color:var(--gold2);font-size:12.5px">🎧 Using Zoom / Teams <b>desktop</b> app? One-time audio setup (BlackHole)</summary>
+      <div class="hint" style="margin-top:8px">
+        Desktop apps don't expose their audio to the browser, so route it through the free <a href="https://existential.audio/blackhole/" target="_blank">BlackHole</a> virtual device:
+        <ol style="margin:8px 0 0;padding-left:18px;line-height:1.7">
+          <li>Install BlackHole (run the included <b>“Setup BlackHole.command”</b> in this folder, or <code>brew install blackhole-2ch</code>).</li>
+          <li>Open <b>Audio MIDI Setup</b> → ➕ → <b>Create Aggregate Device</b>; tick <b>your microphone</b> and <b>BlackHole 2ch</b>. Name it “Meeting Capture”.</li>
+          <li>➕ → <b>Create Multi-Output Device</b>; tick <b>your earphones/speakers</b> and <b>BlackHole 2ch</b> (so you still hear the call).</li>
+          <li>In macOS <b>Sound → Output</b>, pick the Multi-Output Device during calls.</li>
+          <li>Here, set audio source to <b>“My mic only”</b> and choose <b>“Meeting Capture”</b> in the 🎧 input dropdown. That single device now carries your voice <i>and</i> the call.</li>
+        </ol>
+        Then you can use earphones freely — BlackHole taps the audio before it reaches them.
+      </div>
+    </details>
+    <div class="field" style="max-width:480px"><label>Deepgram API key</label>
+      <input type="password" id="dgKey" placeholder="(optional)"></div>
+    <button id="testDg" class="ghost" style="margin-top:12px">Test Deepgram</button>
+    <span id="dgMsg" class="hint" style="margin-left:10px"></span>
+    <label style="display:flex;align-items:center;gap:8px;margin-top:14px;font-size:12.5px;color:var(--txt);cursor:pointer">
+      <input type="checkbox" id="useGlossary" checked style="width:auto"> Use the <b>built-in glossary</b> — auto-boosts ~120 common business, systems and AI terms (ERP, KPI, OTIF, EBITDA, RAG, MLOps…) so Deepgram transcribes them correctly. No typing needed.</label>
+    <div class="field" style="max-width:560px;margin-top:12px"><label>Extra terms to add (optional, comma-separated)</label>
+      <input type="text" id="keyterms" placeholder="people's names, your own products, anything not in the glossary"></div>
+
+  <div class="card"><h3><span class="step">3</span> Meeting memory <span style="font-weight:400;color:var(--dim);font-size:12px">— optional</span></h3>
+    <p class="hint">Connect a folder. Each meeting auto-saves there with an AI summary, and Copilot reads past meetings back so the chat can recall across calls. (Chrome / Edge.)</p>
+    <button id="folderBtn" class="ghost">📁 Connect folder</button>
+    <span id="folderMsg" class="hint" style="margin-left:10px"></span></div>
+
+  <div class="card"><h3><span class="step">4</span> Your agenda or notes</h3>
+    <p class="hint">Paste anything — a messy email, rough notes, a doc. Copilot pulls out the distinct things you want answered. English or Spanish.</p>
+    <textarea id="agendaInput" placeholder="e.g. For tomorrow's sync I want the Q3 timeline, who owns the budget now Maria left, the main risks on the data migration, whether we're on track for the August launch, and the success metric — activation or retention?"></textarea>
+    <div class="row" style="margin-top:12px">
+      <button id="extractBtn">✨ Extract questions</button>
+      <input type="file" id="fileInput" accept=".txt,.md,.csv" style="font-size:12px;color:var(--mut)">
+      <span id="extractMsg" class="hint" style="margin:0"></span></div>
+    <div id="extractedWrap" class="hidden" style="margin-top:14px">
+      <p class="hint">Extracted goals — edit freely. One question per line; indented “- ” lines are clarifying probes for the question above them.</p>
+      <textarea id="extractedList" style="min-height:130px"></textarea>
+      <button id="beginBtn" style="margin-top:12px">Start meeting →</button></div></div>
+ </div>
+</div>
+
+<!-- ===================== LIVE ===================== -->
+<main id="liveView" class="hidden">
+  <section class="panel">
+    <div class="phead"><div class="ring" id="ring"><i id="ringTxt">0%</i></div>
+      <div class="t">Agenda · answer quality</div><span class="grow"></span><span id="anaState" style="color:var(--gold)"></span></div>
+    <div class="legend">
+      <span><i style="background:var(--none)"></i>not asked</span>
+      <span><i style="background:var(--red)"></i>raised</span>
+      <span><i style="background:var(--orange)"></i>partial</span>
+      <span><i style="background:var(--yellow)"></i>mostly</span>
+      <span><i style="background:var(--green)"></i>answered</span></div>
+    <div class="next"><div class="lbl">Ask next</div><div class="q" id="nextQ">—</div><div class="lvl" id="nextLvl"></div><div class="gap" id="nextGap"></div><div class="probes" id="nextProbes"></div></div>
+    <div class="scroll" id="agendaList"></div>
+  </section>
+
+  <section class="panel" id="panelTranscript">
+    <div class="phead"><div class="t">Live transcript</div><span class="grow"></span><span class="pill" id="charCount">0</span><button class="mini" id="collapseTranscript" title="Minimize">‹</button></div>
+    <div class="scroll" id="transcript"><div class="empty">Press <b>Start</b>. Copilot reads the conversation by meaning, scores each agenda item on a traffic light, and keeps adding to notes as more is said. Items only turn <b>green</b> when fully and properly answered.</div></div>
+  </section>
+
+  <section class="panel" id="panelChat">
+    <div class="phead"><div class="t">Ask the meeting</div><span class="grow"></span><span id="memChip" class="pill hidden">memory</span><button class="mini" id="collapseChat" title="Minimize">›</button></div>
+    <div class="chat">
+      <div class="chatlog" id="chatlog">
+        <div class="msg a">I'm watching this meeting live and I know your agenda. Ask me “what did we decide on the budget?”, “resúmeme los riesgos”, “did this come up last meeting?” — I answer from the full transcript, the live notes, and any past meetings in your folder.</div></div>
+      <div class="memchip" id="memInfo"></div>
+      <div class="chatbar"><input type="text" id="chatInput" placeholder="Ask about this or past meetings…"><button id="chatSend">Send</button></div>
+    </div>
+  </section>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+
+/* ===== Levels (traffic light) ===== */
+const ORDER=["none","red","orange","yellow","green"];
+const LEVELS={
+  none:{c:"var(--none)",pct:0,lbl:"Not asked"},
+  red:{c:"var(--red)",pct:25,lbl:"Raised"},
+  orange:{c:"var(--orange)",pct:55,lbl:"Partial"},
+  yellow:{c:"var(--yellow)",pct:80,lbl:"Mostly"},
+  green:{c:"var(--green)",pct:100,lbl:"Answered"}
+};
+
+/* ===== Providers ===== */
+const PROVIDERS={
+  gemini:{label:"Google Gemini",keyHint:"AIza...",
+    hint:'FREE — no credit card. Key at <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a>.',
+    models:[["gemini-2.5-flash","Gemini 2.5 Flash — fast & free"],["gemini-2.5-pro","Gemini 2.5 Pro — smarter"]]},
+  groq:{label:"Groq",keyHint:"gsk_...",
+    hint:'FREE — no credit card. Key at <a href="https://console.groq.com/keys" target="_blank">console.groq.com/keys</a>.',
+    models:[["llama-3.3-70b-versatile","Llama 3.3 70B — free"],["llama-3.1-8b-instant","Llama 3.1 8B — fastest"]]},
+  anthropic:{label:"Anthropic Claude",keyHint:"sk-ant-...",
+    hint:'Paid. Key at <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a>.',
+    models:[["claude-haiku-4-5-20251001","Haiku 4.5 — fast"],["claude-sonnet-4-6","Sonnet 4.6 — smartest"]]}
+};
+/* Built-in business/systems/AI glossary — used as Deepgram keyterms to improve accuracy */
+const GLOSSARY=["AB InBev","ABI","Anheuser-Busch InBev","Grupo Modelo","Modelorama","Accenture","Bain & Company",
+"Digital Twin","Quick win","Opportunity charter","Design sprint","Decision gate","Squad","Wave",
+"EBITDA","RGM","Revenue Growth Management","DSO","Days Sales Outstanding","POC","Point of Consumption","BDR","GTM","Go-to-Market",
+"OTC","O2C","Order to Cash","STP","S2P","Source to Pay","DTC","Direct to Consumer","Direct Distribution","Wholesale","Modern Trade","Third-Party Distribution",
+"CEDIS","Centro de Distribución","Distribution Center","Tier 1","Tier 2","RTM","Route to Market","DRP","POD","Proof of Delivery",
+"SKU","PPA","Price Pack Architecture","Price tree","price table","Price elasticity","ZBB","Zero-Based Budgeting","JBP","Joint Business Plan",
+"IFRS","IEPS","Impuesto Especial","VAT","IVA","CFDI","ICM","OTIF","On Time In Full","Forecast Accuracy","KPI","ROI","NPS","FTE","SLA",
+"ERP","SAP S/4HANA","BEES","IREP","Workday","LV08","EDI","PRICAT","RECADV","TMS","Salesforce","ServiceNow","Sorba & Segue","CASH.AI","RPA",
+"GenAI","LLM","Machine Learning","Agentic AI","Orchestration","RAG","Retrieval-Augmented Generation","Embeddings","vector store","Fine-tuning",
+"Data lakehouse","Feature store","Semantic layer","Data product","Data contract","ETL","Groundedness","Guardrails","eval set","MAPE","RMSE","Backtesting",
+"HITL","HOTL","Human-in-the-Loop","PII","Observability","FinOps","MLOps","LLMOps","Model registry","CI/CD","Responsible AI","Model risk",
+"Dev-ready","Backlog","Epic","user story","Acceptance criteria","NFR","PRD","ERD","RACI","RAPID","QBR","SME","Subject-Matter Expert",
+"Difference-in-differences","Run-rate","SSO","OAuth","VPN"];
+function deepgramKeyterms(){
+  let terms=[];
+  if($("useGlossary")&&$("useGlossary").checked)terms=terms.concat(GLOSSARY);
+  terms=terms.concat((($("keyterms")&&$("keyterms").value)||"").split(",").map(s=>s.trim()).filter(Boolean));
+  const seen=new Set(),out=[];for(const t of terms){const k=t.toLowerCase();if(t&&!seen.has(k)){seen.add(k);out.push(t);}}
+  return out.slice(0,95); // keep within Deepgram's keyterm budget
+}
+const LS={provider:"mc_provider",model:"mc_model",dg:"mc_dgkey",kt:"mc_keyterms",gl:"mc_useglossary"};
+const keyLS=p=>"mc_key_"+p;
+let CFG={provider:"gemini",model:"gemini-2.5-flash",key:"",dg:""};
+
+/* ===== State ===== */
+let items=[];           // {id,text,level,answer,updates,flash}
+let transcriptText="";
+let recognizing=false, analyzing=false, lastLen=0, autoTimer=null, savedThisRun=false;
+let rec=null, dgSocket=null, audioCtx=null, micStream=null, dispStream=null, dgProc=null, keepAlive=null;
+let dirHandle=null, pastMeetings=[];
+
+/* ===== IndexedDB ===== */
+function idb(mode,fn){return new Promise((res,rej)=>{const o=indexedDB.open("mcdb",1);
+  o.onupgradeneeded=()=>o.result.createObjectStore("kv");
+  o.onsuccess=()=>{const t=o.result.transaction("kv",mode);const r=fn(t.objectStore("kv"));
+    t.oncomplete=()=>res(r&&r.result);t.onerror=()=>rej(t.error);};o.onerror=()=>rej(o.error);});}
+const idbSet=(k,v)=>idb("readwrite",s=>s.put(v,k));
+const idbGet=k=>idb("readonly",s=>s.get(k));
+
+/* ===== LLM ===== */
+function extractJson(txt){
+  const m=txt.match(/```(?:json)?\s*([\s\S]*?)```/);if(m)txt=m[1].trim();
+  const a=txt.indexOf("["),o=txt.indexOf("{");const s=(a>=0&&(a<o||o<0))?a:(o>=0?o:0);
+  let body=txt.slice(s);try{return JSON.parse(body);}catch(_){}
+  for(let i=body.length-1;i>0;i--){const ch=body[i];
+    if(ch==='}'||ch==='"'||ch===']'){let head=body.slice(0,i+1).replace(/,\s*$/,"");
+      const ob=(head.match(/\[/g)||[]).length-(head.match(/\]/g)||[]).length;
+      const oc=(head.match(/\{/g)||[]).length-(head.match(/\}/g)||[]).length;
+      try{return JSON.parse(head+"}".repeat(Math.max(0,oc))+"]".repeat(Math.max(0,ob)));}catch(_){}}}
+  throw new Error("Could not parse model JSON (response cut off). Try again.");
+}
+function toStrArray(x){if(Array.isArray(x))return x.map(e=>typeof e==="string"?e:(e&&(e.question||e.text||e.q||e.title)||"")).map(s=>String(s).trim()).filter(Boolean);
+  if(x&&typeof x==="object"){const a=Object.values(x).find(v=>Array.isArray(v));if(a)return toStrArray(a);}return[];}
+function toArr(x){if(Array.isArray(x))return x;if(x&&typeof x==="object"){const a=Object.values(x).find(v=>Array.isArray(v));if(a)return a;}return[];}
+
+async function llm(system,user,{json=false,max=1024}={}){
+  let txt;
+  if(CFG.provider==="anthropic"){
+    const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",
+      headers:{"content-type":"application/json","x-api-key":CFG.key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+      body:JSON.stringify({model:CFG.model,max_tokens:max,system,messages:[{role:"user",content:user}]})});
+    if(!r.ok)throw new Error("Claude "+r.status+": "+(await r.text()).slice(0,160));
+    const d=await r.json();txt=(d.content||[]).map(b=>b.text||"").join("").trim();
+  }else if(CFG.provider==="gemini"){
+    const body={systemInstruction:{parts:[{text:system}]},contents:[{role:"user",parts:[{text:user}]}],generationConfig:{maxOutputTokens:max}};
+    if(/2\.5-flash/.test(CFG.model))body.generationConfig.thinkingConfig={thinkingBudget:0};
+    else if(/2\.5/.test(CFG.model))body.generationConfig.thinkingConfig={thinkingBudget:128};
+    if(json)body.generationConfig.responseMimeType="application/json";
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${CFG.model}:generateContent?key=${encodeURIComponent(CFG.key)}`,
+      {method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});
+    if(!r.ok)throw new Error("Gemini "+r.status+": "+(await r.text()).slice(0,160));
+    const d=await r.json();txt=((d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts)||[]).map(p=>p.text||"").join("").trim();
+  }else{
+    const body={model:CFG.model,max_tokens:max,messages:[{role:"system",content:system},{role:"user",content:user}]};
+    if(json)body.response_format={type:"json_object"};
+    const r=await fetch("https://api.groq.com/openai/v1/chat/completions",{method:"POST",
+      headers:{"content-type":"application/json","authorization":"Bearer "+CFG.key},body:JSON.stringify(body)});
+    if(!r.ok)throw new Error("Groq "+r.status+": "+(await r.text()).slice(0,160));
+    const d=await r.json();txt=(d.choices&&d.choices[0]&&d.choices[0].message.content||"").trim();
+  }
+  return json?extractJson(txt):txt;
+}
+
+/* ===== Setup wiring ===== */
+function applyProvider(p){CFG.provider=p;localStorage.setItem(LS.provider,p);const def=PROVIDERS[p];
+  $("providerHint").innerHTML=def.hint;$("apiKey").placeholder=def.keyHint;
+  $("model").innerHTML=def.models.map(([v,l])=>`<option value="${v}">${l}</option>`).join("");
+  const sm=localStorage.getItem(LS.model+"_"+p);CFG.model=sm&&def.models.some(m=>m[0]===sm)?sm:def.models[0][0];$("model").value=CFG.model;
+  CFG.key=localStorage.getItem(keyLS(p))||"";$("apiKey").value=CFG.key;$("keyMsg").textContent="";}
+function loadCfg(){CFG.provider=localStorage.getItem(LS.provider)||"gemini";$("provider").value=CFG.provider;applyProvider(CFG.provider);
+  CFG.dg=localStorage.getItem(LS.dg)||"";if(CFG.dg)$("dgKey").value=CFG.dg;
+  const kt=localStorage.getItem(LS.kt)||"";if(kt)$("keyterms").value=kt;
+  const gl=localStorage.getItem(LS.gl);if(gl==="0")$("useGlossary").checked=false;
+  idbGet("dir").then(h=>{if(h){dirHandle=h;tryReloadFolder();}});}
+$("keyterms")&&$("keyterms").addEventListener("change",e=>localStorage.setItem(LS.kt,e.target.value.trim()));
+$("useGlossary")&&$("useGlossary").addEventListener("change",e=>localStorage.setItem(LS.gl,e.target.checked?"1":"0"));
+$("provider").onchange=e=>applyProvider(e.target.value);
+$("apiKey").addEventListener("change",e=>{CFG.key=e.target.value.trim();localStorage.setItem(keyLS(CFG.provider),CFG.key);});
+$("dgKey").addEventListener("change",e=>{CFG.dg=e.target.value.trim();localStorage.setItem(LS.dg,CFG.dg);});
+$("model").addEventListener("change",e=>{CFG.model=e.target.value;localStorage.setItem(LS.model+"_"+CFG.provider,CFG.model);});
+
+$("testKey").onclick=async()=>{CFG.key=$("apiKey").value.trim();localStorage.setItem(keyLS(CFG.provider),CFG.key);
+  if(!CFG.key){$("keyMsg").innerHTML='<span class="err">Enter a key first.</span>';return;}
+  $("keyMsg").innerHTML='<span class="spin"></span>';
+  try{await llm("test","Reply only: OK",{max:10});$("keyMsg").innerHTML='<span class="ok">✓ '+PROVIDERS[CFG.provider].label+' connected.</span>';}
+  catch(e){$("keyMsg").innerHTML='<span class="err">'+e.message+'</span>';}};
+$("testDg").onclick=()=>{CFG.dg=$("dgKey").value.trim();localStorage.setItem(LS.dg,CFG.dg);
+  if(!CFG.dg){$("dgMsg").innerHTML='<span class="err">Enter a Deepgram key.</span>';return;}
+  $("dgMsg").innerHTML='<span class="spin"></span> testing stream…';
+  // REST is blocked by CORS in the browser; test the real streaming path instead.
+  let done=false;
+  const ws=new WebSocket("wss://api.deepgram.com/v1/listen?model=nova-3&encoding=linear16&sample_rate=16000",["token",CFG.dg]);
+  const to=setTimeout(()=>{if(!done){done=true;try{ws.close();}catch(_){}$("dgMsg").innerHTML='<span class="err">Timed out — check your network.</span>';}},7000);
+  ws.onopen=()=>{if(done)return;done=true;clearTimeout(to);try{ws.send(JSON.stringify({type:"CloseStream"}));ws.close();}catch(_){}
+    $("dgMsg").innerHTML='<span class="ok">✓ Deepgram streaming connected.</span>';};
+  ws.onerror=()=>{if(done)return;done=true;clearTimeout(to);$("dgMsg").innerHTML='<span class="err">Connection refused — key may be invalid or out of credit.</span>';};
+  ws.onclose=ev=>{if(done)return;done=true;clearTimeout(to);
+    $("dgMsg").innerHTML=ev.code===1000?'<span class="ok">✓ Deepgram connected.</span>':'<span class="err">Closed ('+ev.code+') — check the key.</span>';};};
+
+/* ===== Folder / memory ===== */
+$("folderBtn").onclick=async()=>{if(!window.showDirectoryPicker){$("folderMsg").innerHTML='<span class="err">Use Chrome or Edge for folder memory.</span>';return;}
+  try{dirHandle=await window.showDirectoryPicker({mode:"readwrite"});await idbSet("dir",dirHandle);await loadFolder();}
+  catch(e){if(e.name!=="AbortError")$("folderMsg").innerHTML='<span class="err">'+e.message+'</span>';}};
+async function tryReloadFolder(){try{const perm=await dirHandle.queryPermission({mode:"readwrite"});
+  if(perm==="granted")await loadFolder();
+  else{$("folderMsg").innerHTML='Folder remembered — <a href="#" id="reperm">click to reconnect</a>';
+    const rp=$("reperm");if(rp)rp.onclick=async ev=>{ev.preventDefault();if(await dirHandle.requestPermission({mode:"readwrite"})==="granted")loadFolder();};}}catch(_){}}
+async function loadFolder(){pastMeetings=[];
+  try{for await(const [name,h] of dirHandle.entries()){if(h.kind==="file"&&/\.(md|txt)$/i.test(name)){const f=await h.getFile();pastMeetings.push({name,text:await f.text()});}}}catch(e){}
+  pastMeetings.sort((a,b)=>a.name<b.name?1:-1);const n=pastMeetings.length;
+  $("folderMsg").innerHTML='<span class="ok">✓ '+dirHandle.name+' — '+n+' past meeting'+(n===1?'':'s')+' loaded.</span>';
+  $("memChip").classList.toggle("hidden",n===0);
+  $("memInfo").textContent=n?`Recall enabled · ${n} past meeting${n===1?'':'s'} in “${dirHandle.name}”`:'';}
+
+/* ===== Extract agenda ===== */
+$("fileInput").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>$("agendaInput").value=r.result;r.readAsText(f);};
+$("extractBtn").onclick=async()=>{CFG.key=$("apiKey").value.trim();
+  if(!CFG.key){$("extractMsg").innerHTML='<span class="err">Add your LLM key in step 1.</span>';return;}
+  const raw=$("agendaInput").value.trim();if(!raw){$("extractMsg").innerHTML='<span class="err">Paste some agenda text first.</span>';return;}
+  $("extractMsg").innerHTML='<span class="spin"></span> reading your notes…';
+  try{const sys="You are a meeting-prep assistant. Read the user's raw notes or agenda (it may be a Discovery Kit / interview guide) and extract the distinct concrete things they want to learn or decide. Rewrite each as one clear, askable question. IMPORTANT: if the document attaches follow-up probes, clarifying sub-questions, or 'what to ask' bullets to an item, capture those as that question's probes (e.g. 'why', 'how often', 'what happens when…', 'show me'). Merge duplicates, drop pleasantries. Keep the user's original language. Return ONLY a JSON array of objects: {\"question\":string,\"probes\":[string]} (probes may be an empty array).";
+    let raw2=toArr(await llm(sys,raw,{json:true,max:8192}));
+    let arr=raw2.map(o=>typeof o==="string"?{question:o,probes:[]}:{question:String(o.question||o.text||o.q||"").trim(),probes:Array.isArray(o.probes)?o.probes.map(p=>String(p).trim()).filter(Boolean):[]}).filter(o=>o.question);
+    if(!arr.length)throw new Error("No questions found — try rephrasing.");
+    $("extractedList").value=arr.map(o=>o.question+(o.probes.length?"\n"+o.probes.map(p=>"   - "+p).join("\n"):"")).join("\n");
+    $("extractedWrap").classList.remove("hidden");
+    const np=arr.reduce((s,o)=>s+o.probes.length,0);
+    $("extractMsg").innerHTML='<span class="ok">✓ '+arr.length+' goals'+(np?' · '+np+' probes':'')+' — review below.</span>';
+  }catch(e){$("extractMsg").innerHTML='<span class="err">'+e.message+'</span>';}};
+$("beginBtn").onclick=()=>{
+  const parsed=[];let cur=null;
+  $("extractedList").value.split(/\n/).forEach(line=>{if(!line.trim())return;
+    const isProbe=/^(\s+|\s*[-•*])/.test(line);
+    if(isProbe&&cur){cur.probes.push(line.replace(/^\s*[-•*]?\s*/,"").trim());}
+    else{cur={text:line.trim(),probes:[]};parsed.push(cur);}});
+  if(!parsed.length){alert("No questions to start with.");return;}
+  items=parsed.map((p,i)=>({id:i,text:p.text,probes:p.probes,level:"none",answer:"",gap:"",updates:0,flash:false}));
+  $("setupView").classList.add("hidden");$("liveView").classList.remove("hidden");
+  const show=["progress","recLang","analyzeBtn","startBtn","resetBtn"];
+  if(CFG.dg){show.push("audioSrc","audioDevice");populateDevices();}  // call-audio + device picker only work on Deepgram
+  show.forEach(id=>$(id).classList.remove("hidden"));
+  renderAgenda();updateNext();updateProgress();updateLayout();setStatus("Ready — press Start");};
+
+/* ===== Collapsible panels ===== */
+function updateLayout(){const t=$("panelTranscript").classList.contains("collapsed"),c=$("panelChat").classList.contains("collapsed");
+  $("liveView").style.gridTemplateColumns=`minmax(360px,1.5fr) ${t?"56px":"1.05fr"} ${c?"56px":"0.95fr"}`;}
+function bindCollapse(panelId,btnId){const panel=$(panelId);
+  $(btnId).onclick=e=>{e.stopPropagation();panel.classList.toggle("collapsed");updateLayout();};
+  panel.addEventListener("click",()=>{if(panel.classList.contains("collapsed")){panel.classList.remove("collapsed");updateLayout();}});}
+bindCollapse("panelTranscript","collapseTranscript");
+bindCollapse("panelChat","collapseChat");
+
+/* ===== Agenda render ===== */
+function renderAgenda(){const c=$("agendaList");c.innerHTML="";
+  const ai=items.findIndex(i=>i.level!=="green");
+  items.forEach((it,idx)=>{const L=LEVELS[it.level];
+    const d=document.createElement("div");
+    d.className="item"+(it.level==="green"?" green":"")+(idx===ai?" active":"")+(it.flash?" flash":"");
+    d.style.borderLeftColor=L.c;it.flash=false;
+    d.innerHTML=`<div class="light" style="color:${L.c}" title="click to set manually"></div>
+      <div class="body" style="flex:1;min-width:0"><div class="q"></div><div class="ans"></div><div class="gap"></div>
+      ${it.updates>1?`<div class="meta">enriched ${it.updates}× during the call</div>`:""}</div>`;
+    const q=d.querySelector(".q");q.textContent=it.text;
+    const tag=document.createElement("span");tag.className="lvltag";tag.style.color=L.c;tag.textContent=L.lbl;q.appendChild(tag);
+    if(it.updates>1){const b=document.createElement("span");b.className="badge";b.textContent="updated";q.appendChild(b);}
+    d.querySelector(".ans").textContent=it.answer;
+    if(it.level!=="green"&&it.gap)d.querySelector(".gap").textContent="Still needed: "+it.gap;
+    if(it.probes&&it.probes.length&&it.level!=="green"){const pb=document.createElement("div");pb.className="probes";
+      pb.innerHTML='<div class="ph">Clarifying probes</div>'+it.probes.map(p=>`<div class="probe"></div>`).join("");
+      [...pb.querySelectorAll(".probe")].forEach((el,k)=>el.textContent=it.probes[k]);d.querySelector(".body").appendChild(pb);}
+    d.querySelector(".light").onclick=()=>{const ni=(ORDER.indexOf(it.level)+1)%ORDER.length;it.level=ORDER[ni];
+      if(it.level==="green")it.gap="";if(it.level!=="none"&&!it.answer)it.answer="(set manually)";renderAgenda();updateNext();updateProgress();};
+    c.appendChild(d);});}
+function updateNext(){const n=items.find(i=>i.level!=="green");
+  if(n){$("nextQ").textContent=n.text;$("nextLvl").textContent="Current: "+LEVELS[n.level].lbl+(n.answer?" — "+n.answer.slice(0,90):"");
+    $("nextGap").textContent=n.gap?"Still needed: "+n.gap:"";
+    if(n.probes&&n.probes.length){$("nextProbes").innerHTML='<div class="ph">Probes to clarify</div>'+n.probes.map(()=>'<div class="probe"></div>').join("");
+      [...$("nextProbes").querySelectorAll(".probe")].forEach((el,k)=>el.textContent=n.probes[k]);}
+    else $("nextProbes").innerHTML="";}
+  else{$("nextQ").textContent="✅ Every item fully answered!";$("nextLvl").textContent="";$("nextGap").textContent="";$("nextProbes").innerHTML="";}}
+function updateProgress(){const g=items.filter(i=>i.level==="green").length;
+  const w=items.length?Math.round(items.reduce((s,i)=>s+LEVELS[i.level].pct,0)/items.length):0;
+  $("progress").textContent=`${g} / ${items.length} green`;$("ring").style.setProperty("--p",w);$("ringTxt").textContent=w+"%";}
+
+/* ===== Analysis ===== */
+async function analyze(force){if(analyzing||!items.length)return;
+  if(!force&&transcriptText.length-lastLen<140)return;
+  analyzing=true;lastLen=transcriptText.length;$("anaState").innerHTML='<span class="spin"></span>';$("dot").className="dot think";
+  try{const recent=transcriptText.slice(-5000);
+    const sys=`You maintain live notes for a meeting and rate how well each agenda question has been answered, like a traffic light. You receive the agenda (each item with its CURRENT note and level) and the RECENT transcript (may include speaker labels). For EACH item where the recent transcript adds or changes information, return {"id":number,"level":"red|orange|yellow|green","answer":"<consolidated note: merge existing note with new info, concise>","missing":"<short phrase naming exactly what still needs to be asked/clarified to reach a full answer; empty string if green>"}.
+LEVEL RUBRIC (be strict):
+- "red": the topic was only raised/mentioned, no real answer yet.
+- "orange": partially answered, major gaps or vague.
+- "yellow": mostly answered, only minor details missing.
+- "green": FULLY and properly answered — the specific information or a clear decision is present, nothing important missing.
+Each item may include "probes" — clarifying sub-points that a complete answer should cover. Only use "green" when the question AND its key probes are genuinely answered; if probes remain open, stay at yellow/orange and name them in "missing". The "missing" field must be a concrete, actionable hint of what to ask next to close the gap (e.g. "needs a specific date" or "who approves it?"). Judge by MEANING, not keywords. Attribute who said it if speakers are labelled. Omit items with no new information. Keep answer and missing in the SAME LANGUAGE as the question. Return ONLY a JSON array.`;
+    const payload="AGENDA (JSON):\n"+JSON.stringify(items.map(i=>({id:i.id,question:i.text,probes:i.probes&&i.probes.length?i.probes:undefined,current_note:i.answer||null,current_level:i.level})))+"\n\nRECENT TRANSCRIPT:\n"+recent;
+    const res=toArr(await llm(sys,payload,{json:true,max:2048}));let changed=false;
+    res.forEach(r=>{const it=items.find(i=>i.id===r.id);if(!it)return;
+      const lvl=ORDER.includes(r.level)?r.level:it.level;const ans=r.answer?String(r.answer).trim():it.answer;
+      const gap=lvl==="green"?"":(r.missing?String(r.missing).trim():it.gap);
+      if(ans!==it.answer||lvl!==it.level||gap!==it.gap){if(ans&&ans!==it.answer)it.updates++;it.answer=ans;it.level=lvl;it.gap=gap;it.flash=true;changed=true;}});
+    if(changed){renderAgenda();updateNext();updateProgress();}
+  }catch(e){setStatus("Analyze: "+e.message.slice(0,60));}
+  finally{analyzing=false;$("anaState").innerHTML="";$("dot").className=recognizing?"dot live":"dot";}}
+$("analyzeBtn").onclick=()=>analyze(true);
+
+/* ===== Transcript render ===== */
+function spkVar(n){return["--gold","--green","--yellow","--orange","--red","--gold2"][n%6];}
+function appendFinal(text,speaker){if(!text.trim())return;const c=$("transcript");if(c.querySelector(".empty"))c.innerHTML="";
+  const live=c.querySelector(".liveseg");if(live)live.remove();const d=document.createElement("div");d.className="seg";
+  if(speaker!=null){const label="Speaker "+(speaker+1);
+    d.innerHTML=`<span class="spk" style="color:var(${spkVar(speaker)})">${label}</span><span class="t"></span>`;
+    d.querySelector(".t").textContent=text;transcriptText+=`\n${label}: ${text}`;
+  }else{d.textContent=text;transcriptText+=" "+text;}
+  c.appendChild(d);c.scrollTop=c.scrollHeight;$("charCount").textContent=transcriptText.length.toLocaleString();savedThisRun=false;
+  if(transcriptText.length-lastLen>=200)analyze(false);}
+function showInterim(t){const c=$("transcript");let live=c.querySelector(".liveseg");
+  if(!live){live=document.createElement("div");live.className="seg liveseg";c.appendChild(live);}
+  live.innerHTML=`<span class="interim">${t}</span>`;c.scrollTop=c.scrollHeight;}
+
+/* ===== Deepgram ===== */
+async function populateDevices(){
+  try{const tmp=await navigator.mediaDevices.getUserMedia({audio:true});tmp.getTracks().forEach(t=>t.stop());}catch(_){}
+  try{const devs=await navigator.mediaDevices.enumerateDevices();
+    const ins=devs.filter(d=>d.kind==="audioinput");const sel=$("audioDevice");const cur=sel.value;
+    sel.innerHTML='<option value="">🎧 Default input</option>'+ins.map(d=>`<option value="${d.deviceId}">🎧 ${d.label||"Input "+d.deviceId.slice(0,6)}</option>`).join("");
+    if(cur&&[...sel.options].some(o=>o.value===cur))sel.value=cur;}catch(_){}}
+async function startDeepgram(){
+  const dev=$("audioDevice").value;
+  // A specifically chosen device is almost always a clean digital feed (BlackHole/aggregate);
+  // browser noise/echo/gain processing degrades clean audio, so turn it off there.
+  const clean=!!dev;
+  const micConstraints={channelCount:1,echoCancellation:!clean,noiseSuppression:!clean,autoGainControl:!clean};
+  if(dev)micConstraints.deviceId={exact:dev};
+  micStream=await navigator.mediaDevices.getUserMedia({audio:micConstraints});
+  audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  const mixer=audioCtx.createGain();
+  audioCtx.createMediaStreamSource(micStream).connect(mixer);
+  let capturedCall=false;
+  if($("audioSrc").value==="both"){
+    try{dispStream=await navigator.mediaDevices.getDisplayMedia({video:true,audio:true});
+      const at=dispStream.getAudioTracks();
+      if(at.length){audioCtx.createMediaStreamSource(new MediaStream([at[0]])).connect(mixer);capturedCall=true;}
+      dispStream.getVideoTracks().forEach(t=>t.stop());
+      if(!capturedCall)setStatus("No call audio shared — pick a tab and tick “Share tab audio”.");
+    }catch(e){setStatus("Call-audio share cancelled — mic only.");}
+  }
+  const lang=$("recLang").value;
+  const p=new URLSearchParams({model:"nova-3",language:lang,punctuate:"true",smart_format:"true",diarize:"true",interim_results:"true",encoding:"linear16",sample_rate:"16000"});
+  deepgramKeyterms().forEach(t=>p.append("keyterm",t));
+  dgSocket=new WebSocket("wss://api.deepgram.com/v1/listen?"+p,["token",CFG.dg]);
+  dgSocket.onopen=()=>{dgProc=audioCtx.createScriptProcessor(4096,1,1);
+    mixer.connect(dgProc);const mute=audioCtx.createGain();mute.gain.value=0;dgProc.connect(mute);mute.connect(audioCtx.destination);
+    const inRate=audioCtx.sampleRate;
+    dgProc.onaudioprocess=e=>{if(!dgSocket||dgSocket.readyState!==1)return;dgSocket.send(floatTo16(downsample(e.inputBuffer.getChannelData(0),inRate,16000)));};
+    keepAlive=setInterval(()=>{if(dgSocket&&dgSocket.readyState===1)dgSocket.send(JSON.stringify({type:"KeepAlive"}));},7000);
+    setStatus("Listening · Deepgram"+(capturedCall?" + call audio":""));};
+  dgSocket.onmessage=ev=>{let m;try{m=JSON.parse(ev.data);}catch(_){return;}
+    if(m.type!=="Results"&&!m.channel)return;const alt=m.channel&&m.channel.alternatives&&m.channel.alternatives[0];if(!alt||!alt.transcript)return;
+    if(m.is_final){if(alt.words&&alt.words.length){let buf=[],spk=alt.words[0].speaker??0;
+        const flush=()=>{if(buf.length)appendFinal(buf.join(" "),spk);buf=[];};
+        alt.words.forEach(w=>{const s=w.speaker??0;if(s!==spk){flush();spk=s;}buf.push(w.punctuated_word||w.word);});flush();
+      }else appendFinal(alt.transcript,null);
+    }else showInterim(alt.transcript);};
+  dgSocket.onerror=()=>setStatus("Deepgram socket error");}
+function stopDeepgram(){try{if(dgSocket&&dgSocket.readyState===1){dgSocket.send(JSON.stringify({type:"CloseStream"}));dgSocket.close();}}catch(_){}
+  clearInterval(keepAlive);if(dgProc){dgProc.disconnect();dgProc=null;}if(audioCtx){audioCtx.close();audioCtx=null;}
+  if(micStream){micStream.getTracks().forEach(t=>t.stop());micStream=null;}
+  if(dispStream){dispStream.getTracks().forEach(t=>t.stop());dispStream=null;}dgSocket=null;}
+function downsample(buf,inR,outR){if(outR>=inR)return buf;const ratio=inR/outR,len=Math.round(buf.length/ratio),out=new Float32Array(len);
+  let oi=0,ii=0;while(oi<len){const next=Math.round((oi+1)*ratio);let s=0,c=0;for(let i=ii;i<next&&i<buf.length;i++){s+=buf[i];c++;}out[oi]=s/(c||1);oi++;ii=next;}return out;}
+function floatTo16(f){const b=new ArrayBuffer(f.length*2),v=new DataView(b);for(let i=0;i<f.length;i++){let s=Math.max(-1,Math.min(1,f[i]));v.setInt16(i*2,s<0?s*0x8000:s*0x7FFF,true);}return b;}
+
+/* ===== Browser speech ===== */
+function startBrowser(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){alert("Browser speech needs Chrome or Edge.");recognizing=false;return;}
+  rec=new SR();rec.continuous=true;rec.interimResults=true;const l=$("recLang").value;rec.lang=l==="es"?"es-ES":"en-US";
+  rec.onresult=e=>{let interim="",fin="";for(let i=e.resultIndex;i<e.results.length;i++){const t=e.results[i][0].transcript;
+    if(e.results[i].isFinal)fin+=t+" ";else interim+=t;}if(fin)appendFinal(fin.trim(),null);showInterim(interim);};
+  rec.onerror=e=>setStatus("Mic: "+e.error);rec.onend=()=>{if(recognizing){try{rec.start();}catch(_){}}};rec.start();setStatus("Listening · browser");}
+function stopBrowser(){if(rec){try{rec.stop();}catch(_){}rec=null;}}
+
+/* ===== Start / stop ===== */
+$("startBtn").onclick=async()=>{
+  if(!recognizing){recognizing=true;savedThisRun=false;$("startBtn").textContent="■ Stop";$("dot").className="dot live";
+    try{if(CFG.dg)await startDeepgram();else startBrowser();
+      autoTimer=setInterval(()=>analyze(false),8000);
+    }catch(e){recognizing=false;$("startBtn").textContent="● Start";$("dot").className="dot";if(e)setStatus("Start failed");}
+  }else{recognizing=false;clearInterval(autoTimer);stopDeepgram();stopBrowser();
+    $("startBtn").textContent="● Start";$("dot").className="dot";setStatus("Wrapping up…");
+    await analyze(true);
+    if(transcriptText.trim())await saveMeeting(true);else setStatus("Paused");}};
+$("recLang").onchange=()=>{if(recognizing)$("startBtn").click();};
+
+/* ===== Chat (full transcript, no trim) ===== */
+async function sendChat(){const q=$("chatInput").value.trim();if(!q)return;
+  if(!CFG.key){addMsg("a","Add your LLM key first.");return;}
+  $("chatInput").value="";addMsg("u",q);const wait=addMsg("a","…");
+  try{const agenda=items.map(i=>`- (${LEVELS[i.level].lbl}) ${i.text}${i.answer?"\n    note: "+i.answer.replace(/\n/g," "):""}`).join("\n");
+    let past="";if(pastMeetings.length)past="\n\nPAST MEETINGS (most recent first):\n"+pastMeetings.slice(0,8).map(m=>`### ${m.name}\n${m.text}`).join("\n\n");
+    const sys="You are Copilot inside a live meeting tool. Answer using the CURRENT meeting (agenda + live notes + full transcript) and, when relevant, the PAST MEETINGS. If the answer isn't there, say so. Cite which meeting when using a past one. Reply in the user's language. Be concise and concrete.";
+    const ctx=`CURRENT AGENDA & NOTES:\n${agenda}\n\nFULL LIVE TRANSCRIPT:\n${transcriptText||"(nothing said yet)"}${past}\n\nQUESTION: ${q}`;
+    wait.textContent=await llm(sys,ctx,{max:1000});
+  }catch(e){wait.textContent="Error: "+e.message.slice(0,140);}$("chatlog").scrollTop=$("chatlog").scrollHeight;}
+function addMsg(role,text){const d=document.createElement("div");d.className="msg "+role;d.textContent=text;
+  $("chatlog").appendChild(d);$("chatlog").scrollTop=$("chatlog").scrollHeight;return d;}
+$("chatSend").onclick=sendChat;$("chatInput").addEventListener("keydown",e=>{if(e.key==="Enter")sendChat();});
+
+/* ===== Save + AI summary ===== */
+async function makeSummary(){
+  try{const sys="Write concise meeting minutes in the meeting's main language. Format as markdown: a 2-4 sentence overview, then '**Decisions:**' bullets, then '**Open / unresolved:**' bullets. Base it strictly on the agenda notes and transcript.";
+    const agenda=items.map(i=>`- (${LEVELS[i.level].lbl}) ${i.text}${i.answer?": "+i.answer.replace(/\n/g," "):""}`).join("\n");
+    return await llm(sys,`AGENDA & NOTES:\n${agenda}\n\nTRANSCRIPT:\n${transcriptText}`,{max:900});
+  }catch(e){return "_(summary unavailable: "+e.message.slice(0,80)+")_";}}
+function buildNotes(summary){let md=`# Meeting Notes — ${new Date().toLocaleString()}\n\n`;
+  md+=`Provider: ${PROVIDERS[CFG.provider].label} (${CFG.model})\n\n## Summary\n\n${summary}\n\n## Agenda coverage\n\n`;
+  items.forEach(it=>{md+=`- **[${LEVELS[it.level].lbl}]** ${it.text}\n`;if(it.answer)md+=`  - ${it.answer.replace(/\n/g," ")}\n`;
+    if(it.level!=="green"&&it.gap)md+=`  - _Still needed: ${it.gap.replace(/\n/g," ")}_\n`;});
+  md+=`\n## Full transcript\n\n${transcriptText.trim()||"(none)"}\n`;return md;}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function buildDoc(summary){
+  const colors={none:"#777",red:"#c62828",orange:"#e65100",yellow:"#b58900",green:"#2e7d32"};
+  let rows=items.map(it=>`<tr>
+      <td style="padding:6px;border:1px solid #ccc;color:${colors[it.level]};font-weight:bold;white-space:nowrap">${LEVELS[it.level].lbl}</td>
+      <td style="padding:6px;border:1px solid #ccc">${esc(it.text)}${it.answer?`<div style="color:#333;margin-top:4px"><i>${esc(it.answer)}</i></div>`:""}${it.level!=="green"&&it.gap?`<div style="color:#8a6d00;margin-top:3px;font-size:11px">Still needed: ${esc(it.gap)}</div>`:""}</td></tr>`).join("");
+  const sumHtml=esc(summary).replace(/\n/g,"<br>").replace(/\*\*(.*?)\*\*/g,"<b>$1</b>");
+  const trans=esc(transcriptText.trim()||"(none)").replace(/\n/g,"<br>");
+  return `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Meeting Notes</title></head>
+<body style="font-family:Calibri,Arial,sans-serif;font-size:12px;color:#111">
+<h1 style="color:#8a7942">Meeting Notes</h1>
+<p style="color:#666">${new Date().toLocaleString()} · ${esc(PROVIDERS[CFG.provider].label)} (${esc(CFG.model)})</p>
+<h2 style="color:#8a7942">Summary</h2><p>${sumHtml}</p>
+<h2 style="color:#8a7942">Agenda coverage</h2>
+<table style="border-collapse:collapse;width:100%"><tr><th style="padding:6px;border:1px solid #ccc;background:#f2eedd;text-align:left">Status</th><th style="padding:6px;border:1px solid #ccc;background:#f2eedd;text-align:left">Question & notes</th></tr>${rows}</table>
+<h2 style="color:#8a7942">Full transcript</h2><p style="color:#222">${trans}</p>
+</body></html>`;}
+async function writeToFolder(name,blob){const fh=await dirHandle.getFileHandle(name,{create:true});const w=await fh.createWritable();await w.write(blob);await w.close();}
+function download(name,blob){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();}
+async function saveMeeting(auto){
+  if(savedThisRun&&auto)return;
+  setStatus("Generating summary…");$("dot").className="dot think";
+  const summary=await makeSummary();
+  const base=`meeting-${new Date().toISOString().slice(0,16).replace(/[:T]/g,"-")}`;
+  const mdBlob=new Blob([buildNotes(summary)],{type:"text/markdown"});
+  const docBlob=new Blob(["﻿"+buildDoc(summary)],{type:"application/msword"});
+  if(dirHandle){try{const perm=await dirHandle.queryPermission({mode:"readwrite"});
+      if(perm!=="granted"&&await dirHandle.requestPermission({mode:"readwrite"})!=="granted")throw 0;
+      await writeToFolder(base+".md",mdBlob);await writeToFolder(base+".doc",docBlob);
+      savedThisRun=true;await loadFolder();setStatus("✓ Saved .md + .doc to “"+dirHandle.name+"”");$("dot").className=recognizing?"dot live":"dot";return;}catch(e){}}
+  download(base+".md",mdBlob);download(base+".doc",docBlob);
+  savedThisRun=true;setStatus("✓ Notes downloaded (.md + .doc)");$("dot").className=recognizing?"dot live":"dot";}
+$("resetBtn").onclick=()=>{if(confirm("Reset this meeting? (keeps keys & folder)")){stopDeepgram();stopBrowser();
+  items.forEach(i=>{i.level="none";i.answer="";i.gap="";i.updates=0;});transcriptText="";lastLen=0;savedThisRun=false;
+  $("transcript").innerHTML='<div class="empty">Cleared. Press Start to begin a new meeting.</div>';
+  $("charCount").textContent="0";renderAgenda();updateNext();updateProgress();setStatus("Ready");}};
+
+function setStatus(s){$("statusTxt").textContent=s;}
+loadCfg();
+</script>
+</body>
+</html>
